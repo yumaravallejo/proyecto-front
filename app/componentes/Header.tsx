@@ -16,12 +16,11 @@ export default function Header(props: Props) {
   const opcionesMenu = [
     {
       estado: "logged", opciones: [
-        { nombre: "Dietas", ruta: "/dietas" },
-        { nombre: "Reservas", ruta: "/reservas" },
-        { nombre: "Actividades", ruta: "/actividades" },
-        { nombre: "Calendario", ruta: "/calendario" },
-        { nombre: "Contacto", ruta: "/contacto" },
-        { nombre: "Perfil", ruta: "/perfil" },
+        { nombre: "DIETAS", ruta: "/dietas" },
+        { nombre: "RESERVAS", ruta: "/reservas" },
+        { nombre: "ACTIVIDADES", ruta: "/actividades" },
+        { nombre: "CALENDARIO", ruta: "/calendario" },
+        { nombre: "CONTACTO", ruta: "/contacto" },
       ]
     },
     {
@@ -29,7 +28,6 @@ export default function Header(props: Props) {
         { nombre: "CUOTAS", ruta: "/cuotas" },
         { nombre: "SERVICIOS", ruta: "/servicios" },
         { nombre: "ACTIVIDADES", ruta: "/actividades" },
-        { nombre: "PREGUNTAS FRECUENTES", ruta: "/faqs" },
         { nombre: "CONTACTO", ruta: "/contacto" },
         { nombre: "ÚNETE", ruta: "/registro" },
       ]
@@ -45,13 +43,17 @@ export default function Header(props: Props) {
           <span></span>
         </label>
 
-        <Link href="/">
+        <Link href="/" className="flex items-center gap-4">
           <Image src="/logo.svg" alt="Logo de Changes" width={100} height={50} className="rounded-full" />
+          <span className="text-xl font-bold text-white flex flex-col">
+            <span className="amarillo">CHANGES</span>
+            <span className="azul">FITNESS CLUB</span>
+          </span>
         </Link>
 
         <nav className={`${menuAbierto ? "abierto" : "cerrado"} general `}>
           {
-            opcionesMenu[1].opciones.map((opcion, index) => (
+            opcionesMenu[0].opciones.map((opcion, index) => (
               <Link key={index} href={opcion.ruta} className="text-lg font-bold text-white hover:text-[var(--azul)] transition-colors duration-200">
                 {opcion.nombre}
               </Link>

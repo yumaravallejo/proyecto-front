@@ -30,30 +30,39 @@ import {
 import { Input } from "@/components/ui/input"
 
 
+
+
 const formSchema = z.object({
     email: z.string().email("Email no válido"),
     password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 })
 
 async function handleLogin(values: z.infer<typeof formSchema>) {
-  try {
-    const response = await fetch("http://localhost:8080/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: values.email,
-        password: values.password,
-      }),
-    });
+    try {
+        const response = await fetch("http://localhost:8080/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: values.email,
+                password: values.password,
+            }),
+        });
 
-    const data = await response.json();
-    console.log("Login exitoso:", data);
+        const data = await response.json();
 
-  } catch (error) {
-    console.log("Error en login:", error);
-  }
+        if (!response.ok) {
+            throw new Error(data.message || "Error en el login");
+        }
+
+        // Crear la sesión con el token y los datos del usuario
+        localStorage.setItem("user", JSON.stringify(data));
+
+
+    } catch (error) {
+        console.log("Error en login:", error);
+    }
 }
 
 export default function Login() {
@@ -82,6 +91,9 @@ export default function Login() {
                 <DialogHeader>
                     <DialogTitle className="text-left">Iniciar Sesión</DialogTitle>
                 </DialogHeader>
+        
+                
+
                 <Form {...form}>
                     <FormField
                         control={form.control}

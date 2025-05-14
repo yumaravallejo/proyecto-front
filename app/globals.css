@@ -15,6 +15,26 @@
   --gris-oscuro: #202020;
   --error: #f22816;
   --aviso: #D33A2F;
+  --destructive: 0 100% 50%; /* Rojo brillante */
+  --destructive-foreground: 210 40% 98%; /* Blanco */
+}
+
+header > a > span {
+  display: none;
+}
+
+.amarillo {
+  color: var(--dorado);
+  font-family: var(--font-oswald);
+}
+
+.azul {
+  color: var(--azul);
+  font-family: var(--font-oswald);
+}
+
+header > button {
+  flex: none;
 }
 
 header u {
@@ -110,7 +130,7 @@ nav.general a {
   left: -400px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1060px) {
   label.menu-btn {
     display: none;
   }
@@ -124,7 +144,7 @@ nav.general a {
   }
 
   header > a {
-    flex: 20% 0;
+    flex: 25% 0;
   }
 
   header u {
@@ -133,7 +153,7 @@ nav.general a {
 
   nav.general {
     padding: 0 0;
-    flex: 60% 0;
+    flex: 50% 0;
     height: 6rem;
     flex-flow: row;
     align-items: center;
@@ -161,4 +181,12 @@ nav.general a {
   .sesion:hover {
     border-color: var(--azul-oscuro) ;
   } 
+
+  header > button {
+  flex: 20% 0;
+}
+
+header > a > span {
+  display: flex;
+}
 }
