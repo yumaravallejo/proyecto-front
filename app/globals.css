@@ -4,19 +4,39 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --dorado: #EBAE2D;
-  --dorado-oscuro: #D79E25;
-  --azul: #4F8CF5;
-  --azul-medio: #6784B5;
-  --azul-oscuro: #335CA1;
-  --gris: #C0C0C0;
+  --dorado: #ebae2d;
+  --dorado-claro: #FFFBF6;
+  --dorado-oscuro: #d79e25;
+  --azul: #4f8cf5;
+  --azul-medio: #6784b5;
+  --azul-oscuro: #335ca1;
+  --gris: #c0c0c0;
   --gris-medio: #565656;
   --gris-alto: #383838;
   --gris-oscuro: #202020;
   --error: #f22816;
-  --aviso: #D33A2F;
+  --aviso: #d33a2f;
   --destructive: 0 100% 50%; /* Rojo brillante */
   --destructive-foreground: 210 40% 98%; /* Blanco */
+}
+
+* {
+  font-family: var(--font-inter);
+}
+
+.oswald {
+  font-family: var(--font-oswald);
+}
+
+.boton {
+  background-color: var(--azul);
+  width: 10rem;
+  padding: .5rem 0;
+  font-weight: 500;
+}
+
+.mitad {
+  flex-basis: 50%;
 }
 
 header > a > span {
@@ -33,8 +53,15 @@ header > a > span {
   font-family: var(--font-oswald);
 }
 
-header > button {
+header > button,
+div.perfil-ic > a,
+div.perfil-ic {
   flex: none;
+}
+
+div.perfil-ic > a,
+div.perfil-ic > a {
+  width: auto;
 }
 
 header u {
@@ -56,18 +83,17 @@ label.menu-btn {
   height: 2.5rem;
 }
 
-label.menu-btn span{
+label.menu-btn span {
   position: absolute;
   background-color: white;
-  height: .4rem;
-  border-radius: .5rem;
+  height: 0.4rem;
+  border-radius: 0.5rem;
   width: 100%;
-} 
+}
 
 label span:nth-child(1) {
   top: 0em;
   transition: top 0.25s ease 0.25s, transform 0.25s ease 0s;
-
 }
 
 label span:nth-child(2) {
@@ -77,7 +103,6 @@ label span:nth-child(2) {
 label span:nth-child(3) {
   top: 2em;
   transition: top 0.25s ease 0.25s, transform 0.25s ease 0s;
-
 }
 
 label.menu-abierto span:nth-child(1) {
@@ -97,7 +122,7 @@ label.menu-abierto span:nth-child(2) {
 }
 
 .sesion {
-  border: none
+  border: none;
 }
 
 .general {
@@ -115,11 +140,12 @@ label.menu-abierto span:nth-child(2) {
   padding: 3rem 2.5rem;
   flex-flow: column;
   align-items: left;
+  z-index: 2;
 }
 
 nav.general a {
   font-family: var(--font-oswald);
-  text-align: left ;
+  text-align: left;
 }
 
 .abierto {
@@ -130,7 +156,28 @@ nav.general a {
   left: -400px;
 }
 
-@media (min-width: 1060px) {
+.div-video {
+  background-color: var(--gris-oscuro);
+  width: 100%;
+  height: calc(100vh - 7rem);
+}
+
+.video {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+
+
+.div-video > div {
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+@media (min-width: 970px) {
   label.menu-btn {
     display: none;
   }
@@ -165,6 +212,7 @@ nav.general a {
     font-family: var(--font-oswald);
     text-align: center;
     padding: 0 auto;
+    font-size: 1.3rem;
   }
 
   header img.usuario {
@@ -173,20 +221,50 @@ nav.general a {
   }
 
   .sesion {
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     border: 4px solid var(--dorado);
     transition: border-color 0.2s ease-in-out;
-  } 
+  }
 
   .sesion:hover {
-    border-color: var(--azul-oscuro) ;
-  } 
+    border-color: var(--azul-oscuro);
+  }
 
-  header > button {
-  flex: 20% 0;
+  header > button,
+  div.perfil-ic {
+    flex: 20% 0;
+  }
+
+  .div-video a {
+    width: 15rem;
+
+    font-size: x-large;
+  }
+
+  .div-video div {
+    gap: 2rem;
+  }
+
+  .div-video h1 {
+    font-size: 3rem;
+  }
+
+  header > a > span {
+    display: flex;
+  }
+
+  footer > div:nth-child(1) {
+    align-items: center;
+    font-weight: bold;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  footer > div:nth-child(2) {
+    
+  }
+
 }
 
-header > a > span {
-  display: flex;
-}
-}
+
+

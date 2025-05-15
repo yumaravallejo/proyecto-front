@@ -13,9 +13,9 @@ export default function PersAlert(props: {message: string, title: string, varian
         <Alert variant={props.variant}>
             <Icon className="h-4 w-4" />
             <AlertTitle>{props.title}</AlertTitle>
-            <AlertDescription className="flex justify-between items-center ">
+            <AlertDescription className="flex justify-between items-center relative">
                 {props.message}
-                {props.spinner ? <Spinner /> : null}
+                {props.spinner ? <div className="absolute right-0 bottom-1"><Spinner /></div> : null}
             </AlertDescription>
         </Alert>
     )
