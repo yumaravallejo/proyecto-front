@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/dialog"
 import { DialogClose } from "@radix-ui/react-dialog";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { set, useForm } from "react-hook-form"
 import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -28,45 +27,66 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import PersAlert from "./PersAlert";
 
-
-
-
-const formSchema = z.object({
-    email: z.string().email("Email no válido"),
-    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-})
-
-async function handleLogin(values: z.infer<typeof formSchema>) {
-    try {
-        const response = await fetch("http://localhost:8080/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: values.email,
-                password: values.password,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Error en el login");
-        }
-
-        // Crear la sesión con el token y los datos del usuario
-        localStorage.setItem("user", JSON.stringify(data));
-
-
-    } catch (error) {
-        console.log("Error en login:", error);
-    }
-}
 
 export default function Login() {
     const [isOpen, setIsOpen] = useState(false);
+    const [alert, setAlert] = useState<{ message: string; title: string; variant: "default" | "destructive" | "success" } | null>(null);
+
+
+
+    const formSchema = z.object({
+        email: z.string().email("Email no válido"),
+        password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+    })
+
+    async function handleLogin(values: z.infer<typeof formSchema>) {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API;
+            const response = await fetch(apiUrl + "login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: values.email,
+                    password: values.password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setAlert({
+                    title: "Error",
+                    message: data?.message || "Error al iniciar sesión.",
+                    variant: "destructive",
+                });
+                return;
+            }
+
+            // Crear la sesión con el token y los datos del usuario
+            localStorage.setItem("user", JSON.stringify(data));
+            setAlert({
+                title: "Tu sesión ha sido iniciada",
+                message: "¡Hola " + data.nombre + "!",
+                variant: "success",
+            });
+            // setTimeout(() => {
+            //     setIsOpen(false); // Cierra el modal
+            //     window.location.reload(); // Recarga la página para reflejar el cambio de sesión
+            // }, 5000); // Espera 5 segundos antes de cerrar el modal
+
+        } catch (error) {
+            setAlert({
+                title: "Error",
+                message: "Error en login: " + (error as Error).message,
+                variant: "destructive",
+            });
+        }
+    }
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -78,6 +98,7 @@ export default function Login() {
     return (
         <Dialog onOpenChange={(open) => {
             if (!open) {
+                alert && setAlert(null); // Limpia el alert
                 form.reset(); // Limpia campos y errores
             }
         }}>
@@ -91,8 +112,15 @@ export default function Login() {
                 <DialogHeader>
                     <DialogTitle className="text-left">Iniciar Sesión</DialogTitle>
                 </DialogHeader>
-        
-                
+
+                {alert && (
+                    <PersAlert
+                        title={alert.title}
+                        message={alert.message}
+                        variant={alert.variant}
+                        spinner={alert.variant === "success"}
+                    />
+                )}
 
                 <Form {...form}>
                     <FormField
