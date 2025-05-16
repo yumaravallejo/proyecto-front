@@ -4,7 +4,7 @@ import { JSX } from "react";
 
 type Props = {
   videoUrl: string;
-  texto: JSX.Element;
+  texto: JSX.Element | null;
 };
 
 export default function Video(props: Props) {
@@ -23,4 +23,5 @@ export default function Video(props: Props) {
         </div>
       </div>
   );
+
 }

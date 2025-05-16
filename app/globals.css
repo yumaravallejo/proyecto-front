@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
   --dorado: #ebae2d;
   --dorado-claro: #FFFBF6;
@@ -16,8 +14,10 @@
   --gris-oscuro: #202020;
   --error: #f22816;
   --aviso: #d33a2f;
-  --destructive: 0 100% 50%; /* Rojo brillante */
-  --destructive-foreground: 210 40% 98%; /* Blanco */
+  --destructive: 0 100% 50%;
+  /* Rojo brillante */
+  --destructive-foreground: 210 40% 98%;
+  /* Blanco */
 }
 
 * {
@@ -28,18 +28,30 @@
   font-family: var(--font-oswald);
 }
 
+.bg-dorado {
+  background-color: var(--dorado);
+}
+
+.dorado {
+  color: var(--dorado);
+}
+
 .boton {
   background-color: var(--azul);
-  width: 10rem;
+  width: 7rem;
   padding: .5rem 0;
   font-weight: 500;
+}
+
+.fondo-dash {
+  background: linear-gradient(to right, var(--azul), var(--dorado-oscuro));
 }
 
 .mitad {
   flex-basis: 50%;
 }
 
-header > a > span {
+header>a>span {
   display: none;
 }
 
@@ -53,14 +65,14 @@ header > a > span {
   font-family: var(--font-oswald);
 }
 
-header > button,
-div.perfil-ic > a,
+header>button,
+div.perfil-ic>a,
 div.perfil-ic {
   flex: none;
 }
 
-div.perfil-ic > a,
-div.perfil-ic > a {
+div.perfil-ic>a,
+div.perfil-ic>a {
   width: auto;
 }
 
@@ -160,6 +172,7 @@ nav.general a {
   background-color: var(--gris-oscuro);
   width: 100%;
   height: calc(100vh - 7rem);
+  overflow: hidden;
 }
 
 .video {
@@ -168,16 +181,36 @@ nav.general a {
   object-fit: cover;
 }
 
+footer div:nth-child(3) {
+  flex: 100% 0;
+  display: flex;
+  flex-flow: row wrap;
+}
 
+footer div:nth-child(3) h3 {
+  flex: 100% 0;
+}
 
-.div-video > div {
-  top: 40%;
+footer div:nth-child(3) a {
+  flex: 50% 0;
+}
+
+footer a {
+  display: inline-block;
+  width: auto;
+  align-self: flex-start;
+  transition: all 0.2s ease;
+}
+
+.div-video>div {
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
 }
 
-@media (min-width: 970px) {
+@media (min-width: 970px), 
+       (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
   label.menu-btn {
     display: none;
   }
@@ -190,12 +223,17 @@ nav.general a {
     flex-flow: row wrap;
   }
 
-  header > a {
+  header>a {
     flex: 25% 0;
   }
 
   header u {
     display: flex;
+    font-size: .85rem;
+  }
+
+  header span.azul {
+    font-size: 1rem;
   }
 
   nav.general {
@@ -212,7 +250,7 @@ nav.general a {
     font-family: var(--font-oswald);
     text-align: center;
     padding: 0 auto;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
   }
 
   header img.usuario {
@@ -230,15 +268,15 @@ nav.general a {
     border-color: var(--azul-oscuro);
   }
 
-  header > button,
+  header>button,
   div.perfil-ic {
     flex: 20% 0;
   }
 
   .div-video a {
-    width: 15rem;
-
-    font-size: x-large;
+    width: 10rem;
+    font-size: large;
+    margin-top: 1rem;
   }
 
   .div-video div {
@@ -249,22 +287,84 @@ nav.general a {
     font-size: 3rem;
   }
 
-  header > a > span {
+  header>a>span {
     display: flex;
   }
 
-  footer > div:nth-child(1) {
+  footer {
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+
+  footer a:hover{
+    font-weight: bold;
+  }
+
+  footer>div:nth-child(1) {
     align-items: center;
     font-weight: bold;
     justify-content: center;
-    padding: 1rem;
-  }
-  
-  footer > div:nth-child(2) {
-    
+    padding: .5rem;
+    flex: 100% 0;
   }
 
+  footer>div:nth-child(2) {
+    flex: 63% 0;
+    display: flex;
+    justify-content: space-between;
+    flex-flow: row wrap;
+    padding: 1rem 0;
+    padding-left: 6rem;
+
+  }
+
+  footer>div:nth-child(2) div {
+    flex: 50% 0;
+  }
+
+  footer>div:nth-child(2) h3:nth-child(1) {
+    order: 1;
+  }
+
+  footer>div:nth-child(2) div:nth-child(2) {
+    flex-direction: column;
+    order: 3;
+  }
+
+  footer>div:nth-child(2) h3:nth-child(3) {
+    order: 2;
+  }
+
+  footer>div:nth-child(2) div:nth-child(4) {
+    order: 4;
+  }
+
+
+  footer>div:nth-child(2) h3 {
+    flex: 50% 0;
+  }
+
+  footer>div:nth-child(2) div a {
+    display: inline-block;
+    flex-basis: auto;
+  }
+
+  footer>div:nth-child(3) {
+    flex: 30% 0;
+    background-color: var(--dorado-claro);
+    color: black;
+    padding: 0 0;
+    display: flex;
+    flex-flow: column;
+    row-gap: calc(var(--spacing) * 1);
+    padding-right: 1rem;
+  }
+
+  footer>div:nth-child(3) > h3{
+    display: flex;
+  }
+
+  footer>span {
+    padding: 1rem 0
+  }
 }
-
-
-

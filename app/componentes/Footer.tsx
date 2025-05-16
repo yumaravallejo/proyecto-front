@@ -43,13 +43,13 @@ export default function Footer() {
           <Link href={"/atencion"} className="basis-[50%] text-sm">
             Atención al cliente
           </Link>
-          <Link href={"/atencion"} className="basis-[50%] text-sm">
+          <Link href={"/horario"} className="basis-[50%] text-sm">
             Horario de apertura
           </Link>
-          <Link href={"/atencion"} className="basis-[50%] text-sm">
+          <Link href={"/reglamento"} className="basis-[50%] text-sm">
             Reglamento interno
           </Link>
-          <Link href={"/atencion"} className="basis-[50%] text-sm">
+          <Link href={"/servicios"} className="basis-[50%] text-sm">
             Servicios del Club
           </Link>
         </div>
@@ -82,17 +82,20 @@ export default function Footer() {
           />
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-y-3 bg-[var(--gris-oscuro)] w-full p-5 pl-10 pr-10 text-left text-white ">
-        <Link href={"/atencion"} className="basis-[50%] text-sm ">
+      <div className="flex flex-row flex-wrap gap-y-3 bg-[var(--gris-oscuro)] w-full p-4 pl-10 pr-10 text-left text-white ">
+        <h3 className="text-[var(--azul-medio)] font-bold hidden">
+          Información adicional
+        </h3>
+        <Link href={"/cookies"} className="basis-[50%] text-sm ">
           Declaración de Cookies
         </Link>
-        <Link href={"/atencion"} className="basis-[50%] text-sm">
+        <Link href={"/privacidad"} className="basis-[50%] text-sm">
           Declaración de privacidad
         </Link>
-        <Link href={"/atencion"} className="basis-[50%] text-sm">
+        <Link href={"/terminos-condiciones"} className="basis-[50%] text-sm">
           Términos y Condiciones
         </Link>
-        <Link href={"/atencion"} className="basis-[50%] text-sm">
+        <Link href={"/aviso-legal"} className="basis-[50%] text-sm">
           Aviso Legal
         </Link>
       </div>

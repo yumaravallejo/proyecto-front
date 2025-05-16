@@ -87,7 +87,7 @@ export default function Header(props: Props) {
                 <Link
                   key={index}
                   href={opcion.ruta}
-                  className="text-lg font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
+                  className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
                 >
                   {opcion.nombre}
                 </Link>
@@ -96,7 +96,7 @@ export default function Header(props: Props) {
                 <Link
                   key={index}
                   href={opcion.ruta}
-                  className="text-lg font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
+                  className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
                 >
                   {opcion.nombre}
                 </Link>
