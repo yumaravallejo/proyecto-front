@@ -3,7 +3,7 @@
 
 :root {
   --dorado: #ebae2d;
-  --dorado-claro: #FFFBF6;
+  --dorado-claro: #fcf0bf;
   --dorado-oscuro: #d79e25;
   --azul: #4f8cf5;
   --azul-medio: #6784b5;
@@ -24,6 +24,10 @@
   font-family: var(--font-inter);
 }
 
+.inter {
+  font-family: var(--font-inter);
+}
+
 .oswald {
   font-family: var(--font-oswald);
 }
@@ -32,8 +36,16 @@
   background-color: var(--dorado);
 }
 
+.bg-dc {
+  background: var(--dorado-claro);
+}
+
 .dorado {
   color: var(--dorado);
+}
+
+.grisosc {
+  color: var(--gris-oscuro);
 }
 
 .boton {
@@ -71,6 +83,10 @@ div.perfil-ic {
   flex: none;
 }
 
+.pad-carrusel {
+  padding: 3rem;
+}
+
 div.perfil-ic>a,
 div.perfil-ic>a {
   width: auto;
@@ -81,7 +97,7 @@ header u {
 }
 
 header {
-  height: 6rem;
+  height: 4rem;
   padding: 0 1.5rem;
 }
 
@@ -209,10 +225,16 @@ footer a {
   width: 100%;
 }
 
-@media (min-width: 970px), 
-       (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
+
+
+@media (min-width: 970px),
+(orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
   label.menu-btn {
     display: none;
+  }
+
+  .pad-carrusel {
+    padding: 3rem 20vw;
   }
 
   nav#redes {
@@ -239,7 +261,7 @@ footer a {
   nav.general {
     padding: 0 0;
     flex: 50% 0;
-    height: 6rem;
+    height: 87px;
     flex-flow: row;
     align-items: center;
     position: initial;
@@ -296,7 +318,7 @@ footer a {
     justify-content: space-between;
   }
 
-  footer a:hover{
+  footer a:hover {
     font-weight: bold;
   }
 
@@ -314,8 +336,7 @@ footer a {
     justify-content: space-between;
     flex-flow: row wrap;
     padding: 1rem 0;
-    padding-left: 6rem;
-
+    padding-left: 5rem;
   }
 
   footer>div:nth-child(2) div {
@@ -360,11 +381,43 @@ footer a {
     padding-right: 1rem;
   }
 
-  footer>div:nth-child(3) > h3{
+  footer>div:nth-child(3)>h3 {
     display: flex;
   }
 
   footer>span {
     padding: 1rem 0
   }
+
+  .contact-form {
+    width: 40%;
+  }
+
+  .contact-form>div:nth-child(2) {
+    width: 100%;
+  }
+
+}
+
+@media (min-width: 1100px) {
+  footer>div:nth-child(2) {
+    padding-left: 10rem;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
+
+  header>a>img {
+    width: 5rem;
+  }
+
+  header span.azul {
+    font-size: .88rem;
+  }
+
+  .sesion {
+    padding: 0.5rem .4rem;
+  }
+
+
 }

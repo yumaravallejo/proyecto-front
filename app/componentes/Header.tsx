@@ -10,11 +10,20 @@ type Props = {
 };
 
 export default function Header(props: Props) {
+  const HEADER_HEIGHT = 90; // px
+
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [login, setLogin] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     localStorage.getItem("user") ? setLogin(true) : setLogin(false);
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -55,11 +64,15 @@ export default function Header(props: Props) {
 
   return (
     <>
-      <header className="flex items-center justify-between w-full bg-[var(--gris-oscuro)] text-white relative">
+      <header
+        className={`flex items-center justify-between w-full bg-[var(--gris-oscuro)] text-white transition-all duration-300 z-50
+          ${isScrolled ? "fixed top-0 left-0 shadow-lg" : "relative"}
+        `}
+        style={{ height: HEADER_HEIGHT }}
+      >
         <label
-          className={`${
-            menuAbierto ? "menu-abierto" : "menu-cerrado"
-          } menu-btn cursor-pointer `}
+          className={`${menuAbierto ? "menu-abierto" : "menu-cerrado"
+            } menu-btn cursor-pointer `}
           onClick={() => setMenuAbierto(!menuAbierto)}
         >
           <span></span>
@@ -71,7 +84,7 @@ export default function Header(props: Props) {
           <Image
             src="/logo.svg"
             alt="Logo de Changes"
-            width={100}
+            width={80}
             height={50}
             className="rounded-full"
           />
@@ -84,23 +97,23 @@ export default function Header(props: Props) {
         <nav className={`${menuAbierto ? "abierto" : "cerrado"} general `}>
           {login
             ? opcionesMenu[0].opciones.map((opcion, index) => (
-                <Link
-                  key={index}
-                  href={opcion.ruta}
-                  className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
-                >
-                  {opcion.nombre}
-                </Link>
-              ))
+              <Link
+                key={index}
+                href={opcion.ruta}
+                className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
+              >
+                {opcion.nombre}
+              </Link>
+            ))
             : opcionesMenu[1].opciones.map((opcion, index) => (
-                <Link
-                  key={index}
-                  href={opcion.ruta}
-                  className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
-                >
-                  {opcion.nombre}
-                </Link>
-              ))}
+              <Link
+                key={index}
+                href={opcion.ruta}
+                className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
+              >
+                {opcion.nombre}
+              </Link>
+            ))}
           <nav id="redes" className="flex gap-4 absolute bottom-30">
             <Image
               src="/instagram-am.svg"
@@ -148,8 +161,10 @@ export default function Header(props: Props) {
         ) : (
           <Login login={() => setLogin(true)} />
         )}
+       
       </header>
-      <div
+      {isScrolled && <div style={{ height: HEADER_HEIGHT }} />}
+       <div
         id="promociones"
         className="text-xs font-normal w-full text-center text-white bg-[var(--azul-medio)] p-2"
       >
