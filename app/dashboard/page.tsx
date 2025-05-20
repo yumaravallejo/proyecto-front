@@ -9,8 +9,6 @@ import Carousel from "../componentes/Carousel";
 import ContactForm from "../componentes/ContactForm";
 
 export default function Dashboard() {
-   
-
     const texto = <div className="text-white flex flex-col text-center gap-5 items-center">
         <u>EL CAMBIO LO ELIGES TÚ</u>
         <h1 className="oswald text-3xl font-bold">CHANGES FITNESS CLUB</h1>
@@ -28,10 +26,10 @@ export default function Dashboard() {
 
         </div>
     ) : (
-        <div className=" pb-10 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center gap-y-20">
+        <div className="dashboard pb-10 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
             <Video videoUrl="/videos/chica-fitness.mp4" texto={texto} />
-            <div id="encuentranos" className="flex flex-col items-center justify-center gap-6 pb-4 mt-[-2rem]">
-                <h2 className="font-bold text-white oswald text-2xl mb-4">ENCUÉNTRANOS</h2>
+            <div id="encuentranos" className="flex flex-col items-center justify-center gap-6 pb-4 ">
+                <h2 className="font-bold text-white text-2xl mb-4">ENCUÉNTRANOS</h2>
                 <Image
                     src="/img/localizacion.webp"
                     alt="Imagen de usuario"
@@ -70,12 +68,12 @@ export default function Dashboard() {
                     </span>
                 </div>
             </div>
-            <div id="" className="flex flex-col items-center justify-center gap-6 pb-4 w-full">
-                <h2 className="font-bold text-white oswald text-2xl mb-4 flex flex-row items-center w-full justify-between">
+            <div className="flex flex-col items-center justify-center gap-6 pb-4 w-full">
+                <div className="title-barras font-bold text-white text-2xl mb-4 flex flex-row items-center w-full justify-between">
                     <span className="bg-[var(--azul)] h-2 w-[15%]"></span>
-                    <div className="flex flex-col items-center w-[60%]"><span className="oswald">TODAS LAS CLASES</span><span className="oswald font-normal">INCLUIDAS EN TU CUOTA</span></div>
+                    <h2 className="flex flex-col items-center w-[60%]">TODAS LAS CLASES <span>INCLUIDAS EN TU CUOTA</span></h2>
                     <span className="bg-[var(--azul)] h-2 w-[15%]"></span>
-                </h2>
+                </div>
                 <video
                     src="/videos/chica-yoga.mp4"
                     autoPlay
@@ -86,19 +84,21 @@ export default function Dashboard() {
                 />
             </div>
 
-            <div className="w-full bg-white pt-4">
+            <div id="experiencia" className="w-full bg-white pt-4">
                 <h2 className="oswald font-semibold text-white fondo-dash text-center p-2 text-3xl">EXPERIENCIA CHANGES</h2>
-                <p className="p-7 text-justify text-sm">
-                    ¡El gimnasio donde entrenar se convierte en un placer! Con equipos de última generación, más de 150 clases a la semana y… <span className="dorado font-bold">¡SIN COMPROMISOS!</span> Sí, sabemos que lo tuyo es vivir al máximo. Y a nosotros nos ENCANTA ser parte de esa energía. Por eso en CHANGES te damos todo lo que necesitas para disfrutar cada entrenamiento.
-                </p>
+                <div className="flex justify-center">
+                    <p className="p-7 text-justify text-sm">
+                        ¡El gimnasio donde entrenar se convierte en un placer! Con equipos de última generación, más de 150 clases a la semana y… <strong className="dorado">¡SIN COMPROMISOS!</strong> Sí, sabemos que lo tuyo es vivir al máximo. Y a nosotros nos ENCANTA ser parte de esa energía. Por eso en CHANGES te damos todo lo que necesitas para disfrutar cada entrenamiento.
+                    </p>
+                </div>
             </div>
 
             <div className="flex flex-col items-center justify-center gap-6 pb-4 w-full">
-                <h2 className="font-bold text-white oswald text-2xl mb-4 flex flex-row items-center w-full justify-between">
+                <div className="title-barras font-bold text-white oswald text-2xl mb-4 flex flex-row items-center w-full justify-between">
                     <span className="bg-[var(--dorado)] h-2 w-[15%]"></span>
-                    <div className="flex flex-col items-center w-[60%]"><span className="oswald">ASESORAMIENTO</span><span className="oswald font-normal">NUTRICIONAL PERSONAL</span></div>
+                    <h2 className="flex flex-col items-center w-[60%]">ASESORAMIENTO <span>NUTRICIONAL PERSONAL</span></h2>
                     <span className="bg-[var(--dorado)] h-2 w-[15%]"></span>
-                </h2>
+                </div>
                 <video
                     src="/videos/asesoramiento-nutricional.mp4"
                     autoPlay
@@ -109,7 +109,9 @@ export default function Dashboard() {
                 />
             </div>
 
-            <Link href={"/registro"} className="bg-dorado p-3 w-40 font-bold text-white text-center">ÚNETE YA</Link>
+            <div className="flex flex-row gap-x-4 items-center m-[-2rem] mt-[-3rem] ">
+                <Link href={"/registro"} className="p-3 w-50 font-bold text-white text-center  boton-dorado-shadow">ÚNETE YA</Link>
+            </div>
 
             <div className="bg-white w-full pt-5 pb-5 flex flex-col">
                 <p className="text-sm font-light text-center">¿NO NOS CREES A NOSOTROS?</p>
@@ -117,8 +119,16 @@ export default function Dashboard() {
                 <div className="pad-carrusel"><Carousel /></div>
             </div>
 
-            <ContactForm />
+            <div className="flex flex-col gap-y-2 text-left w-full items-center">
+                <span className="text-white ">¿AÚN TIENES DUDAS?</span>
+                <h2 className="oswald text-[var(--dorado)] text-2xl">CONTACTA CON NOSOTROS</h2>
+            </div>
+            <div id="form-contacto-db" className="flex items-center justify-center mt-[-2.5rem]">
+                <ContactForm />
+            </div>
+
             
+
         </div>
     );
 

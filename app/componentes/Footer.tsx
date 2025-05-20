@@ -6,36 +6,36 @@ import Image from "next/image";
 export default function Footer() {
   return (
     <footer className="flex flex-col w-full text-center items-center">
-      <div className="bg-[var(--dorado)] w-full text-white flex flex-col gap-3 p-3">
-        <span>¡Contacta con nosotros!</span>
+      <div className="bg-[var(--dorado)] w-full text-white flex flex-col gap-2 p-3">
+       
         <div className="flex flex-row gap-4 justify-center">
           <Image
             alt="Logo de instagram"
             src={"/Rounded-instagram.svg"}
-            width={50}
+            width={40}
             height={50}
           />
           <Image
             alt="Logo de tiktok"
             src={"/Tiktok-rounded.svg"}
-            width={50}
+            width={40}
             height={50}
           />
           <Image
             alt="Logo de whatsapp"
             src={"/Whatsapp-rounded.svg"}
-            width={50}
+            width={40}
             height={50}
           />
           <Image
             alt="Logo de facebook"
             src={"/Facebook-rounded.svg"}
-            width={50}
+            width={40}
             height={50}
           />
         </div>
       </div>
-      <div className="bg-[var(--dorado-claro)] w-full text-left p-3 pl-10 pr-10">
+      <div className="w-full text-left p-3 pl-10 pr-10 bg-white">
         <h3 className="text-[var(--azul-medio)] font-bold">
           Servicios de información
         </h3>

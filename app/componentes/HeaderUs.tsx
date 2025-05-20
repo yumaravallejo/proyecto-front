@@ -9,22 +9,12 @@ type Props = {
   promocion: string | null;
 };
 
-export default function Header(props: Props) {
-  const HEADER_HEIGHT = 70; // px
-  const PROMO_HEIGHT = 30;
-
+export default function HeaderUs(props: Props) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [login, setLogin] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     localStorage.getItem("user") ? setLogin(true) : setLogin(false);
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -66,10 +56,8 @@ export default function Header(props: Props) {
   return (
     <>
       <header
-        className={`flex items-center justify-between gap-x-15 w-full bg-[var(--gris-oscuro)] text-white transition-all duration-300 z-50
-          ${isScrolled ? "fixed top-0 left-0 shadow-lg " : "relative"}
-        `}
-        style={{ height: HEADER_HEIGHT }}
+        className="flex items-center justify-between gap-x-15 w-full bg-[var(--gris-oscuro)] text-white transition-all duration-300 z-50"
+
       >
         <label
           className={`${menuAbierto ? "menu-abierto" : "menu-cerrado"
@@ -95,7 +83,7 @@ export default function Header(props: Props) {
           </span>
         </Link>
 
-        <nav className={`${menuAbierto ? "abierto" : "cerrado"} ${isScrolled ? "" : ""}  general `}>
+        <nav className={`${menuAbierto ? "abierto" : "cerrado"}  general `}>
           {login
             ? opcionesMenu[0].opciones.map((opcion, index) => (
               <Link
@@ -165,8 +153,6 @@ export default function Header(props: Props) {
         {props.promocion ? <div
           id="promociones"
           className="text-xs font-normal w-full text-center text-white flex items-center justify-center bg-[var(--azul-medio)] p-2 z-3"
-          style={{ height: PROMO_HEIGHT }}
-
         >
           {props.promocion}
         </div> : ""}

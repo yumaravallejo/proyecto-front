@@ -41,10 +41,15 @@ export default function ContactForm() {
     } | null>(null);
 
     const formSchema = z.object({
-        nombre: z.string(),
-        email: z.string().email("Email no válido"),
-        telefono: z.string().optional(),
-        objetivo: z.string()
+        nombre: z.string().min(1, "Este campo es obligatorio"),
+        email: z.string().min(1, "Este campo es obligatorio").email("Email no válido"),
+        telefono: z.string()
+            .optional()            
+            .refine(
+                val => !val || /^[0-9]+$/.test(val),
+                { message: "El teléfono tiene que ser un número" }
+            ),
+        objetivo: z.string().min(1, "Este campo es obligatorio")
     });
 
     function handleForm(values: z.infer<typeof formSchema>) {
@@ -67,15 +72,10 @@ export default function ContactForm() {
     });
 
     return (
-        <div className="flex flex-col gap-y-[4rem] contact-form">
+        <div className="flex flex-col gap-y-[4rem] contact-form w-70">
             <Form {...form}>
-
-                <div className="flex flex-col gap-y-2 text-left w-[17rem]">
-                    <span className="text-white ">¿AÚN TIENES DUDAS?</span>
-                    <h2 className="oswald text-[var(--dorado)] text-2xl">CONTACTA CON NOSOTROS</h2>
-                </div>
                 {alert && (
-                    <div className="w-[17rem] mt-[-3rem]">
+                    <div className="w-full mt-[-3rem]">
                         <PersAlert
                             title={alert.title}
                             message={alert.message}
@@ -85,7 +85,7 @@ export default function ContactForm() {
                     </div>
                 )}
 
-                <form className="flex flex-col gap-y-5 w-[17rem] pb-10 mt-[-3rem] w-full">
+                <form className="flex flex-col gap-y-5 pb-10 mt-[-3rem] w-full">
                     <FormField
                         control={form.control}
                         name="nombre"
@@ -153,13 +153,15 @@ export default function ContactForm() {
                                 <FormLabel className="text-white text-md mb-[-.5rem]">Objetivo</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="bg-white w-full focus:ring-yellow-200 rounded-none">
+                                        <SelectTrigger className={form.formState.errors.objetivo
+                                            ? "border-2 border-red-500 focus:ring-red-200 bg-white rounded-none w-full cursor-pointer"
+                                            : "border-none bg-white w-full focus:ring-yellow-200 rounded-none cursor-pointer"}>
                                             <SelectValue placeholder="Selecciona un objetivo" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="bg-white">
+                                    <SelectContent className="bg-white ">
                                         {objetivos.map(e => (
-                                            <SelectItem value={e.value} key={e.value}>{e.label}</SelectItem>
+                                            <SelectItem className="cursor-pointer item-select" value={e.value} key={e.value}>{e.label}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -167,7 +169,7 @@ export default function ContactForm() {
                             </FormItem>
                         )}
                     />
-                    <button onClick={form.handleSubmit(handleForm)} className="bg-dorado text-white font-bold p-2 mt-6">Enviar Solicitud</button>
+                    <button onClick={form.handleSubmit(handleForm)} className="boton-borde-dorado text-white font-bold p-2 mt-6 cursor-pointer">Enviar Solicitud</button>
                 </form>
             </Form>
         </div>

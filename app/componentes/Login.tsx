@@ -113,7 +113,7 @@ export default function Login(props: Props) {
         }
       }}
     >
-      <DialogTrigger className="flex-25 flex items-center justify-end">
+      <DialogTrigger className="flex-25 flex items-center justify-end mr-7">
         <div className="sesion bg-[var(--gris-oscuro)] rounded-full flex items-center gap-2 font-bold text-white rounded-full border-2 text-center cursor-pointer">
           <Image
             src="/usuario.svg"
@@ -127,7 +127,7 @@ export default function Login(props: Props) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-left">Iniciar Sesión</DialogTitle>
+          <DialogTitle className="text-left inter">Iniciar Sesión</DialogTitle>
         </DialogHeader>
 
         {alert && (
