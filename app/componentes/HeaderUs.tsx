@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import Login from "./Login";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   promocion: string | null;
@@ -12,9 +13,17 @@ type Props = {
 export default function HeaderUs(props: Props) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [login, setLogin] = useState(false);
+  const [imagenUser, setImagenUser] = useState("")
 
   useEffect(() => {
-    localStorage.getItem("user") ? setLogin(true) : setLogin(false);
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      setLogin(true);
+
+      // Imagen de usuario
+      const JSONuser = JSON.parse(userString); // <-- así lo parseas
+      setImagenUser(JSONuser.imagen);
+    }
   }, []);
 
   useEffect(() => {
@@ -132,23 +141,39 @@ export default function HeaderUs(props: Props) {
         </nav>
 
         {login ? (
-          <div className="perfil-ic flex-25 flex items-center justify-end mr-10">
+          <div className="perfil-ic flex justify-end mr-6">
             <Link
               href={"/perfil"}
-              className="sesion flex w-55 gap-2 rounded-full "
+              className={`${imagenUser ? "avatar" : "no-avatar"} sesion logged flex rounded-full`}
             >
-              <Image
-                src="/usuario.svg"
-                alt="Imagen de usuario"
-                width={50}
-                height={50}
-                className="usuario"
-              />
-              <u className="font-bold">Perfil de Usuario</u>
+              {imagenUser ? (
+                <Avatar className="w-11 h-auto">
+                  <AvatarImage
+                    src={`${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${imagenUser}`}
+                    alt="Imagen de usuario"
+                    className="icono-user rounded-full"
+                    title="Ir al perfil"
+                  />
+                </Avatar>
+              ) : (
+                <>
+                  <Image
+                    src="/usuario.svg"
+                    alt="Imagen de usuario"
+                    width={50}
+                    height={50}
+                    className="usuario"
+                    title="Ir al perfil"
+                  />
+                </>
+              )}
+
             </Link>
           </div>
         ) : (
-          <Login login={() => setLogin(true)} />
+          <div className="perfil-ic flex-25 flex items-center justify-end mr-6">
+            <Login login={() => setLogin(true)} />
+          </div>
         )}
         {props.promocion ? <div
           id="promociones"

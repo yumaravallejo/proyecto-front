@@ -155,6 +155,10 @@ label.menu-btn {
   height: 2rem;
 }
 
+.icono-user {
+  border: 2px solid white;
+}
+
 label.menu-btn span {
   position: absolute;
   background-color: white;
@@ -348,14 +352,35 @@ footer a {
   }
 
   header img.usuario {
-    width: 1.2rem;
+    width: 1.5rem;
     height: auto;
   }
 
   .sesion {
-    padding: 0.5rem 1rem;
-    border: 4px solid var(--dorado);
     transition: border-color 0.2s ease-in-out;
+  }
+
+  .icono-user {
+    width: 100%;
+  }
+
+  a.no-avatar {
+    height: 3rem;
+  }
+
+  a.no-avatar > img {
+    width: 100%;
+  }
+
+  .sesion.logged {
+    padding: 0.2rem 1rem;
+    width: 10rem;
+    justify-content: space-around;
+  }
+
+  .sesion.unlogged {
+    border: 4px solid var(--dorado);
+    padding: 0.5rem 1rem;
   }
 
   .sesion:hover {
@@ -373,6 +398,12 @@ footer a {
 
   header>a>img {
     width: 4em;
+  }
+
+  .icono-user {
+
+    border: 2px solid rgba(255, 255, 255, 0.641);
+    object-fit: cover;
   }
 
   /* HEADER - MENU ----------------- */

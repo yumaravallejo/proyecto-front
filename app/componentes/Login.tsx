@@ -12,11 +12,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
+
 import { DialogClose } from "@radix-ui/react-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { set, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -35,6 +36,8 @@ type Props = {
 
 export default function Login(props: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  
   const [alert, setAlert] = useState<{
     message: string;
     title: string;
@@ -113,8 +116,8 @@ export default function Login(props: Props) {
         }
       }}
     >
-      <DialogTrigger className="flex-25 flex items-center justify-end mr-7">
-        <div className="sesion bg-[var(--gris-oscuro)] rounded-full flex items-center gap-2 font-bold text-white rounded-full border-2 text-center cursor-pointer">
+      <DialogTrigger >
+        <div className="sesion unlogged flex items-center gap-2 font-bold text-white rounded-full border-2 text-center cursor-pointer">
           <Image
             src="/usuario.svg"
             alt="Imagen de usuario"
@@ -122,7 +125,7 @@ export default function Login(props: Props) {
             height={50}
             className="usuario"
           />
-          <u>Iniciar Sesión</u>
+          <u className="font-bold items-center">Iniciar Sesión</u>
         </div>
       </DialogTrigger>
       <DialogContent>
