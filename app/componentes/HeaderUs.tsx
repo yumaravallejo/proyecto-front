@@ -16,14 +16,22 @@ export default function HeaderUs(props: Props) {
   const [imagenUser, setImagenUser] = useState("")
 
   useEffect(() => {
-    const userString = localStorage.getItem("user");
-    if (userString) {
-      setLogin(true);
-
-      // Imagen de usuario
-      const JSONuser = JSON.parse(userString); // <-- así lo parseas
-      setImagenUser(JSONuser.imagen);
+    function actualizarImagen() {
+      const userString = localStorage.getItem("user");
+      if (userString) {
+        setLogin(true);
+        const JSONuser = JSON.parse(userString);
+        setImagenUser(JSONuser.imagen);
+      } else {
+        setLogin(false);
+        setImagenUser("");
+      }
     }
+
+    actualizarImagen();
+
+    window.addEventListener("icon-updated", actualizarImagen);
+    return () => window.removeEventListener("icon-updated", actualizarImagen);
   }, []);
 
   useEffect(() => {

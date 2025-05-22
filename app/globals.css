@@ -291,6 +291,19 @@ div#encuentranos > * {
   object-fit: cover;
 }
 
+.main-alto {
+  height: calc(100vh - 4rem);
+  align-items: center;  
+  row-gap: 2rem;
+}
+
+/* PERFIL DE USUARIO ------------------------------------ */
+.icono-user-perfil {
+  width: 100%;
+  height: auto;
+}
+
+
 footer div:nth-child(3) {
   flex: 100% 0;
   display: flex;
