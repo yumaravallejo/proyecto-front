@@ -82,15 +82,15 @@ export default function UserProfile() {
     return (
         <div>
             <HeaderUs promocion={null} />
-            <main className="p-8 flex flex-col main-alto">
-                <div id="foto-perfil" className="w-30">
+            <main id="perfil" className="p-8 flex flex-col main-alto">
+                <div id="foto-perfil" className="w-30 flex items-center mb-[-.7rem]">
                     {userInfo && userInfo.imagen ? (
                         <Avatar className="w-full h-auto">
                             <AvatarImage
                                 src={`${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${userInfo.imagen}`}
                                 alt="Imagen de usuario"
                                 className="icono-user-perfil rounded-full border-3"
-                                title="Ir al perfil"
+                                title="Foto de perfil"
                             />
                         </Avatar>
                     ) : (
@@ -100,7 +100,7 @@ export default function UserProfile() {
                             width={50}
                             height={50}
                             className="usuario"
-                            title="Ir al perfil"
+                            title="Foto de perfil"
                         />
 
                     )}
@@ -113,7 +113,7 @@ export default function UserProfile() {
                         name="imagen"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel htmlFor="file" className="cursor-pointer text-[var(--azul)] text-md underline mt-[-1rem] ">Editar</FormLabel>
+                                <FormLabel htmlFor="file" className="cursor-pointer text-[var(--azul)] hover:text-[var(--azul-oscuro)] text-md underline mt-[-1rem] translate-2s">Editar</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="file"
@@ -135,7 +135,9 @@ export default function UserProfile() {
 
                 </Form>
 
-                
+                <section id="infoUser">
+                        
+                </section>
 
                 <button onClick={handleLogOut} className="rounded-full bg-[var(--error)] text-white p-1 pl-4 pr-4 cursor-pointer">Cerrar Sesión</button>
 
