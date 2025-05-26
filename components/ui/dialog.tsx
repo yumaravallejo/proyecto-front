@@ -5,6 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Toaster } from "sonner"
 
 function Dialog({
   ...props
@@ -53,6 +54,8 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content>) {
   return (
     <DialogPortal data-slot="dialog-portal">
+      <Toaster position="top-center" theme="dark"/>
+      
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"

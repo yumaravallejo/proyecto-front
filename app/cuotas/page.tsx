@@ -1,3 +1,4 @@
+"use client";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
 import Cuota from "../componentes/Cuota";
@@ -72,7 +73,7 @@ export default function Cuotas() {
             <HeaderUs promocion={null} />
             <main id="cuotas" className="p-10 text-justify flex gap-y-10 flex-col main-completo  items-center">
             {cuotas.map((cuota, index) => (
-                <Cuota key={index} titulo={cuota.titulo} precio={cuota.precio} duracion={cuota.duracion} incluye={cuota.incluye} color={index} />
+                <Cuota registro={false} key={index} titulo={cuota.titulo} precio={cuota.precio} duracion={cuota.duracion} incluye={cuota.incluye} color={index} />
             ))}
             </main>
             <Footer />

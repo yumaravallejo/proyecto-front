@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import { DialogClose } from "@radix-ui/react-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,15 +27,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PersAlert from "./PersAlert";
-import { Toaster, toast } from 'sonner'
+import { Toaster, toast } from "sonner";
 
-type Props = {
-  login: () => void;
-};
-
-export default function Login(props: Props) {
+export default function Login() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname(); // Obtén la ruta actual
 
   const [alert, setAlert] = useState<{
     message: string;
@@ -67,10 +64,8 @@ export default function Login(props: Props) {
       const data = await response.json();
 
       if (!response.ok) {
-        setAlert({
-          title: "Error al iniciar sesión",
-          message: data?.message || "Las credenciales no coinciden",
-          variant: "destructive",
+        toast.error("Error al iniciar sesión", {
+          description: "Las credenciales son incorrectas",
         });
         return;
       }
@@ -82,13 +77,13 @@ export default function Login(props: Props) {
         description: "Estás siendo redirigido",
       });
 
-      setTimeout
-        (() => {
-          props.login(); // Llama a la función de login pasada como prop
-          router.push("/"); // Redirige al usuario a la página principal
-        }, 3000); // Espera 1 segundo antes de redirigir
-
-
+      setTimeout(() => {
+        if (pathname === "/") {
+          window.location.reload();
+        } else {
+          router.push("/");
+        }
+      }, 2000);
     } catch (error) {
       toast.error("Error al iniciar sesión", {
         description: "Inténtelo de nuevo más tarde",
@@ -113,8 +108,7 @@ export default function Login(props: Props) {
         }
       }}
     >
-      <Toaster />
-      <DialogTrigger >
+      <DialogTrigger>
         <div className="sesion unlogged flex items-center gap-2 font-bold text-white rounded-full border-2 text-center cursor-pointer">
           <Image
             src="/usuario.svg"
