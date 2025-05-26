@@ -55,7 +55,7 @@ export default function Dashboard() {
                             width={40}
                             height={50}
                         />
-                        infoChanges@gmail.com
+                        contacto@changesfitnessclub.com
                     </span>
                     <span className="flex flex-row gap-5 items-center text-white font-bold">
                         <Image

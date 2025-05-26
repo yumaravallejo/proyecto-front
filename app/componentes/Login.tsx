@@ -6,7 +6,6 @@ import Image from "next/image";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -21,7 +20,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,6 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PersAlert from "./PersAlert";
+import { Toaster, toast } from 'sonner'
 
 type Props = {
   login: () => void;
@@ -37,7 +36,7 @@ type Props = {
 export default function Login(props: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  
+
   const [alert, setAlert] = useState<{
     message: string;
     title: string;
@@ -79,22 +78,20 @@ export default function Login(props: Props) {
       // Crear la sesión con el token y los datos del usuario
       localStorage.setItem("user", JSON.stringify(data));
 
-      setAlert({
-        title: "Tu sesión ha sido iniciada",
-        message: "¡Hola " + data.nombre + "!",
-        variant: "success",
+      toast.success("Tu sesión ha sido iniciada", {
+        description: "Estás siendo redirigido",
       });
 
-      setTimeout(() => {
-        props.login;
-        setIsOpen(false); // Cierra el modal
-        window.location.reload(); // Recarga la página para reflejar el cambio de sesión
-      }, 2000); // Espera 2 segundos antes de cerrar el modal
+      setTimeout
+        (() => {
+          props.login(); // Llama a la función de login pasada como prop
+          router.push("/"); // Redirige al usuario a la página principal
+        }, 3000); // Espera 1 segundo antes de redirigir
+
+
     } catch (error) {
-      setAlert({
-        title: "Error",
-        message: "Error en login: " + (error as Error).message,
-        variant: "destructive",
+      toast.error("Error al iniciar sesión", {
+        description: "Inténtelo de nuevo más tarde",
       });
     }
   }
@@ -116,6 +113,7 @@ export default function Login(props: Props) {
         }
       }}
     >
+      <Toaster />
       <DialogTrigger >
         <div className="sesion unlogged flex items-center gap-2 font-bold text-white rounded-full border-2 text-center cursor-pointer">
           <Image

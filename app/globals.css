@@ -26,22 +26,24 @@
 }
 
 /* Título login */
-div#radix-«Rh7l7» h2{ 
+div#radix-«Rh7l7» h2 {
   font-family: var(--font-inter);
   font-weight: 500;
 }
 
-.oswald{
+.oswald {
   font-family: var(--font-oswald);
   font-weight: 600;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-weight: 600;
   font-family: var(--font-oswald);
 }
 
-h2 > span {
+h2>span {
   font-family: var(--font-oswald);
   font-weight: 400;
 }
@@ -63,8 +65,16 @@ h2 > span {
   font-weight: 600;
 }
 
+.font-extrabold {
+  font-weight: 800;
+}
+
 .bg-dc {
   background: var(--dorado-claro);
+}
+
+.bg-go {
+  background-color: var(--gris-oscuro);
 }
 
 .dorado {
@@ -78,9 +88,9 @@ h2 > span {
 }
 
 .boton-dorado-shadow:hover {
-   box-shadow:
+  box-shadow:
     0 0 16px 2px var(--dorado),
-    0 2px 8px 0 rgba(0,0,0,0.10);
+    0 2px 8px 0 rgba(0, 0, 0, 0.10);
 
 }
 
@@ -100,8 +110,8 @@ strong {
 }
 
 div.dashboard {
-    gap: 6rem;
-  }
+  gap: 6rem;
+}
 
 .fondo-dash {
   background: linear-gradient(to right, var(--azul), var(--dorado-oscuro));
@@ -227,11 +237,11 @@ nav.general a {
 
 div#encuentranos {
   position: relative;
-  background-image: url(../public/img/marbella.webp);
+  background-image: url(/img/marbella.webp);
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
-  padding:  3rem 0;
+  padding: 3rem 0;
   padding-bottom: 8rem;
   margin-top: -6rem;
   margin-bottom: -6rem;
@@ -241,7 +251,8 @@ div#encuentranos::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.75); /* Ajusta la opacidad aquí */
+  background: rgba(0, 0, 0, 0.75);
+  /* Ajusta la opacidad aquí */
   z-index: 1;
   pointer-events: none;
 }
@@ -249,20 +260,21 @@ div#encuentranos::before {
 div#encuentranos::after {
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 4rem; /* Ajusta la altura del difuminado */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4rem;
+  /* Ajusta la altura del difuminado */
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--gris-oscuro, #202020) 60%,
-    var(--gris-oscuro, #202020) 100%
-  );
+  background: linear-gradient(to bottom,
+      transparent,
+      var(--gris-oscuro, #202020) 60%,
+      var(--gris-oscuro, #202020) 100%);
 }
 
 
-div#encuentranos > * {
+div#encuentranos>* {
   position: relative;
   z-index: 3;
 }
@@ -291,17 +303,20 @@ div#encuentranos > * {
   object-fit: cover;
 }
 
-  main#perfil img.usuario
-   {
-    width: 100%;
-    height: 95%;
-    border-radius: 100%;
-    background-color: #202020;
-  }
+main#perfil img.usuario {
+  width: 100%;
+  height: 95%;
+  border-radius: 100%;
+  background-color: #202020;
+}
+
+.main-completo {
+  min-height: calc(100vh - 340px);
+}
 
 .main-alto {
   height: calc(100vh - 4rem);
-  align-items: center;  
+  align-items: center;
   row-gap: 2rem;
 }
 
@@ -340,12 +355,12 @@ footer a {
   width: 100%;
 }
 
-  /* EXPERIENCIA -------------------- */
+/* EXPERIENCIA -------------------- */
 
-  div#experiencia > div > p {
-    width: 80%;
-    line-height: 1.5rem;
-  }
+div#experiencia>div>p {
+  width: 80%;
+  line-height: 1.5rem;
+}
 
 
 /* MODO DESKTOP / LANDSCAPE ----------------------------------------------------------- */
@@ -391,7 +406,7 @@ footer a {
     height: 3rem;
   }
 
-  a.no-avatar > img {
+  a.no-avatar>img {
     width: 100%;
   }
 
@@ -476,7 +491,7 @@ footer a {
   }
 
   footer>div:nth-child(2) {
-    flex: 60% 0;
+    flex: 50% 0;
     display: flex;
     justify-content: space-between;
     flex-flow: row wrap;
@@ -501,6 +516,10 @@ footer a {
 
   footer>div:nth-child(2) div:nth-child(4) {
     order: 4;
+  }
+
+  .desk-pad {
+    padding: 10rem
   }
 
 
@@ -539,7 +558,7 @@ footer a {
   /* VIDEO ----------------------------------- */
   .div-video {
     height: 100%;
-    
+
   }
 
   .div-video a {
@@ -575,7 +594,7 @@ footer a {
   }
 
   div#form-contacto-db {
-   width: 100%; 
+    width: 100%;
   }
 
   /* MAPA -------------------------------- */
@@ -591,7 +610,7 @@ footer a {
     flex-basis: 100%;
     text-align: center;
     font-size: xx-large;
-     letter-spacing: .4rem;
+    letter-spacing: .4rem;
   }
 
   div#encuentranos>img {
@@ -616,11 +635,25 @@ footer a {
   div>div.title-barras>span {
     width: 40%;
   }
+
   /* EXPERIENCIA -------------------- */
 
-  div#experiencia > div > p {
+  div#experiencia>div>p {
     width: 40%;
     line-height: 2rem;
+  }
+
+  /* CUOTAS ---------------------------- */
+  main#cuotas {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    column-gap: 4rem;
+    width: 60%;
+  }
+   
+  main#cuotas>div {
+    flex: 30% 0;
   }
 
 }
@@ -639,4 +672,11 @@ footer a {
     padding: 0.5rem .4rem;
   }
 
+}
+
+@media (min-width: 1030px),
+(orientation: landscape) and (max-width: 1030px) and (pointer: coarse) {
+    footer>div:nth-child(3) {
+      padding-left: 4vw;
+    }
 }

@@ -43,7 +43,7 @@ export default function Footer() {
           <Link href={"/atencion"} className="basis-[50%] text-sm">
             Atención al cliente
           </Link>
-          <Link href={"/horario"} className="basis-[50%] text-sm">
+          <Link href={"/reglamento"} className="basis-[50%] text-sm">
             Horario de apertura
           </Link>
           <Link href={"/reglamento"} className="basis-[50%] text-sm">
@@ -89,13 +89,13 @@ export default function Footer() {
         <Link href={"/cookies"} className="basis-[50%] text-sm ">
           Declaración de Cookies
         </Link>
-        <Link href={"/privacidad"} className="basis-[50%] text-sm">
+        <Link href={"/legal"} className="basis-[50%] text-sm">
           Declaración de privacidad
         </Link>
         <Link href={"/terminos-condiciones"} className="basis-[50%] text-sm">
           Términos y Condiciones
         </Link>
-        <Link href={"/aviso-legal"} className="basis-[50%] text-sm">
+        <Link href={"/legal"} className="basis-[50%] text-sm">
           Aviso Legal
         </Link>
       </div>
