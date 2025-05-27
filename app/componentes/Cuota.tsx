@@ -39,9 +39,10 @@ export default function Cuota(props: Props) {
       break;
   }
 
-  const selectCuota = () => {
+  const selectCuota = (titulo : String) => {
     if (props.registro) {
       //Añadir al registro
+      console.log(`Seleccionada la cuota: ${titulo}`);
     } else {
       router.push("/registro");
     }
@@ -56,8 +57,8 @@ export default function Cuota(props: Props) {
       <div className="flex flex-col gap-y-2 ">
         <p className="text-3xl text-blue-500 font-extrabold oswald">
           {precio} €
+          <span className="text-[1rem] text-black mt-[-.3rem] font-bold"> / {duracion}</span>
         </p>
-        <p className="text-lg">/ {duracion}</p>
         <p className="text-lg">{titulo} incluye:</p>
         <ul className="list-disc pl-5">
           {incluye?.map((item, index) => (
@@ -65,7 +66,7 @@ export default function Cuota(props: Props) {
           ))}
         </ul>
         <button
-          onClick={selectCuota}
+          onClick={() => selectCuota(titulo)}
           className="rounded-full p-3 oswald text-center border-4 border-[var(--azul)] mt-3 hover:border-[var(--dorado)] cursor-pointer transition-all duration-200"
         >
           SELECCIONA {titulo.toUpperCase()}

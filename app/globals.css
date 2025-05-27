@@ -20,10 +20,19 @@
   /* Blanco */
 }
 
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
 * {
   font-family: var(--font-inter);
   font-weight: 400;
 }
+
 
 /* Título login */
 div#radix-«Rh7l7» h2 {
@@ -43,7 +52,7 @@ h3 {
   font-family: var(--font-oswald);
 }
 
-h2 > span {
+h2>span {
   font-family: var(--font-oswald);
   font-weight: 400;
 }
@@ -118,7 +127,7 @@ div.dashboard {
   flex-basis: 50%;
 }
 
-header > a > span {
+header>a>span {
   display: none;
 }
 
@@ -132,8 +141,8 @@ header > a > span {
   font-family: var(--font-oswald);
 }
 
-header > button,
-div.perfil-ic > a,
+header>button,
+div.perfil-ic>a,
 div.perfil-ic {
   flex: none;
 }
@@ -142,8 +151,8 @@ div.perfil-ic {
   padding: 3rem;
 }
 
-div.perfil-ic > a,
-div.perfil-ic > a {
+div.perfil-ic>a,
+div.perfil-ic>a {
   width: auto;
 }
 
@@ -211,7 +220,7 @@ label.menu-abierto span:nth-child(2) {
 .general {
   width: 18rem;
   height: calc(100vh - 3.8rem);
-  top: 4.3rem;
+  top: 3.8rem;
   row-gap: 2rem;
   transition: left 0.5s ease;
   padding-top: 4rem;
@@ -224,7 +233,8 @@ label.menu-abierto span:nth-child(2) {
   flex-flow: column;
   align-items: left;
   z-index: 2;
-  box-shadow: 10px 2px 2.5px rgba(0, 0, 0, 0.251); /* Sombra a la derecha */
+  box-shadow: 10px 2px 2.5px rgba(0, 0, 0, 0.251);
+  /* Sombra a la derecha */
 }
 
 nav.general a {
@@ -265,15 +275,13 @@ div#encuentranos::after {
   /* Ajusta la altura del difuminado */
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--gris-oscuro, #202020) 60%,
-    var(--gris-oscuro, #202020) 100%
-  );
+  background: linear-gradient(to bottom,
+      transparent,
+      var(--gris-oscuro, #202020) 60%,
+      var(--gris-oscuro, #202020) 100%);
 }
 
-div#encuentranos > * {
+div#encuentranos>* {
   position: relative;
   z-index: 3;
 }
@@ -345,7 +353,7 @@ footer a {
   transition: all 0.2s ease;
 }
 
-.div-video > div {
+.div-video>div {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -354,40 +362,41 @@ footer a {
 
 /* EXPERIENCIA -------------------- */
 
-div#experiencia > div > p {
+div#experiencia>div>p {
   width: 80%;
   line-height: 1.5rem;
 }
 
-main#cuotas {
+main#cuotas,
+main#servicios {
   display: flex;
-  flex-flow: row wrap;
   justify-content: center;
   column-gap: 4rem;
   width: 100%;
 }
 
-main#cuotas > div.cuotas > div {
+main#cuotas>div.cuotas>div {
   padding-bottom: 1rem;
   padding: 1rem 2.5rem;
   height: 100%;
 }
 
-main#cuotas > div.cuotas > div > button {
+main#cuotas>div.cuotas>div>button {
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
 /* MODO DESKTOP / LANDSCAPE ----------------------------------------------------------- */
 @media (min-width: 970px),
-  (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
+(orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
+
   /* HEADER ---------------------------------------------------------- */
   header {
     gap: 0;
-    
+
   }
 
-  header > a {
+  header>a {
     flex: 20% 0;
     margin-left: 1rem;
   }
@@ -419,7 +428,7 @@ main#cuotas > div.cuotas > div > button {
     height: 3rem;
   }
 
-  a.no-avatar > img {
+  a.no-avatar>img {
     width: 100%;
   }
 
@@ -438,16 +447,16 @@ main#cuotas > div.cuotas > div > button {
     border-color: var(--azul-oscuro);
   }
 
-  header > button,
+  header>button,
   div.perfil-ic {
     flex: 19% 0;
   }
 
-  header > a > span {
+  header>a>span {
     display: flex;
   }
 
-  header > a > img {
+  header>a>img {
     width: 4em;
   }
 
@@ -473,7 +482,8 @@ main#cuotas > div.cuotas > div > button {
     align-items: center;
     position: initial;
     justify-content: space-between;
-    box-shadow: none; /* Sombra a la derecha */
+    box-shadow: none;
+    /* Sombra a la derecha */
 
   }
 
@@ -496,7 +506,7 @@ main#cuotas > div.cuotas > div > button {
     font-weight: bold;
   }
 
-  footer > div:nth-child(1) {
+  footer>div:nth-child(1) {
     align-items: center;
     font-weight: bold;
     justify-content: center;
@@ -504,31 +514,31 @@ main#cuotas > div.cuotas > div > button {
     flex: 100% 0;
   }
 
-  footer > div:nth-child(2) {
+  footer>div:nth-child(2) {
     flex: 40% 0;
     display: flex;
     justify-content: space-between;
     flex-flow: row wrap;
   }
 
-  footer > div:nth-child(2) div {
+  footer>div:nth-child(2) div {
     flex: 50% 0;
   }
 
-  footer > div:nth-child(2) h3:nth-child(1) {
+  footer>div:nth-child(2) h3:nth-child(1) {
     order: 1;
   }
 
-  footer > div:nth-child(2) div:nth-child(2) {
+  footer>div:nth-child(2) div:nth-child(2) {
     flex-direction: column;
     order: 3;
   }
 
-  footer > div:nth-child(2) h3:nth-child(3) {
+  footer>div:nth-child(2) h3:nth-child(3) {
     order: 2;
   }
 
-  footer > div:nth-child(2) div:nth-child(4) {
+  footer>div:nth-child(2) div:nth-child(4) {
     order: 4;
   }
 
@@ -536,16 +546,16 @@ main#cuotas > div.cuotas > div > button {
     padding: 10rem;
   }
 
-  footer > div:nth-child(2) h3 {
+  footer>div:nth-child(2) h3 {
     flex: 50% 0;
   }
 
-  footer > div:nth-child(2) div a {
+  footer>div:nth-child(2) div a {
     display: inline-block;
     flex-basis: auto;
   }
 
-  footer > div:nth-child(3) {
+  footer>div:nth-child(3) {
     flex: 20% 0;
     background-color: white;
     color: black;
@@ -555,11 +565,11 @@ main#cuotas > div.cuotas > div > button {
     row-gap: calc(var(--spacing) * 1.5);
   }
 
-  footer > div:nth-child(3) > h3 {
+  footer>div:nth-child(3)>h3 {
     display: flex;
   }
 
-  footer > span {
+  footer>span {
     padding: 1rem 0;
   }
 
@@ -606,7 +616,7 @@ main#cuotas > div.cuotas > div > button {
     width: 40%;
   }
 
-  .contact-form > div:nth-child(2) {
+  .contact-form>div:nth-child(2) {
     width: 100%;
   }
 
@@ -623,56 +633,70 @@ main#cuotas > div.cuotas > div > button {
     background-position: center -3.5rem;
   }
 
-  div#encuentranos > h2 {
+  div#encuentranos>h2 {
     flex-basis: 100%;
     text-align: center;
     font-size: xx-large;
     letter-spacing: 0.4rem;
   }
 
-  div#encuentranos > img {
+  div#encuentranos>img {
     width: 300px;
     border: 5px solid var(--azul);
     border-radius: 1rem;
     padding: 0.5rem;
   }
 
-  div#encuentranos > div {
+  div#encuentranos>div {
     flex-basis: 40%;
     font-size: medium;
     row-gap: 2.5rem;
     margin: 0;
   }
 
-  div#encuentranos > div > span > img {
+  div#encuentranos>div>span>img {
     min-width: 50px;
   }
 
   /* BARRAS - TITULOS -------------------- */
-  div > div.title-barras > span {
+  div>div.title-barras>span {
     width: 40%;
   }
 
   /* EXPERIENCIA -------------------- */
 
-  div#experiencia > div > p {
+  div#experiencia>div>p {
     width: 40%;
     line-height: 2rem;
   }
 
   /* CUOTAS ---------------------------- */
-  main#cuotas > div.cuotas {
+  main#cuotas,
+  main#servicios {
+    flex-flow: row wrap;
+  }
+
+  main#servicios {
+    padding: 2rem 6rem;
+  }
+
+  main#servicios>div.servicio {
     flex: 40% 0;
+    height: 20rem;
+  }
+
+  main#cuotas>div.cuotas {
+    flex: 45% 0;
     height: 30rem;
   }
 
-  main#cuotas > div.cuotas > div > button {
+  main#cuotas>div.cuotas>div>button {
     margin-top: auto;
   }
 }
 
 @media (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
-  header > a > img {
+  header>a>img {
     width: 5rem;
   }
 
@@ -686,20 +710,25 @@ main#cuotas > div.cuotas > div > button {
 }
 
 @media (min-width: 1030px),
-  (orientation: landscape) and (max-width: 1030px) and (pointer: coarse) {
-  footer > div:nth-child(3) {
+(orientation: landscape) and (max-width: 1030px) and (pointer: coarse) {
+  footer>div:nth-child(3) {
     padding-left: 4vw;
   }
 }
 
 @media (min-width: 1400px),
-  (orientation: landscape) and (max-width: 1200px) and (pointer: coarse) {
-  main#cuotas > div.cuotas {
-    flex: 30% 0;
+(orientation: landscape) and (max-width: 1200px) and (pointer: coarse) {
+  main#cuotas>div.cuotas {
+    flex: 25%;
+  }
+
+    main#servicios>div.servicio {
+    flex: 29% 0;
+    height: 20rem;
   }
 
   main#cuotas {
-    padding: 2rem 10rem;
+    padding: 2rem 2.5rem;
     padding-bottom: 7rem;
   }
 }
