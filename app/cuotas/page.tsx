@@ -70,8 +70,8 @@ export default function Cuotas() {
 
     return (
         <div className="flex flex-col bg-[var(--gris-oscuro)] items-center">
-            <HeaderUs promocion={null} />
-            <main id="cuotas" className="p-10 text-justify flex gap-y-10 flex-col main-completo  items-center">
+            <HeaderUs promocion={null} pagina="CUOTAS" />
+            <main id="cuotas" className="p-10 text-justify flex gap-y-10 flex-col main-completo items-center">
             {cuotas.map((cuota, index) => (
                 <Cuota registro={false} key={index} titulo={cuota.titulo} precio={cuota.precio} duracion={cuota.duracion} incluye={cuota.incluye} color={index} />
             ))}

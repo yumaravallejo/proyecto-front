@@ -50,7 +50,7 @@ export default function Servicio(props: Props) {
             </h2>
 
             <div
-                className="relative w-60 h-50 mb-7 group cursor-pointer perspective-1000"
+                className="relative w-70 h-80 mb-7 group cursor-pointer perspective-1000 mt-3"
                 onClick={() => setShowDesc((v) => !v)}
                 onMouseLeave={() => setShowDesc(false)}
             >
@@ -63,12 +63,12 @@ export default function Servicio(props: Props) {
                     `}
                 >
                     {/* Cara frontal: imagen */}
-                    <div className="absolute inset-0 [backface-visibility:hidden] flex items-center justify-center">
+                    <div className="absolute inset-0 [backface-visibility:hidden] flex items-center justify-center w-full">
                         {imagen && (
                             <img
                                 src={imagen}
                                 alt={nombre}
-                                className={`w-60 h-50 object-cover ${shadowClass} rounded-lg`}
+                                className={`w-full h-full object-cover ${shadowClass} rounded-lg`}
                                 width={50}
                                 height={50}
                             />

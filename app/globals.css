@@ -24,6 +24,12 @@
   perspective: 1000px;
 }
 
+.filter-act:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  text-decoration-color: white;
+}
+
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
@@ -241,6 +247,9 @@ nav.general a {
   font-family: var(--font-oswald);
   text-align: left;
   font-size: 1.3rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 div#encuentranos {
@@ -386,6 +395,10 @@ main#cuotas>div.cuotas>div>button {
   margin-bottom: 2rem;
 }
 
+.general a.border-b-4 {
+  border-bottom-width: 0 !important;
+}
+
 /* MODO DESKTOP / LANDSCAPE ----------------------------------------------------------- */
 @media (min-width: 970px),
 (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
@@ -470,6 +483,11 @@ main#cuotas>div.cuotas>div>button {
     display: none;
   }
 
+  .general a.border-b-4 {
+    padding-bottom: 2px;
+    border-bottom-width: 4px !important;
+  }
+
   nav#redes {
     display: none;
   }
@@ -489,8 +507,6 @@ main#cuotas>div.cuotas>div>button {
 
   nav.general a {
     font-family: var(--font-oswald);
-    text-align: center;
-    padding: 0 auto;
     font-size: 1.2rem;
   }
 
@@ -693,6 +709,17 @@ main#cuotas>div.cuotas>div>button {
   main#cuotas>div.cuotas>div>button {
     margin-top: auto;
   }
+
+  main#actividadesUnlogged > div >  div.actividades  {
+    flex-flow: row wrap;
+    width: 80%;
+    justify-content: space-between;
+    margin: 0 auto;
+  }
+
+  main#actividadesUnlogged > div > div.actividades > div.actividad  {
+    flex: 30% 0;
+  }
 }
 
 @media (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {
@@ -728,7 +755,7 @@ main#cuotas>div.cuotas>div>button {
   }
 
   main#cuotas {
-    padding: 2rem 2.5rem;
+    width: 87vw;
     padding-bottom: 7rem;
   }
 }

@@ -7,9 +7,10 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   promocion: string | null;
+  pagina?: string;
 };
 
-export default function Header({ promocion }: Props) {
+export default function Header(props: Props) {
   const HEADER_HEIGHT = 70;
   const PROMO_HEIGHT = 30;
 
@@ -98,7 +99,8 @@ export default function Header({ promocion }: Props) {
             <Link
               key={index}
               href={opcion.ruta}
-              className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
+              className={`text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200
+                ${opcion.nombre === (props.pagina ?? "").toUpperCase() ? "border-b-4 border-[var(--azul)]" : ""}`}
             >
               {opcion.nombre}
             </Link>
@@ -141,12 +143,12 @@ export default function Header({ promocion }: Props) {
       </header>
 
       {/* Promoción */}
-      {promocion && (
+      {props.promocion && (
         <div
           className="fixed top-[70px] left-0 w-full text-xs text-white text-center bg-[var(--azul-medio)] p-2 z-40"
           style={{ height: PROMO_HEIGHT }}
         >
-          {promocion}
+          {props.promocion}
         </div>
       )}
     </>

@@ -26,7 +26,7 @@ export default function Servicios() {
          {
             nombre: "Clases Grupales",
             descripcion: "Entrena en equipo, diviértete y mantén la motivación al máximo. Ofrecemos una variedad de clases como yoga, pilates, cycling, y más. Para todos los niveles, con instructores certificados y ambientes energizantes.",
-            imagen: "/img/clases_grupales.webp",
+            imagen: "/img/clases-grupales.webp",
             
         },
          {
@@ -45,7 +45,7 @@ export default function Servicios() {
 
     return (
         <div className="flex flex-col bg-[var(--gris-oscuro)] items-center ">
-            <HeaderUs promocion={null} />
+            <HeaderUs promocion={null} pagina="SERVICIOS" />
             <main id="servicios" className="p-10 text-justify flex gap-y-10 flex-col main-completo items-center">
             {servicios.map((servicio, index) => (
                 <Servicio key={index} nombre={servicio.nombre} descripcion={servicio.descripcion} imagen={servicio.imagen} color={index} />

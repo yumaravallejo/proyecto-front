@@ -21,7 +21,7 @@ export default function Dietas() {
 
     return (
         <div>
-            <HeaderUs promocion={null} />
+            <HeaderUs promocion={null} pagina="DIETAS" />
             <main>
                 
             </main>

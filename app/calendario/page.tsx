@@ -21,7 +21,7 @@ export default function Calendario() {
 
     return (
         <div>
-            <HeaderUs promocion={null} />
+            <HeaderUs promocion={null} pagina="CALENDARIO" />
 
             <Footer />
         </div>

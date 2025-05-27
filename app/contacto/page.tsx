@@ -6,7 +6,7 @@ import Footer from "../componentes/Footer";
 export default function Contact() {
     return (
         <div className="bg-[var(--gris-oscuro)] flex flex-col gap-20 items-center">
-            <HeaderUs promocion={null} />
+            <HeaderUs promocion={null} pagina="CONTACTO"/>
             <div className="flex flex-col gap-y-2 text-left w-full items-center mt-[-1rem]">
                 <span className="text-white ">¿AÚN TIENES DUDAS?</span>
                 <h1 className="oswald text-[var(--dorado)] text-2xl">CONTACTA CON NOSOTROS</h1>

@@ -7,9 +7,10 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   promocion: string | null;
+  pagina?: string;
 };
 
-export default function HeaderUs({ promocion }: Props) {
+export default function HeaderUs(props: Props) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [user, setUser] = useState(() => {
     if (typeof window !== "undefined") {
@@ -70,7 +71,12 @@ export default function HeaderUs({ promocion }: Props) {
       <header className="flex items-center justify-between gap-x-15 w-full bg-[var(--gris-oscuro)] text-white transition-all duration-300 z-50">
         <label
           className={`${menuAbierto ? "menu-abierto" : "menu-cerrado"} menu-btn cursor-pointer ml-7`}
-          onClick={() => setMenuAbierto(!menuAbierto)}
+          onClick={() => {
+            if (!menuAbierto) {
+              window.scrollTo({ top: 0, behavior: "auto" });
+            }
+            setMenuAbierto(!menuAbierto);
+          }}
         >
           <span></span>
           <span></span>
@@ -96,7 +102,8 @@ export default function HeaderUs({ promocion }: Props) {
             <Link
               key={index}
               href={opcion.ruta}
-              className="text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200"
+              className={`text-md font-bold text-white hover:text-[var(--azul)] transition-colors duration-200 px-2
+        ${opcion.nombre === (props.pagina ?? "").toUpperCase() ? "border-b-4 border-[var(--azul)]" : ""}`}
             >
               {opcion.nombre}
             </Link>
@@ -141,12 +148,12 @@ export default function HeaderUs({ promocion }: Props) {
           </div>
         )}
 
-        {promocion && (
+        {props.promocion && (
           <div
             id="promociones"
             className="text-xs font-normal w-full text-center text-white flex items-center justify-center bg-[var(--azul-medio)] p-2 z-3"
           >
-            {promocion}
+            {props.promocion}
           </div>
         )}
       </header>
