@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Login from "./Login";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import Cookies from "js-cookie";
 
 type Props = {
   promocion: string | null;
@@ -19,10 +20,16 @@ export default function Header(props: Props) {
 
   const [isClient, setIsClient] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     setIsClient(true);
 
+    // Comprueba la cookie token
+    const tokenValue = Cookies.get("token");
+    setToken(tokenValue);
+
+    // Si quieres seguir usando datos de usuario, puedes mantener esto:
     const userString = localStorage.getItem("user");
     if (userString) {
       setUser(JSON.parse(userString));
@@ -52,9 +59,9 @@ export default function Header(props: Props) {
 
   const opcionesMenu = login
     ? [
+        { nombre: "INICIO", ruta: "/dashboard" },
         { nombre: "DIETAS", ruta: "/dietas" },
-        { nombre: "RESERVAS", ruta: "/reservas" },
-        { nombre: "ACTIVIDADES", ruta: "/actividades" },
+        { nombre: "HORARIO", ruta: "/horario" },
         { nombre: "CALENDARIO", ruta: "/calendario" },
         { nombre: "CONTACTO", ruta: "/contacto" },
       ]

@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { clear } from "console";
 
 export default function UserProfile() {
   const [userInfo, setUserInfo] = useState({
@@ -54,16 +55,35 @@ export default function UserProfile() {
     }
   }, []);
 
+  async function clearCookies() {
+    const apiUrl = process.env.NEXT_PUBLIC_API;
+    try {
+      const response = await fetch(apiUrl + "usuarios/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al cerrar sesión");
+      }
+    } catch (error) {
+      toast.error("No se ha podido cerrar la sesion", {
+        description: "Inténtalo de nuevo más tarde",
+      });
+    }
+  }
+
   function handleLogOut() {
     toast.success("Tu sesión ha sido cerrada", {
       description: "¡Hasta pronto!",
     });
 
+    localStorage.removeItem("user");
+    clearCookies();
+
     setTimeout(() => {
-        localStorage.removeItem("user");
-        router.push("/");
+      router.push("/");
     }, 2000);
-    
   }
 
   async function editarImagen(file: File) {
@@ -82,8 +102,8 @@ export default function UserProfile() {
 
       if (!response.ok) {
         toast.error("Error al editar la imagen", {
-            description: "Inténtalo de nuevo más tarde",
-          });
+          description: "Inténtalo de nuevo más tarde",
+        });
         return;
       }
 

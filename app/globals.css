@@ -30,6 +30,14 @@
   text-decoration-color: white;
 }
 
+form > div > div {
+  width: 100%;
+}
+
+form > div > div > input {
+  width: 100%;
+}
+
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
@@ -226,7 +234,7 @@ label.menu-abierto span:nth-child(2) {
 .general {
   width: 18rem;
   height: calc(100vh - 3.8rem);
-  top: 3.8rem;
+  top: 4.4rem;
   row-gap: 2rem;
   transition: left 0.5s ease;
   padding-top: 4rem;
@@ -249,6 +257,7 @@ nav.general a {
   font-size: 1.3rem;
   display: flex;
   align-items: center;
+  
 }
 
 div#encuentranos {
@@ -491,7 +500,7 @@ main#cuotas>div.cuotas>div>button {
   }
 
   .general a {
-    
+    height: 100%;
   }
 
   nav#redes {
