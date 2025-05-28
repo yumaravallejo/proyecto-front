@@ -47,9 +47,10 @@ export default function Actividades() {
   const contenidoUnlogged = (
     <main id="actividadesUnlogged" className="bg-[var(--gris-oscuro)]">
       {loading ? (
-        <div className="h-full bg-[var(--gris-oscuro)]"></div>
+        <div className="h-[100vh] bg-[var(--gris-oscuro)]"></div>
       ) : error ? (
-        <p>{error}</p>
+        <div className="h-[100vh] bg-[var(--gris-oscuro)] text-white flex items-center text-center justify-center"><p>{error}</p></div>
+
       ) : (
         <div className="pb-20">
           <section className="filtros-actividades w-full flex overflow-x-auto gap-2 sm:justify-center sm:overflow-visible sm:gap-4">
@@ -59,11 +60,10 @@ export default function Actividades() {
             >
               <span className="w-5 h-5 bg-[#d1d1d1] border-2"></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === "TODAS"
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === "TODAS"
                     ? "underline underline-offset-4 font-bold"
                     : ""
-                }`}
+                  }`}
               >
                 TODAS
               </span>
@@ -74,11 +74,10 @@ export default function Actividades() {
             >
               <span className="w-5 h-5 bg-pink-500 border-2"></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === "CARDIO"
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === "CARDIO"
                     ? "underline underline-offset-4 font-bold"
                     : ""
-                }`}
+                  }`}
               >
                 CARDIO
               </span>
@@ -89,11 +88,10 @@ export default function Actividades() {
             >
               <span className="w-5 h-5 bg-blue-500 border-2"></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === "INFANTIL"
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === "INFANTIL"
                     ? "underline underline-offset-4 font-bold"
                     : ""
-                }`}
+                  }`}
               >
                 INFANTIL
               </span>
@@ -104,11 +102,10 @@ export default function Actividades() {
             >
               <span className="w-5 h-5 bg-green-500 border-2"></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === "RELAJACION"
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === "RELAJACION"
                     ? "underline underline-offset-4 font-bold"
                     : ""
-                }`}
+                  }`}
               >
                 CUERPO Y MENTE
               </span>
@@ -119,11 +116,10 @@ export default function Actividades() {
             >
               <span className="w-5 h-5 bg-red-500 border-2"></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === "FUERZA"
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === "FUERZA"
                     ? "underline underline-offset-4 font-bold"
                     : ""
-                }`}
+                  }`}
               >
                 FUERZA
               </span>
@@ -134,11 +130,10 @@ export default function Actividades() {
             >
               <span className="w-5 h-5 bg-yellow-500 border-2"></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === "TONIFICACION"
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === "TONIFICACION"
                     ? "underline underline-offset-4 font-bold"
                     : ""
-                }`}
+                  }`}
               >
                 TONIFICACIÓN
               </span>
@@ -149,11 +144,10 @@ export default function Actividades() {
             >
               <span className="w-5 h-5 bg-orange-500 border-2"></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === "TONO_CARDIO"
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === "TONO_CARDIO"
                     ? "underline underline-offset-4 font-bold"
                     : ""
-                }`}
+                  }`}
               >
                 TONO Y CARDIO
               </span>

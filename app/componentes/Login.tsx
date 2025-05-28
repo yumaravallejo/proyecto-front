@@ -52,9 +52,8 @@ export default function Login() {
       const apiUrl = process.env.NEXT_PUBLIC_API;
       const response = await fetch(apiUrl + "login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
         body: JSON.stringify({
           email: values.email,
           password: values.password,
