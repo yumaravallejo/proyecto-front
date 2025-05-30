@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import { DialogClose } from "@radix-ui/react-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,11 +26,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import PersAlert from "./PersAlert";
+import { Toaster, toast } from "sonner";
 
 export default function Login() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname(); // Obtén la ruta actual
 
   const [alert, setAlert] = useState<{
     message: string;
@@ -43,14 +45,6 @@ export default function Login() {
     password: z
       .string()
       .min(6, "La contraseña debe tener al menos 6 caracteres"),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
   });
 
   async function handleLogin(values: z.infer<typeof formSchema>) {
@@ -68,8 +62,6 @@ export default function Login() {
 
       const data = await response.json();
 
-      console.log("Datos de respuesta:", data);
-
       if (!response.ok) {
         toast.error("Error al iniciar sesión", {
           description: "Las credenciales son incorrectas",
@@ -77,23 +69,34 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(data)); // Guardar los datos del usuario en localStorage
-
       // Crear la sesión con el token y los datos del usuario
+      localStorage.setItem("user", JSON.stringify(data));
+
       toast.success("Tu sesión ha sido iniciada", {
         description: "Estás siendo redirigido",
       });
 
       setTimeout(() => {
-        router.push("/dashboard");
-      }, 1000);
-
+        if (pathname === "/") {
+          window.location.reload();
+        } else {
+          router.push("/");
+        }
+      }, 2000);
     } catch (error) {
       toast.error("Error al iniciar sesión", {
-        description: "Inténtelo de nuevo más tarde " + error,
+        description: "Inténtelo de nuevo más tarde",
       });
     }
   }
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   return (
     <Dialog
@@ -120,6 +123,15 @@ export default function Login() {
         <DialogHeader>
           <DialogTitle className="text-left inter">Iniciar Sesión</DialogTitle>
         </DialogHeader>
+
+        {alert && (
+          <PersAlert
+            title={alert.title}
+            message={alert.message}
+            variant={alert.variant}
+            spinner={alert.variant === "success"}
+          />
+        )}
 
         <Form {...form}>
           <FormField
