@@ -41,21 +41,20 @@ form > div > div > input {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
-
 * {
-  font-family: var(--font-inter);
+  font-family: var(--font-inter), sans-serif;
   font-weight: 400;
 }
 
 
 /* Título login */
 div#radix-«Rh7l7» h2 {
-  font-family: var(--font-inter);
+  font-family: var(--font-inter), sans-serif;
   font-weight: 500;
 }
 
 .oswald {
-  font-family: var(--font-oswald);
+  font-family: var(--font-oswald), sans-serif;
   font-weight: 600;
 }
 

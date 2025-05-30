@@ -26,12 +26,13 @@ import {
 import CuotasSelec from "../componentes/Cuotas";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import PaginaDePago from "../componentes/PasarelaPago";
 
 export default function Registro() {
   const router = useRouter();
 
   const [pagina, setPagina] = useState(1);
-  const totalPaginas = 3;
+  const totalPaginas = 4;
   const [cliente, setCliente] = useState<{
     nombre: string | null;
     email: string | null;
@@ -170,6 +171,38 @@ export default function Registro() {
       tarifa: numberTarifa(titulo),
     }));
     form.setValue("tarifa", numberTarifa(titulo)); // <-- Añade esto
+  };
+
+  const handleSubmit = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API;
+    const response = await fetch(apiUrl + "registro", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(cliente),
+    });
+
+    const data = await response.json();
+
+    console.log("Datos de respuesta:", data);
+
+    if (!response.ok) {
+      toast.error("Error en el registro", {
+        description: "Inténtelo de nuevo más tarde",
+      });
+      return;
+    }
+
+    localStorage.setItem("user", JSON.stringify(data)); // Guardar los datos del usuario en localStorage
+
+    // Crear la sesión con el token y los datos del usuario
+    toast.success("Registro completado", {
+      description: "¡Disfruta del proceso del cambio!",
+    });
+
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 1000);
   };
 
   const paginas = [
@@ -488,39 +521,12 @@ export default function Registro() {
         </div>
       ),
     },
-  ];
-
-  const handleSubmit = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API;
-    const response = await fetch(apiUrl + "registro", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(cliente),
-    });
-
-    const data = await response.json();
-
-    console.log("Datos de respuesta:", data);
-
-    if (!response.ok) {
-      toast.error("Error en el registro", {
-        description: "Inténtelo de nuevo más tarde",
-      });
-      return;
+    {
+      numero: 4,
+      titulo: "Datos de Pago",
+      contenido: <PaginaDePago cliente={cliente} registrar={handleSubmit} />
     }
-
-    localStorage.setItem("user", JSON.stringify(data)); // Guardar los datos del usuario en localStorage
-
-    // Crear la sesión con el token y los datos del usuario
-    toast.success("Registro completado", {
-      description: "¡Disfruta del proceso del cambio!",
-    });
-
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 1000);
-  };
+  ];
 
   return (
     <div>
@@ -530,7 +536,7 @@ export default function Registro() {
         <span className="text-lg text-gray-500 mt-5">
           Paso {pagina}: {paginas[pagina - 1].titulo}
         </span>
-        <Progress value={pagina * 33.33} className="w-[82%]" />
+        <Progress value={pagina * 25} />
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
