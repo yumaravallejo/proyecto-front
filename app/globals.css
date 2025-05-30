@@ -30,11 +30,11 @@
   text-decoration-color: white;
 }
 
-form > div > div {
+div#formRegistro > div > div {
   width: 100%;
 }
 
-form > div > div > input {
+div#formRegistro > div > div > input {
   width: 100%;
 }
 

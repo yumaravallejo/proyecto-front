@@ -57,11 +57,17 @@ function FormularioPago({ cliente, registrar }: { cliente: cliente; registrar: (
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='h-full flex flex-col gap-y-15 w-100 p-20'>
       <CardElement />
-      <button type="submit" disabled={!stripe || isLoading}>
+      <div className='flex flex-row gap-5 justify-center w-full text-center'>
+      <button type="submit" className='cursor-pointer rounded-full w-30 text-white h-8 bg-[var(--azul)]' disabled={!stripe || isLoading}>
         {isLoading ? 'Procesando...' : 'Pagar'}
       </button>
+      <button type="submit" className='cursor-pointer border-3 rounded-full w-30 h-8 border-[var(--gris-oscuro)]' disabled={!stripe || isLoading}>
+        {isLoading ? 'Procesando...' : 'Saltar'}
+      </button>
+      </div>
+
     </form>
   );
 }
@@ -70,8 +76,8 @@ export default function PaginaDePago({ cliente, registrar }: { cliente: cliente;
 
   return (
     <Elements stripe={stripePromise}>
-      <h1>Pagar</h1>
       <FormularioPago cliente={cliente} registrar={registrar} />
+      <small className='sm:w-[50%] w-20 text-xs text-justify'>Si saltas este paso quedarás registrado como pendiente de pago. No podrás acceder a las instalaciones hasta realizar el primer cobro.</small>
     </Elements>
   );
 }

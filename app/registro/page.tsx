@@ -210,7 +210,7 @@ export default function Registro() {
       numero: 1,
       titulo: "Datos Personales",
       contenido: (
-        <div className="flex flex-col mt-10 gap-8 w-90 items-center sm:w-2/7">
+        <div className="flex flex-col mt-10 gap-8 w-90 items-center sm:w-2/6">
           <FormField
             control={form.control}
             name="nombre"
@@ -536,9 +536,10 @@ export default function Registro() {
         <span className="text-lg text-gray-500 mt-5">
           Paso {pagina}: {paginas[pagina - 1].titulo}
         </span>
-        <Progress value={pagina * 25} />
+        <Progress value={pagina * 25}  className="w-[80%]" />
         <Form {...form}>
-          <form
+          <div
+          id="formRegistro"
             onSubmit={form.handleSubmit(handleSubmit)}
             className="flex flex-col gap-4 w-full items-center"
           >
@@ -566,16 +567,9 @@ export default function Registro() {
                     Por favor, selecciona una cuota para continuar.
                   </p>
                 )}
-
-                <button
-                  type="submit"
-                  className=" px-6 mb-4 py-2 w-89 rounded bg-[var(--azul)] text-white font-bold hover:bg-[var(--dorado)] hover:text-[var(--gris-oscuro)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Registrarse
-                </button>
               </div>
             ) : null}
-          </form>
+          </div>
         </Form>
         <Pagination className="my-8">
           <PaginationContent>
@@ -591,7 +585,7 @@ export default function Registro() {
                 href="#"
               />
             </PaginationItem>
-            {[1, 2, 3].map((num) => (
+            {[1, 2, 3, 4].map((num) => (
               <PaginationItem key={num}>
                 <PaginationLink
                   isActive={pagina === num}

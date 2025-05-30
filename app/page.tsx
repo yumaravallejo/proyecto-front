@@ -67,7 +67,7 @@ export default function Home() {
       </section>
     </div>
   ) : (
-    <div className="dashboard pb-10 pt-25 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
+    <div className="dashboard pb-10 pt-20 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
       <Video videoUrl="/videos/chica-fitness.mp4" texto={texto} />
       <div
         id="encuentranos"
