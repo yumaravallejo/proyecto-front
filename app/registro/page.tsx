@@ -1,7 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import HeaderUs from "../componentes/HeaderUs";
+<<<<<<< HEAD
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -27,10 +27,15 @@ import CuotasSelec from "../componentes/Cuotas";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import PaginaDePago from "../componentes/PasarelaPago";
+=======
+>>>>>>> parent of 0be2ca9 (registro añadido)
 
 export default function Registro() {
-  const router = useRouter();
+    return (
+        <div>
+            <HeaderUs promocion={null} pagina="ÚNETE" />
 
+<<<<<<< HEAD
   const [pagina, setPagina] = useState(1);
   const totalPaginas = 4;
   const [cliente, setCliente] = useState<{
@@ -627,3 +632,8 @@ export default function Registro() {
     </div>
   );
 }
+=======
+        </div>
+    ) ;
+}
+>>>>>>> parent of 0be2ca9 (registro añadido)

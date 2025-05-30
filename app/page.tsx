@@ -1,14 +1,10 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
-import Header from "./componentes/Header";
-import Video from "./componentes/Video";
-import Footer from "./componentes/Footer";
-import { useEffect, useState } from "react";
-import Carousel from "./componentes/Carousel";
-import ContactForm from "./componentes/ContactForm";
+
+import Head from "next/head";
+import Dashboard from "./dashboard/page";
+
 
 export default function Home() {
+<<<<<<< HEAD
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -199,11 +195,10 @@ export default function Home() {
     </div>
   );
 
+=======
+  
+>>>>>>> parent of 0be2ca9 (registro añadido)
   return (
-    <div className="items-center justify-items-center min-h-screen">
-      <Header promocion={"NUEVOS MIEMBROS | PERIODO DE PRUEBA GRATIS"} />
-      {contenido}
-      <Footer />
-    </div>
+    <Dashboard />
   );
 }
