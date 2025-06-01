@@ -1,10 +1,14 @@
-
-import Head from "next/head";
-import Dashboard from "./dashboard/page";
-
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import Video from "./componentes/Video";
+import Carousel from "./componentes/Carousel";
+import ContactForm from "./componentes/ContactForm";
+import React, { useEffect, useState } from "react";
+import Header from "./componentes/Header";
+import Footer from "./componentes/Footer";
 
 export default function Home() {
-<<<<<<< HEAD
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function Home() {
       </section>
     </div>
   ) : (
-    <div className="dashboard pb-10 pt-20 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
+    <div className="dashboard pb-10 pt-17 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
       <Video videoUrl="/videos/chica-fitness.mp4" texto={texto} />
       <div
         id="encuentranos"
@@ -195,10 +199,11 @@ export default function Home() {
     </div>
   );
 
-=======
-  
->>>>>>> parent of 0be2ca9 (registro añadido)
   return (
-    <Dashboard />
+    <>
+      <Header pagina="INICIO" promocion={""} />
+      {contenido}
+      <Footer />
+    </>
   );
 }

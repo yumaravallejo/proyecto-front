@@ -5,23 +5,15 @@ import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe('pk_test_51RJXaXFmAubiNjpUes8i6QDGeAHAkJ69BIFnH43tOEFsooZIbqfmAUiNgNsQgHouMNwQVgnMQ4CRzc9MQQkyj3iy0074J3SrXg');
 
-type cliente = {
-    nombre: string | null;
-    email: string | null;
-    dni: string | null;
-    codigoPostal: string | null;
+type Props = {
     tarifa: number | null;
-    detallesUsuario: string;
-    fechaNacimiento: string | null;
-    imagen: any;
-    password: string | null;
+    registro: ()=>void;
 };
 
-function FormularioPago({ cliente, registrar }: { cliente: cliente; registrar: (c: any) => void }) {
+function FormularioPago(props: Props) {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
-  const [clientes, setCliente] = useState([cliente])
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -43,12 +35,12 @@ function FormularioPago({ cliente, registrar }: { cliente: cliente; registrar: (
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token: token.id,
-          amount: Math.round((cliente.tarifa ?? 0) * 100),
+          tarifa: props.tarifa,
         }),
       });
 
       if (!res.ok) throw new Error('Error del servidor');
-      registrar(cliente);
+      props.registro;
     } catch (err: any) {
       alert('Error: ' + err.message);
     } finally {
@@ -56,28 +48,31 @@ function FormularioPago({ cliente, registrar }: { cliente: cliente; registrar: (
     }
   };
 
+
   return (
+    <div  className='h-full flex flex-col gap-y-15 w-100'>
     <form onSubmit={handleSubmit} className='h-full flex flex-col gap-y-15 w-100 p-20'>
       <CardElement />
       <div className='flex flex-row gap-5 justify-center w-full text-center'>
       <button type="submit" className='cursor-pointer rounded-full w-30 text-white h-8 bg-[var(--azul)]' disabled={!stripe || isLoading}>
         {isLoading ? 'Procesando...' : 'Pagar'}
       </button>
-      <button type="submit" className='cursor-pointer border-3 rounded-full w-30 h-8 border-[var(--gris-oscuro)]' disabled={!stripe || isLoading}>
-        {isLoading ? 'Procesando...' : 'Saltar'}
+      <button type='button' onClick={props.registro} className='cursor-pointer rounded-full w-30 text-white h-8 bg-[var(--gris-oscuro)]'>
+        Saltar
       </button>
       </div>
 
     </form>
+    </div>
   );
 }
 
-export default function PaginaDePago({ cliente, registrar }: { cliente: cliente; registrar: (c: any) => void }) {
+export default function PaginaDePago(props: Props) {
 
   return (
     <Elements stripe={stripePromise}>
-      <FormularioPago cliente={cliente} registrar={registrar} />
-      <small className='sm:w-[50%] w-20 text-xs text-justify'>Si saltas este paso quedarás registrado como pendiente de pago. No podrás acceder a las instalaciones hasta realizar el primer cobro.</small>
+      <FormularioPago tarifa={props.tarifa} registro={props.registro} />
+      <small className='sm:w-[50%] w-20 text-xs text-center'>Si saltas este paso quedarás registrado como pendiente de pago. No podrás acceder a las instalaciones hasta realizar el primer cobro.</small>
     </Elements>
   );
 }

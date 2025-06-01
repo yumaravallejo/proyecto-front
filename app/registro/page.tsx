@@ -1,7 +1,6 @@
 "use client";
 
 import HeaderUs from "../componentes/HeaderUs";
-<<<<<<< HEAD
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -23,19 +22,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import CuotasSelec from "../componentes/Cuotas";
-import { toast } from "sonner";
+
+import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import PaginaDePago from "../componentes/PasarelaPago";
-=======
->>>>>>> parent of 0be2ca9 (registro añadido)
+import { useForm } from "react-hook-form";
+import CuotasSelec from "../componentes/Cuotas";
 
 export default function Registro() {
-    return (
-        <div>
-            <HeaderUs promocion={null} pagina="ÚNETE" />
-
-<<<<<<< HEAD
+  const router = useRouter();
   const [pagina, setPagina] = useState(1);
   const totalPaginas = 4;
   const [cliente, setCliente] = useState<{
@@ -179,6 +174,7 @@ export default function Registro() {
   };
 
   const handleSubmit = async () => {
+    console.log("Datos del cliente:", cliente);
     const apiUrl = process.env.NEXT_PUBLIC_API;
     const response = await fetch(apiUrl + "registro", {
       method: "POST",
@@ -207,7 +203,7 @@ export default function Registro() {
 
     setTimeout(() => {
       router.push("/dashboard");
-    }, 1000);
+    }, 2000);
   };
 
   const paginas = [
@@ -529,7 +525,7 @@ export default function Registro() {
     {
       numero: 4,
       titulo: "Datos de Pago",
-      contenido: <PaginaDePago cliente={cliente} registrar={handleSubmit} />
+      contenido: <PaginaDePago tarifa={cliente.tarifa} registro={handleSubmit} />
     }
   ];
 
@@ -542,6 +538,7 @@ export default function Registro() {
           Paso {pagina}: {paginas[pagina - 1].titulo}
         </span>
         <Progress value={pagina * 25}  className="w-[80%]" />
+        <Toaster position="top-center" theme="dark" />
         <Form {...form}>
           <div
           id="formRegistro"
@@ -632,8 +629,3 @@ export default function Registro() {
     </div>
   );
 }
-=======
-        </div>
-    ) ;
-}
->>>>>>> parent of 0be2ca9 (registro añadido)

@@ -53,7 +53,7 @@ export default function Actividades() {
 
       ) : (
         <div className="pb-20">
-          <section className="filtros-actividades w-full flex overflow-x-auto gap-2 sm:justify-center sm:overflow-visible sm:gap-4">
+          <section className="filtros-actividades w-full flex overflow-x-auto gap-2 ">
             <article
               className="flex flex-row items-center justify-center gap-x-2 p-5 cursor-pointer filter-act"
               onClick={() => filterByType("TODAS")}
