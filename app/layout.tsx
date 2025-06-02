@@ -1,21 +1,16 @@
 import "./globals.css";
-import { Inter, Oswald } from "next/font/google";
+import Head from "next/head";
+import { Inter, Oswald } from 'next/font/google'
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "300", "600", "500"],
-  variable: "--font-inter",
-});
-
-const oswald = Oswald({
-  subsets: ["latin"],
-  weight: ["400", "300", "600", "500"],
-  variable: "--font-oswald",
-});
+const oswald = Oswald({ subsets: ['latin'], weight: ['300', '400', '500', '600'] })
+const inter = Inter({ subsets: ['latin'], weight: ['300', '400', '500', '600'] })
 
 export const metadata = {
-  title: "Changes Fitness Club",
-  description: "Website for a gym called Changes Fitness Club",
+  title: "Mi Web",
+  description: "Prueba de fuentes",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${oswald.variable}`}>
+    <html lang="es" className={inter.className}>
       <body>{children}</body>
     </html>
   );

@@ -5,8 +5,8 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const { pathname } = req.nextUrl;
 
-  const publicRoutes = ["/", "/login", "/registro", "/cuotas", "/servicios"];
-  const privateRoutes = ["/dashboard", "/perfil", "/dietas", "/calendario", "/horarios"];
+  const publicRoutes = ["/", "/login", "/registro", "/cuotas", "/servicios", "/actividades"];
+  const privateRoutes = ["/dashboard", "/perfil", "/dietas", "/calendario", "/reservas", "horarios-actividades"];
 
   if (token && publicRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", req.url));

@@ -17,11 +17,12 @@
   --destructive: 0 100% 50%;
   /* Rojo brillante */
   --destructive-foreground: 210 40% 98%;
-  /* Blanco */
+  --font-inter: "Inter";
+  --font-oswald: "Oswald";
 }
 
 html {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-inter);
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
@@ -49,31 +50,32 @@ div#formRegistro > div > div > input {
   transform: rotateY(180deg);
 }
 
+
 .oswald {
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-oswald);
   font-weight: 600;
 }
 
 h1, h2, h3, h4, h5 {
   font-weight: 600;
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-oswald);
 }
 
 p, u, span {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-inter);
   font-weight: 400;
 }
 
 /* Título login */
 div#radix-«Rh7l7» h2 {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-inter);
   font-weight: 500;
 }
 
 
 
 h2 > span {
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-oswald);
   font-weight: 400;
 }
 
@@ -153,12 +155,12 @@ header > a > span {
 
 .amarillo {
   color: var(--dorado);
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-oswald);
 }
 
 .azul {
   color: var(--azul);
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-oswald);
 }
 
 header > button,
@@ -239,8 +241,8 @@ label.menu-abierto span:nth-child(2) {
 
 .general {
   width: 18rem;
-  height: calc(100vh - 3.8rem);
-  top: 3.8rem;
+  height: calc(100vh - 4.4rem);
+  top: 4.4rem;
   row-gap: 2rem;
   transition: left 0.5s ease;
   padding-top: 4rem;
@@ -258,7 +260,7 @@ label.menu-abierto span:nth-child(2) {
 }
 
 nav.general a {
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-oswald);
   text-align: left;
   font-size: 1.3rem;
   display: flex;
@@ -525,7 +527,7 @@ main#cuotas > div.cuotas > div > button {
   }
 
   nav.general a {
-    font-family: var(--font-oswald), sans-serif;
+    font-family: var(--font-oswald);
     font-size: 1.2rem;
   }
 

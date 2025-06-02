@@ -48,31 +48,31 @@ function CarouselNombres() {
   const slides = [
     {
       name: "JAVIER SASTRE",
-      text: "Gran sitio para entrenar. Tiene lo necesario para cualquier tipo de rutina...",
+      text: "Me gusta mucho este gimnasio porque siempre está limpio y tiene máquinas modernas. Los entrenadores son atentos y me ayudan a mejorar mi técnica, lo que me hace sentir seguro al entrenar. Además, tienen muchas clases que me motivan a seguir yendo.",
     },
     {
       name: "SUSANA VALLEJO",
-      text: "Gran sitio para entrenar. Tiene lo necesario para cualquier tipo de rutina...",
+      text: "Me gusta mucho este gimnasio porque siempre está limpio y tiene máquinas modernas. Los entrenadores son atentos y me ayudan a mejorar mi técnica, lo que me hace sentir seguro al entrenar. Además, tienen muchas clases que me motivan a seguir yendo.",
     },
     {
       name: "RAFAEL SANTOS",
-      text: "Gran sitio para entrenar. Tiene lo necesario para cualquier tipo de rutina...",
+      text: "Me gusta mucho este gimnasio porque siempre está limpio y tiene máquinas modernas. Los entrenadores son atentos y me ayudan a mejorar mi técnica, lo que me hace sentir seguro al entrenar. Además, tienen muchas clases que me motivan a seguir yendo.",
     },
     {
       name: "DANIEL CUEVAS",
-      text: "Gran sitio para entrenar. Tiene lo necesario para cualquier tipo de rutina...",
+      text: "Me gusta mucho este gimnasio porque siempre está limpio y tiene máquinas modernas. Los entrenadores son atentos y me ayudan a mejorar mi técnica, lo que me hace sentir seguro al entrenar. Además, tienen muchas clases que me motivan a seguir yendo.",
     },
     {
       name: "ALEJANDRO BERNAL",
-      text: "Gran sitio para entrenar. Tiene lo necesario para cualquier tipo de rutina...",
+      text: "Me gusta mucho este gimnasio porque siempre está limpio y tiene máquinas modernas. Los entrenadores son atentos y me ayudan a mejorar mi técnica, lo que me hace sentir seguro al entrenar. Además, tienen muchas clases que me motivan a seguir yendo.",
     },
   ];
 
   return (
-    <div className="relative px-8">
+    <div className="relative px-8 h-full">
       <Slider {...settings}>
         {slides.map((item, index) => (
-          <div key={index} className="px-2">
+          <div key={index} className="px-2 h-[100%]">
             <div className="bg-dc p-4 rounded-lg">
               <h3 className="oswald font-bold grisosc text-xl mb-3">{item.name}</h3>
               <p className="inter text-justify">{item.text}</p>

@@ -54,16 +54,34 @@ export default function UserProfile() {
     }
   }, []);
 
-  function handleLogOut() {
-    toast.success("Tu sesión ha sido cerrada", {
-      description: "¡Hasta pronto!",
-    });
+  async function handleLogOut() {
+    try {
+      const URL = process.env.NEXT_PUBLIC_API;
+      const res = await fetch(`${URL}usuarios/logout`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    setTimeout(() => {
-        localStorage.removeItem("user");
-        router.push("/");
-    }, 2000);
-    
+      if (!res.ok) {
+        console.error("Fallo al cerrar sesión:", res.statusText);
+        toast.error("No se pudo cerrar sesión");
+      } else {
+        toast.success("Tu sesión ha sido cerrada", {
+          description: "¡Hasta pronto!",
+        });
+
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          router.push("/");
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Fallo al cerrar sesión: ", error);
+      toast.error("No se pudo cerrar sesión");
+    }
   }
 
   async function editarImagen(file: File) {
@@ -82,8 +100,8 @@ export default function UserProfile() {
 
       if (!response.ok) {
         toast.error("Error al editar la imagen", {
-            description: "Inténtalo de nuevo más tarde",
-          });
+          description: "Inténtalo de nuevo más tarde",
+        });
         return;
       }
 

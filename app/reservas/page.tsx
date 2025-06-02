@@ -21,7 +21,7 @@ export default function Reservas() {
 
     return (
         <div>
-            <HeaderUs promocion={null} />
+            <HeaderUs promocion={null} pagina="RESERVAS"/>
 
             <Footer />
         </div>

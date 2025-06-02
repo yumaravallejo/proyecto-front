@@ -43,7 +43,6 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    // Leer user de localStorage
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
       setError("No se encontró usuario en localStorage");
@@ -61,25 +60,35 @@ export default function Dashboard() {
       return;
     }
 
-    // Fetch backend solo si localUser ya está listo
-    (async () => {
+    const fetchData = async () => {
       try {
         const URL = process.env.NEXT_PUBLIC_API;
         const res = await fetch(`${URL}usuarios/detalles/${parsedUser.id}`);
-        if (!res.ok) throw new Error("Error al cargar detalles del backend");
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(`Detalles usuario: ${msg}`);
+        }
         const data: BackendData = await res.json();
         setBackendData(data);
 
-        const reservas = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
-        if (!reservas.ok) throw new Error("Error al cargar detalles del backend");
+        const reservas = await fetch(
+          `${URL}usuarios/mis-reservas/${parsedUser.id}`
+        );
+        if (!reservas.ok) {
+          const msg = await reservas.text();
+          throw new Error(`Mis reservas: ${msg}`);
+        }
         const data2 = await reservas.json();
         setReservas(data2);
       } catch (err: any) {
-        setError(err.message || "Error desconocido al cargar detalles");
+        console.error("Error al cargar datos:", err.message);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    fetchData();
   }, []);
 
   if (error) return <p className="text-red-600">Error: {error}</p>;
@@ -87,7 +96,10 @@ export default function Dashboard() {
 
   const detalles = backendData.detallesUsuario;
 
-  const imagen = localUser.imagen == "" ? "/usuario.svg" : `${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${localUser.imagen}`
+  const imagen =
+    localUser.imagen == ""
+      ? "/usuario.svg"
+      : `${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${localUser.imagen}`;
 
   return (
     <div>
@@ -111,9 +123,7 @@ export default function Dashboard() {
             </p>
             <p className="text-gray-600">
               Fecha de nacimiento:{" "}
-              <span className="font-medium">
-                {backendData.fechaNacimiento}
-              </span>
+              <span className="font-medium">{backendData.fechaNacimiento}</span>
             </p>
             <p className="text-gray-600">
               Género: <span className="font-medium">{detalles.genero}</span>
@@ -125,16 +135,12 @@ export default function Dashboard() {
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="bg-blue-50 p-4 rounded-md shadow">
               <h3 className="font-semibold text-xl mb-2">Peso</h3>
-              <p className="text-md ">
-                {detalles.peso || "-"} kg
-              </p>
+              <p className="text-md ">{detalles.peso || "-"} Kg</p>
             </div>
 
             <div className="bg-blue-50 p-4 rounded-md shadow">
               <h3 className="font-semibold text-xl mb-2">Altura</h3>
-              <p className="text-md ">
-                {detalles.altura || "-"} cm
-              </p>
+              <p className="text-md ">{detalles.altura || "-"} cm</p>
             </div>
 
             <div className="bg-blue-50 p-4 rounded-md shadow">
@@ -144,17 +150,34 @@ export default function Dashboard() {
 
             <div className="bg-blue-50 p-4 rounded-md shadow">
               <h3 className="font-semibold text-xl mb-2">Intolerancias</h3>
-              <p className="text-md">
-                {detalles.intolerancias || "Ninguna"}
-              </p>
+              <p className="text-md">{detalles.intolerancias || "Ninguna"}</p>
             </div>
           </section>
-           <div className="bg-blue-50 p-4 rounded-md shadow mt-6">
-              <h3 className="font-semibold text-xl mb-2">Mis Reservas</h3>
-              <div className="text-md flex flex-col">
-                {reservas.length > 0 ? reservas : "Aún no tienes reservas"}
-              </div>
+          <div className="bg-blue-50 p-4 rounded-md shadow mt-6">
+            <h3 className="font-semibold text-xl mb-2">Mis Reservas</h3>
+            <div className="text-md flex flex-row flex-wrap space-y-2 gap-[1rem]">
+              {reservas.length > 0
+                ? reservas.map((reserva: any) => (
+                    <div
+                      key={reserva.id}
+                      className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
+                    >
+                      <p>
+                        <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Fecha Reserva:</strong>{" "}
+                        {new Date(reserva.fechaHora).toLocaleString()}
+                      </p>
+                      <p>
+                        <strong>Tipo Clase:</strong>{" "}
+                        {reserva.tipoClase || "N/A"}
+                      </p>
+                    </div>
+                  ))
+                : "Aún no tienes reservas"}
             </div>
+          </div>
         </section>
       </main>
       <Footer />

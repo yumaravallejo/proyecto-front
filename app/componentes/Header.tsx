@@ -88,7 +88,7 @@ export default function Header(props: Props) {
         <Link href="/" className="flex items-center gap-4">
           <Image src="/logo.svg" alt="Logo de Changes" width={80} height={50} className="rounded-full" />
           <span className="text-xl font-bold text-white flex flex-col">
-            <span className="amarillo oswald">CHANGES</span>
+            <span className="amarillo font-oswald">CHANGES</span>
             <span className="azul oswald">FITNESS CLUB</span>
           </span>
         </Link>

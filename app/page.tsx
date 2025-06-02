@@ -179,7 +179,7 @@ export default function Home() {
         <h2 className="text-center text-[var(--dorado)] text-3xl font-extrabold oswald">
           ¡CRÉETELOS A ELLOS!
         </h2>
-        <div className="pad-carrusel">
+        <div className="pad-carrusel sm:ml-30 sm:mr-30">
           <Carousel />
         </div>
       </div>
