@@ -172,26 +172,11 @@ export default function Actividades() {
     </main>
   );
 
-  const contenidoLogged = (
-    <main id="actividadesLogged">
-      {loading ? (
-        <p>Cargando actividades...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : (
-        <div className="flex flex-col gap-y-4 p-5">
-          {actividades.map((actividad, idx) => (
-            <li key={idx}>{actividad.nombre}</li>
-          ))}
-        </div>
-      )}
-    </main>
-  );
 
   return (
     <div>
       <HeaderUs promocion={null} pagina="ACTIVIDADES" />
-      {user ? contenidoLogged : contenidoUnlogged}
+      {contenidoUnlogged}
       <Footer />
     </div>
   );

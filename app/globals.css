@@ -20,6 +20,13 @@
   /* Blanco */
 }
 
+html {
+  font-family: var(--font-inter), sans-serif;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+
 .perspective-1000 {
   perspective: 1000px;
 }
@@ -41,7 +48,18 @@ div#formRegistro > div > div > input {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
-* {
+
+.oswald {
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 600;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: 600;
+  font-family: var(--font-oswald), sans-serif;
+}
+
+p, u, span {
   font-family: var(--font-inter), sans-serif;
   font-weight: 400;
 }
@@ -52,20 +70,10 @@ div#radix-«Rh7l7» h2 {
   font-weight: 500;
 }
 
-.oswald {
-  font-family: var(--font-oswald), sans-serif;
-  font-weight: 600;
-}
 
-h1,
-h2,
-h3 {
-  font-weight: 600;
-  font-family: var(--font-oswald);
-}
 
 h2 > span {
-  font-family: var(--font-oswald);
+  font-family: var(--font-oswald), sans-serif;
   font-weight: 400;
 }
 
@@ -145,12 +153,12 @@ header > a > span {
 
 .amarillo {
   color: var(--dorado);
-  font-family: var(--font-oswald);
+  font-family: var(--font-oswald), sans-serif;
 }
 
 .azul {
   color: var(--azul);
-  font-family: var(--font-oswald);
+  font-family: var(--font-oswald), sans-serif;
 }
 
 header > button,
@@ -250,7 +258,7 @@ label.menu-abierto span:nth-child(2) {
 }
 
 nav.general a {
-  font-family: var(--font-oswald);
+  font-family: var(--font-oswald), sans-serif;
   text-align: left;
   font-size: 1.3rem;
   display: flex;
@@ -423,12 +431,12 @@ main#cuotas > div.cuotas > div > button {
 
   header u {
     display: flex;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: .8rem;
+    font-weight: 300;
   }
 
   header span.azul {
-    font-size: 1rem;
+    font-size: .9rem;
   }
 
   header img.usuario {
@@ -497,7 +505,7 @@ main#cuotas > div.cuotas > div > button {
   }
 
   .general a {
-  
+    height: 100%;
   }
 
   nav#redes {
@@ -517,7 +525,7 @@ main#cuotas > div.cuotas > div > button {
   }
 
   nav.general a {
-    font-family: var(--font-oswald);
+    font-family: var(--font-oswald), sans-serif;
     font-size: 1.2rem;
   }
 

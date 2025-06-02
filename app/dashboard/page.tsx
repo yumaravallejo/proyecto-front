@@ -1,208 +1,162 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import Header from "../componentes/Header";
-import Video from "../componentes/Video";
+
+import React, { useEffect, useState } from "react";
+import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
-import { useEffect, useState } from "react";
-import Carousel from "../componentes/Carousel";
-import ContactForm from "../componentes/ContactForm";
+
+interface DetallesUsuarioDto {
+  peso: string;
+  altura: string;
+  genero: string;
+  intolerancias: string;
+  objetivo: string;
+}
+
+interface BackendData {
+  fechaNacimiento: string;
+  detallesUsuario: DetallesUsuarioDto;
+  // …otros campos que quieras mostrar (p. ej. email, nombre, etc.)
+}
+
+interface LocalUser {
+  id: number;
+  nombre: string;
+  imagen: string;
+}
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
+  const [localUser, setLocalUser] = useState<LocalUser | null>(null);
+  const [backendData, setBackendData] = useState<BackendData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reservas, setReservas] = useState([]);
 
-  useEffect(() => {
-    const userString = localStorage.getItem("user");
-    if (userString) {
-      setUser(JSON.parse(userString));
+  const calcularEdad = (fecha: string) => {
+    const hoy = new Date();
+    const nacimiento = new Date(fecha);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
     }
-  }, []);
-
-  const texto = (
-    <div className="text-white flex flex-col text-center gap-5 items-center">
-      <u>EL CAMBIO LO ELIGES TÚ</u>
-      <h1 className="oswald text-3xl font-bold">CHANGES FITNESS CLUB</h1>
-      <Link className="boton" href={"/registro"}>
-        ÚNETE
-      </Link>
-    </div>
-  );
-
-  const [login, setLogin] = useState(false);
+    return edad;
+  };
 
   useEffect(() => {
-    localStorage.getItem("user") ? setLogin(true) : setLogin(false);
+    // Leer user de localStorage
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      setError("No se encontró usuario en localStorage");
+      setLoading(false);
+      return;
+    }
+
+    let parsedUser: LocalUser;
+    try {
+      parsedUser = JSON.parse(storedUser);
+      setLocalUser(parsedUser);
+    } catch {
+      setError("Error al parsear datos de usuario en localStorage");
+      setLoading(false);
+      return;
+    }
+
+    // Fetch backend solo si localUser ya está listo
+    (async () => {
+      try {
+        const URL = process.env.NEXT_PUBLIC_API;
+        const res = await fetch(`${URL}usuarios/detalles/${parsedUser.id}`);
+        if (!res.ok) throw new Error("Error al cargar detalles del backend");
+        const data: BackendData = await res.json();
+        setBackendData(data);
+
+        const reservas = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
+        if (!reservas.ok) throw new Error("Error al cargar detalles del backend");
+        const data2 = await reservas.json();
+        setReservas(data2);
+      } catch (err: any) {
+        setError(err.message || "Error desconocido al cargar detalles");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  const contenido = login ? (
-    <div className="pt-30 h-[calc(100vh-70px)] flex flex-col w-90">
-      <h1 className="text-2xl font-bold mt-5">
-        !Bienvenido de nuevo, {user?.nombre}!
-      </h1>
-      <main className="flex flex-col gap-10 mt-10">
-        {/* Tarjetas resumen */}
-        <div className="bg-[var(--azul)] p-5 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold">Rutinas completadas</h2>
-          <p className="text-3xl font-bold mt-2">ejemplo</p>
-        </div>
-        <div className="bg-[var(--dorado)] p-5 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold">Reservas activas</h2>
-          <p className="text-3xl font-bold mt-2">ejemplo</p>
-        </div>
-        <div className="bg-[var(--gris)] p-5 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold">Peso actual</h2>
-          <p className="text-3xl font-bold mt-2">ejemplo kg</p>
-        </div>
-      </main>
+  if (error) return <p className="text-red-600">Error: {error}</p>;
+  if (!localUser || !backendData) return;
 
-      {/* Progreso visual */}
-      <section className="bg-[var(--gris-oscuro)] p-6 rounded-lg shadow-md mt-10">
-        <h2 className="text-xl font-semibold mb-2">
-          Progreso hacia tu objetivo
-        </h2>
-        <div className="w-full bg-gray-700 h-4 rounded-full">
-          <div className="h-4 rounded-full bg-[var(--dorado)] transition-all"></div>
-        </div>
-        <p className="text-sm mt-1">ejemplo% completado</p>
-      </section>
-    </div>
-  ) : (
-    <div className="dashboard pb-10 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
-      <Video videoUrl="/videos/chica-fitness.mp4" texto={texto} />
-      <div
-        id="encuentranos"
-        className="flex flex-col items-center justify-center gap-6 pb-4 "
-      >
-        <h2 className="font-bold text-white text-2xl mb-4">ENCUÉNTRANOS</h2>
-        <Image
-          src="/img/localizacion.webp"
-          alt="Imagen de usuario"
-          width={300}
-          height={50}
-          className="rounded-5"
-        />
-        <div className="flex flex-col gap-y-5 mt-5 pl-13 pr-13">
-          <span className="flex flex-row gap-5 items-center text-white font-bold">
-            <Image
-              src="/place-icon.svg"
-              alt="Imagen de usuario"
-              width={40}
-              height={50}
-            />
-            Calle Ejemplo, 23, Marbella Málaga
-          </span>
-          <span className="flex flex-row gap-5 items-center text-white font-bold">
-            <Image
-              src="/mail-icon.svg"
-              alt="Imagen de usuario"
-              width={40}
-              height={50}
-            />
-            contacto@changesfitnessclub.com
-          </span>
-          <span className="flex flex-row gap-5 items-center text-white font-bold">
-            <Image
-              src="/phone-icon.svg"
-              alt="Imagen de usuario"
-              width={40}
-              height={50}
-            />
-            +34 999999999
-          </span>
-        </div>
-      </div>
-      <div className="flex flex-col items-center justify-center gap-6 pb-4 w-full">
-        <div className="title-barras font-bold text-white text-2xl mb-4 flex flex-row items-center w-full justify-between">
-          <span className="bg-[var(--azul)] h-2 w-[15%]"></span>
-          <h2 className="flex flex-col items-center w-[60%]">
-            TODAS LAS CLASES <span>INCLUIDAS EN TU CUOTA</span>
-          </h2>
-          <span className="bg-[var(--azul)] h-2 w-[15%]"></span>
-        </div>
-        <video
-          src="/videos/chica-yoga.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-80 h-70 object-cover border border-2 border-[var(--azul)] p-1"
-        />
-      </div>
+  const detalles = backendData.detallesUsuario;
 
-      <div id="experiencia" className="w-full bg-white pt-4">
-        <h2 className="oswald font-semibold text-white fondo-dash text-center p-2 text-3xl">
-          EXPERIENCIA CHANGES
-        </h2>
-        <div className="flex justify-center">
-          <p className="p-7 text-justify text-sm">
-            ¡El gimnasio donde entrenar se convierte en un placer! Con equipos
-            de última generación, más de 150 clases a la semana y…{" "}
-            <strong className="dorado">¡SIN COMPROMISOS!</strong> Sí, sabemos
-            que lo tuyo es vivir al máximo. Y a nosotros nos ENCANTA ser parte
-            de esa energía. Por eso en CHANGES te damos todo lo que necesitas
-            para disfrutar cada entrenamiento.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center justify-center gap-6 pb-4 w-full">
-        <div className="title-barras font-bold text-white oswald text-2xl mb-4 flex flex-row items-center w-full justify-between">
-          <span className="bg-[var(--dorado)] h-2 w-[15%]"></span>
-          <h2 className="flex flex-col items-center w-[60%]">
-            ASESORAMIENTO <span>NUTRICIONAL PERSONAL</span>
-          </h2>
-          <span className="bg-[var(--dorado)] h-2 w-[15%]"></span>
-        </div>
-        <video
-          src="/videos/asesoramiento-nutricional.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-80 h-70 object-cover border border-2 border-[var(--dorado)] p-1"
-        />
-      </div>
-
-      <div className="flex flex-row gap-x-4 items-center m-[-2rem] mt-[-3rem] ">
-        <Link
-          href={"/registro"}
-          className="p-3 w-50 font-bold text-white text-center  boton-dorado-shadow"
-        >
-          ÚNETE YA
-        </Link>
-      </div>
-
-      <div className="bg-white w-full pt-5 pb-5 flex flex-col">
-        <p className="text-sm font-light text-center">
-          ¿NO NOS CREES A NOSOTROS?
-        </p>
-        <h2 className="text-center text-[var(--dorado)] text-3xl font-extrabold oswald">
-          ¡CRÉETELOS A ELLOS!
-        </h2>
-        <div className="pad-carrusel">
-          <Carousel />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-y-2 text-left w-full items-center">
-        <span className="text-white ">¿AÚN TIENES DUDAS?</span>
-        <h2 className="oswald text-[var(--dorado)] text-2xl">
-          CONTACTA CON NOSOTROS
-        </h2>
-      </div>
-      <div
-        id="form-contacto-db"
-        className="flex items-center justify-center mt-[-2.5rem]"
-      >
-        <ContactForm />
-      </div>
-    </div>
-  );
+  const imagen = localUser.imagen == "" ? "/usuario.svg" : `${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${localUser.imagen}`
 
   return (
-    <div className="items-center justify-items-center min-h-screen">
-      <Header promocion={"NUEVOS MIEMBROS | PERIODO DE PRUEBA GRATIS"} />
-      {contenido}
+    <div>
+      <HeaderUs promocion={null} pagina="DASHBOARD" />
+      <main className="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md mt-10 mb-10">
+        <h1 className="text-3xl font-bold mb-6">Seguimiento Personal</h1>
+
+        <section className="flex items-center gap-6 mb-8">
+          <img
+            src={imagen}
+            alt={`Imagen de perfil de ${localUser.nombre}`}
+            className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
+          />
+          <div>
+            <h2 className="text-xl font-semibold">{localUser.nombre}</h2>
+            <p className="text-gray-600">
+              Edad:{" "}
+              <span className="font-medium">
+                {calcularEdad(backendData.fechaNacimiento)} años
+              </span>
+            </p>
+            <p className="text-gray-600">
+              Fecha de nacimiento:{" "}
+              <span className="font-medium">
+                {backendData.fechaNacimiento}
+              </span>
+            </p>
+            <p className="text-gray-600">
+              Género: <span className="font-medium">{detalles.genero}</span>
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="bg-blue-50 p-4 rounded-md shadow">
+              <h3 className="font-semibold text-xl mb-2">Peso</h3>
+              <p className="text-md ">
+                {detalles.peso || "-"} kg
+              </p>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-md shadow">
+              <h3 className="font-semibold text-xl mb-2">Altura</h3>
+              <p className="text-md ">
+                {detalles.altura || "-"} cm
+              </p>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-md shadow">
+              <h3 className="font-semibold text-xl mb-2">Objetivo</h3>
+              <p className="text-md">{detalles.objetivo || "-"}</p>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-md shadow">
+              <h3 className="font-semibold text-xl mb-2">Intolerancias</h3>
+              <p className="text-md">
+                {detalles.intolerancias || "Ninguna"}
+              </p>
+            </div>
+          </section>
+           <div className="bg-blue-50 p-4 rounded-md shadow mt-6">
+              <h3 className="font-semibold text-xl mb-2">Mis Reservas</h3>
+              <div className="text-md flex flex-col">
+                {reservas.length > 0 ? reservas : "Aún no tienes reservas"}
+              </div>
+            </div>
+        </section>
+      </main>
       <Footer />
     </div>
   );

@@ -500,10 +500,10 @@ export default function Registro() {
                     <option value="" disabled>
                       Selecciona tu objetivo
                     </option>
-                    <option value="perder_peso">Perder peso</option>
-                    <option value="ganar_musculo">Ganar músculo</option>
-                    <option value="mantener">Mantenerme</option>
-                    <option value="salud">Mejorar salud</option>
+                    <option value="Perder">Perder peso</option>
+                    <option value="Ganar">Ganar músculo</option>
+                    <option value="Mantener">Mantenerme</option>
+                    <option value="Salud">Mejorar salud</option>
                   </select>
                 </FormControl>
                 <FormMessage className="text-red-500 text-sm mb-[-2rem]" />

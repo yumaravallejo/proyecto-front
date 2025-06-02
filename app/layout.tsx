@@ -1,50 +1,31 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Oswald, Inter } from "next/font/google";
 import "./globals.css";
-
-const oswald = Oswald({
-  variable: "--font-oswald",
-  subsets: ["latin"],
-
-});
+import { Inter, Oswald } from "next/font/google";
 
 const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "300", "600", "500"],
   variable: "--font-inter",
-  subsets: ["latin"],
 });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const oswald = Oswald({
   subsets: ["latin"],
+  weight: ["400", "300", "600", "500"],
+  variable: "--font-oswald",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
+export const metadata = {
   title: "Changes Fitness Club",
-  description: "This Website is for a gym called Changes Fitness Club",
-  icons: {
-    icon: "/logo.svg",
-    shortcut: "/logo.svg",
-    apple: "/apple-touch-icon.png",
-  },
+  description: "Website for a gym called Changes Fitness Club",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="es" className={`${oswald.className} ${inter.variable}`}>
-      <head>
-      </head>
-      <body>
-        {children}
-      </body>
+    <html lang="es" className={`${inter.variable} ${oswald.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }
