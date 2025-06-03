@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
+import EditarHorario from "./EditarHorario";
+import ResetWeekDialog from "./ResetWeek";
+import NuevoHorarioDialog from "./NuevoHorario";
 
 export type TipoClase =
   | "CARDIO"
@@ -20,6 +23,12 @@ export interface Horario {
   duracion: number;
   numReservas: number;
 }
+
+export interface NuevoHorario {
+  fechaHora: string;
+  idUsuario: number;
+  idClase: number;
+};
 
 const tipoClaseColors: Record<TipoClase, string> = {
   CARDIO: "bg-red-500",
@@ -45,6 +54,80 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
   const [isLoadingReservas, setIsLoadingReservas] = useState(true);
   const URL = process.env.NEXT_PUBLIC_API;
   const [tipoFiltro, setTipoFiltro] = useState<TipoClase | "TODAS">("TODAS");
+  const [tipoUsuario, setTipoUsuario] = useState<string | "Cliente">("Cliente");
+  const [horarioEdit, setHorarioEdit] = useState<Horario | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmResetDayIdx, setConfirmResetDayIdx] = useState<number | null>(
+    null
+  );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleAddHorario = (nuevo: NuevoHorario) => {
+
+  }
+
+  const handleBorrarSemana = async (dayIdx: number) => {
+    try {
+      const user = localStorage.getItem("user");
+      const parsedUser = user ? JSON.parse(user) : null;
+      const token = parsedUser?.token;
+      const res = await fetch(`${URL}entrenador/borrarSemana/${dayIdx}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Error al borrar semana");
+      await fetchHorarios(); // Recarga horarios
+
+      toast.success("Semana borrada correctamente");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo borrar la semana");
+    }
+  };
+
+  const handleEditar = (horario: Horario) => {
+    setHorarioEdit(horario);
+    setDialogOpen(true);
+  };
+
+  const handleGuardarEdicion = async (
+    idHorario: number,
+    cambios: { fechaHora?: string; idEntrenador?: number }
+  ) => {
+    try {
+      const user = localStorage.getItem("user");
+      const parsedUser = user ? JSON.parse(user) : null;
+      const token = parsedUser?.token;
+      const URL = process.env.NEXT_PUBLIC_API;
+
+      const res = await fetch(`${URL}entrenador/editarHorario/${idHorario}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(cambios),
+      });
+
+      if (!res.ok) throw new Error("Error al editar horario");
+
+      const horarioActualizado = await res.json();
+
+      // Actualiza el estado local
+      setHorarios((prev) =>
+        prev.map((h) => (h.idHorario === idHorario ? horarioActualizado : h))
+      );
+
+      fetchHorarios(); // Refresca la lista de horarios
+      fetchUsuarioYReservas(); // Refresca las reservas del usuario
+    } catch (error) {
+      console.error(error);
+      alert("Error al actualizar el horario");
+    }
+  };
 
   const getDayIndex = (fechaHora: string): number => {
     const day = new Date(fechaHora).getDay();
@@ -61,12 +144,12 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
 
       let claseHour = date.getHours();
 
-      if (tipoFiltro !== "TODAS" && clase.tipoClase !== tipoFiltro) return false;
+      if (tipoFiltro !== "TODAS" && clase.tipoClase !== tipoFiltro)
+        return false;
 
       return claseHour === hour;
     });
   };
-
 
   const fetchUsuarioYReservas = async () => {
     const storedUser = localStorage.getItem("user");
@@ -77,7 +160,9 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
       try {
         const res = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
         const data = await res.json();
-        const horariosIds = data.map((reserva: { idHorario: number }) => reserva.idHorario);
+        const horariosIds = data.map(
+          (reserva: { idHorario: number }) => reserva.idHorario
+        );
         setUserReservations(horariosIds);
       } catch (error) {
         console.error("Error fetching reservas:", error);
@@ -103,6 +188,12 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
     (async () => {
       await Promise.all([fetchHorarios(), fetchUsuarioYReservas()]);
     })();
+
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const user = JSON.parse(userString);
+      setTipoUsuario(user.tipo || "Cliente");
+    }
   }, []);
 
   const handleReservar = async (idHorario: number) => {
@@ -187,24 +278,49 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         <div className="text-sm mb-3">
           {clase.numReservas} / {clase.capacidadMaxima}
         </div>
-        {!isLoadingReservas && (
-          <button
-            className={`transform transition-transform duration-200  py-2 rounded-md font-semibold text-sm transition-all duration-300
-              ${isReservado 
-                ?  isPast ? "cursor-not-allowed bg-gray-500" : "bg-red-600 hover:bg-red-700 hover:scale-[1.03] cursor-pointer " 
-                : isPast ? "cursor-not-allowed bg-gray-500" : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.03] cursor-pointer "
+        {tipoUsuario === "Cliente"
+          ? !isLoadingReservas && (
+              <button
+                className={`transform transition-transform duration-200  py-2 rounded-md font-semibold text-sm transition-all duration-300
+              ${
+                isReservado
+                  ? isPast
+                    ? "cursor-not-allowed bg-gray-500"
+                    : "bg-red-600 hover:bg-red-700 hover:scale-[1.03] cursor-pointer "
+                  : isPast
+                  ? "cursor-not-allowed bg-gray-500"
+                  : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.03] cursor-pointer "
               }
               active:scale-95`}
-            onClick={() =>
-              isReservado
-                ? handleCancelar(clase.idHorario)
-                : handleReservar(clase.idHorario)
-            }
-            disabled={isPast}
-          >
-            {isReservado && !isPast ? "Cancelar Reserva" : isPast ? "No disponible" : "Reservar"}
-          </button>
-        )}
+                onClick={() =>
+                  isReservado
+                    ? handleCancelar(clase.idHorario)
+                    : handleReservar(clase.idHorario)
+                }
+                disabled={isPast}
+              >
+                {isReservado && !isPast
+                  ? "Cancelar Reserva"
+                  : isPast
+                  ? "No disponible"
+                  : "Reservar"}
+              </button>
+            )
+          : !isLoadingReservas && (
+              <button
+                className={`transform transition-transform duration-200  py-2 rounded-md font-semibold text-sm transition-all duration-300
+              ${
+                isPast
+                  ? "cursor-not-allowed bg-gray-500"
+                  : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.03] cursor-pointer "
+              }
+              active:scale-95`}
+                onClick={() => handleEditar(clase)}
+                disabled={isPast}
+              >
+                {isPast ? "No disponible" : "Editar horario"}
+              </button>
+            )}
       </div>
     );
   };
@@ -212,13 +328,29 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
   return (
     <div className="p-6 max-w-8xl mx-auto bg-[var(--gris-oscuro)]">
       <Toaster position="bottom-right" theme="dark" />
-      <div className="w-full flex flex-row items-center justify-center mb-10 lg:mt-10 mt-5">
+      <div className="sm:hidden w-full flex flex-row items-center justify-center mb-10 lg:mt-10 mt-5">
         <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
         <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
-          RESERVA DE CLASES
+          HORARIO DE <br /> ACTIVIDADES
         </h1>
         <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
       </div>
+
+      {tipoUsuario === "Entrenador" ? (
+        <div className="text-center text-white mt-4 mb-6 w-full items-center flex flex-row justify-center gap-4">
+          <button onClick={()=>{setIsDialogOpen(!isDialogOpen)}} className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors active:scale-95 flex items-center gap-2">
+            <img
+              src={"/addHorario.svg"}
+              title="Añadir Horario"
+              className="w-7 h-7"
+            />{" "}
+            <span className="sm:block hidden">Añadir Horario</span>
+          </button>
+        </div>
+      ) : (
+        ""
+      )}
+
       <section className="filtros-actividades w-full flex overflow-x-auto gap-2">
         <article
           className="flex flex-row items-center justify-center gap-x-2 p-5 cursor-pointer filter-act"
@@ -226,8 +358,9 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         >
           <span className="w-5 h-5 bg-[#d1d1d1] border-2"></span>
           <span
-            className={`text-md text-left text-white min-w-max ${tipoFiltro === "TODAS" ? "underline font-semibold" : ""
-              }`}
+            className={`text-md text-left text-white min-w-max ${
+              tipoFiltro === "TODAS" ? "underline font-semibold" : ""
+            }`}
           >
             TODAS
           </span>
@@ -238,10 +371,10 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
             tipo === "RELAJACION"
               ? "CUERPO Y MENTE"
               : tipo === "TONIFICACION"
-                ? "TONIFICACIÓN"
-                : tipo === "TONO_CARDIO"
-                  ? "TONO Y CARDIO"
-                  : tipo;
+              ? "TONIFICACIÓN"
+              : tipo === "TONO_CARDIO"
+              ? "TONO Y CARDIO"
+              : tipo;
 
           return (
             <article
@@ -251,8 +384,9 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
             >
               <span className={`w-5 h-5 ${color} border-2`}></span>
               <span
-                className={`text-md text-left text-white min-w-max ${tipoFiltro === tipo ? "underline font-semibold" : ""
-                  }`}
+                className={`text-md text-left text-white min-w-max ${
+                  tipoFiltro === tipo ? "underline font-semibold" : ""
+                }`}
               >
                 {label}
               </span>
@@ -269,7 +403,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
               setCurrentDayIdx((prev) => (prev > 0 ? prev - 1 : prev))
             }
             disabled={currentDayIdx === 0}
-            className="text-2xl px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
+            className="text-2xl px-3 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
             aria-label="Día anterior"
           >
             ◀
@@ -287,9 +421,27 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
               year: "numeric",
             });
             return (
-              <h2 className="text-xl font-semibold text-gray-800 select-none">
-                {daysOfWeek[currentDayIdx]} - {formatted}
-              </h2>
+              <div>
+                <div className="text-lg font-bold font-inter text-gray-700 select-none flex items-center gap-1">
+                  {daysOfWeek[currentDayIdx]} - {formatted}
+                  {tipoUsuario === "Entrenador" && (
+                    <div className="grid">
+                      <button
+                        onClick={() => setConfirmResetDayIdx(currentDayIdx)}
+                        className="flex items-center justify-center h-full w-full mt-0 cursor-pointer"
+                      >
+                        <img
+                          src="/bin.svg"
+                          alt="Borrar semana"
+                          className="w-7 h-7 "
+                          title="Eliminar horario de la semana"
+                          style={{ display: "block", margin: "0 auto" }}
+                        />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             );
           })()}
           <button
@@ -297,7 +449,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
               setCurrentDayIdx((prev) => (prev < 4 ? prev + 1 : prev))
             }
             disabled={currentDayIdx === 4}
-            className="text-2xl px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
+            className="text-2xl px-3 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
             aria-label="Día siguiente"
           >
             ▶
@@ -351,11 +503,36 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
             return (
               <div
                 key={day}
-                className="flex flex-col items-center justify-center font-semibold text-gray-700 text-sm select-none p-2 bg-white rounded-lg shadow-sm"
+                className="flex flex-row items-center justify-between font-semibold text-gray-700 text-sm select-none p-2 bg-white rounded-lg shadow-sm"
                 style={{ minHeight: "52px" }}
               >
-                <div>{day}</div>
-                <div className="text-xs text-gray-500">{formatted}</div>
+                <div className="flex flex-col items-center basis-2/2">
+                  <div>{day}</div>
+                  <div className="text-xs text-gray-500">{formatted}</div>
+                </div>
+                <div className="grid">
+                  <button
+                    onClick={() => setConfirmResetDayIdx(index)}
+                    className="flex items-center justify-center h-full w-full mt-0 cursor-pointer"
+                  >
+                    <img
+                      src="/bin.svg"
+                      alt="Borrar semana"
+                      className="w-7 h-7 "
+                      title="Eliminar horario de la semana"
+                      style={{ display: "block", margin: "0 auto" }}
+                    />
+                  </button>
+                </div>
+                {confirmResetDayIdx !== null && (
+                  <ResetWeekDialog
+                    open={confirmResetDayIdx !== null}
+                    dayIdx={confirmResetDayIdx}
+                    daysOfWeek={daysOfWeek}
+                    onCancel={() => setConfirmResetDayIdx(null)}
+                    onConfirm={handleBorrarSemana}
+                  />
+                )}
               </div>
             );
           })}
@@ -377,6 +554,30 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
           ))}
         </div>
       </div>
+      <EditarHorario
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        horario={
+          horarioEdit
+            ? {
+                idHorario: horarioEdit.idHorario,
+                fechaHora: horarioEdit.fechaHora,
+                idEntrenador: (horarioEdit as any).idEntrenador ?? 0,
+                nombreEntrenador: horarioEdit.nombreEntrenador,
+              }
+            : null
+        }
+        onSave={handleGuardarEdicion}
+      />
+
+      <NuevoHorarioDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onCreate={(nuevo: NuevoHorario) => {
+          handleAddHorario(nuevo);
+          
+        }}
+      />
     </div>
   );
 };

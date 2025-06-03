@@ -8,7 +8,14 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { set, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -134,7 +141,6 @@ export default function UserProfile() {
       ? "/usuario.svg"
       : `${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${localUser.imagen}`;
 
-
   async function handleLogOut() {
     try {
       const URL = process.env.NEXT_PUBLIC_API;
@@ -196,38 +202,39 @@ export default function UserProfile() {
   }
 
   async function editarImagen(file: File) {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API;
-      const formData = new FormData();
-      formData.append("imagen", file);
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API;
+    const formData = new FormData();
+    formData.append("imagen", file);
 
-      const response = await fetch(
-        apiUrl + "usuarios/" + localUser?.id + "/editarAvatar",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        toast.error("Error al editar la imagen", {
-          description: "Inténtalo de nuevo más tarde",
-        });
-        return;
+    const response = await fetch(
+      `${apiUrl}usuarios/${localUser?.id}/editarAvatar`,
+      {
+        method: "POST",
+        body: formData,
       }
+    );
 
-      const data = await response.text();
-
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ ...localUser, imagen: data })
-      );
-      window.dispatchEvent(new Event("icon-updated"));
-    } catch (error) {
-      console.error("Error al editar la imagen. " + error);
+    if (!response.ok) {
+      toast.error("Error al editar la imagen", {
+        description: "Inténtalo de nuevo más tarde",
+      });
+      return;
     }
+
+    const data = await response.text();
+
+    setLocalUser((prevUser) => {
+      if (!prevUser) return prevUser;
+      const updatedUser = { ...prevUser, imagen: data };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+    window.dispatchEvent(new Event("icon-updated"));
+  } catch (error) {
+    console.error("Error al editar la imagen. " + error);
   }
+}
 
   if (localUser.tipo === "Entrenador") {
     return (
@@ -237,43 +244,46 @@ export default function UserProfile() {
         <main className="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md mt-10 mb-10">
           <h1 className="text-3xl font-bold mb-6">Perfil Entrenador</h1>
           {/* Aquí puedes poner la información y acciones específicas para el entrenador */}
-          <p>Bienvenido, {localUser.nombre}. Aquí irá el contenido para entrenadores.</p>
+          <p>
+            Bienvenido, {localUser.nombre}. Aquí irá el contenido para
+            entrenadores.
+          </p>
           {/* ...más contenido para entrenadores... */}
           <div className="p-4 rounded-md mt-6 justify-between sm:justify-start sm:gap-4 flex flex-row">
-              <Dialog open={openLogout} onOpenChange={setOpenLogout}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>¿Quieres irte?</DialogTitle>
-                    <DialogDescription>
-                      Recuerda que trabajas aquí eh...
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <button
-                      onClick={() => setOpenLogout(false)}
-                      className="rounded bg-blue-500 text-white px-4 py-2 mr-2 cursor-pointer hover:bg-blue-700 transition-colors duration-200"
-                    >
-                      Seguir trabajando
-                    </button>
-                    <button
-                      onClick={() => {
-                        setOpenLogout(false);
-                        handleLogOut();
-                      }}
-                      className="rounded bg-red-600 text-white px-4 py-2 cursor-pointer hover:bg-red-800 transition-colors duration-200"
-                    >
-                      Sí, cerrar sesión
-                    </button>
-                  </DialogFooter>
-                </DialogContent>
-                <button
-                  onClick={() => setOpenLogout(true)}
-                  className="rounded-full bg-red-500 hover:bg-red-700 text-white p-1 pl-4 pr-4 cursor-pointer transition-colors duration-200"
-                >
-                  Cerrar Sesión
-                </button>
-              </Dialog>
-            </div>
+            <Dialog open={openLogout} onOpenChange={setOpenLogout}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>¿Quieres irte?</DialogTitle>
+                  <DialogDescription>
+                    Recuerda que trabajas aquí eh...
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <button
+                    onClick={() => setOpenLogout(false)}
+                    className="rounded bg-blue-500 text-white px-4 py-2 mr-2 cursor-pointer hover:bg-blue-700 transition-colors duration-200"
+                  >
+                    Seguir trabajando
+                  </button>
+                  <button
+                    onClick={() => {
+                      setOpenLogout(false);
+                      handleLogOut();
+                    }}
+                    className="rounded bg-red-600 text-white px-4 py-2 cursor-pointer hover:bg-red-800 transition-colors duration-200"
+                  >
+                    Sí, cerrar sesión
+                  </button>
+                </DialogFooter>
+              </DialogContent>
+              <button
+                onClick={() => setOpenLogout(true)}
+                className="rounded-full bg-red-500 hover:bg-red-700 text-white p-1 pl-4 pr-4 cursor-pointer transition-colors duration-200"
+              >
+                Cerrar Sesión
+              </button>
+            </Dialog>
+          </div>
         </main>
       </div>
     );
@@ -283,11 +293,13 @@ export default function UserProfile() {
         <Toaster />
 
         <HeaderUs promocion={null} />
-        <main className="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md mt-5 mb-10 sm:mt-10">
-          <h1 className="text-3xl font-bold mb-6 text-center sm:text-left">Seguimiento Personal</h1>
+        <main className="max-w-3xl mx-auto p-6 bg-white rounded-md sm:shadow-md mt-5 mb-10 sm:mt-10">
+          <h1 className="text-3xl font-bold mb-6 text-center sm:text-left">
+            Seguimiento Personal
+          </h1>
 
           <section className="flex flex-col sm:flex-row items-center gap-6 mb-8">
-            <div className="flex flex-col items-center gap-5">
+            <div className="flex flex-col items-center gap-5 w-1/3">
               <img
                 src={imagen}
                 alt={`Imagen de perfil de ${localUser.nombre}`}
@@ -325,7 +337,7 @@ export default function UserProfile() {
                 />
               </Form>
             </div>
-            <div className="bg-blue-50 p-4 rounded-md shadow w-full sm:w-auto sm:bg-white sm:rounded-none">
+            <div className="bg-blue-50 p-4 rounded-md shadow w-full sm:bg-white sm:rounded-none">
               <h2 className="text-xl font-semibold">{localUser.nombre}</h2>
               <p className="text-gray-600 mt-2">
                 Edad:{" "}
@@ -335,7 +347,9 @@ export default function UserProfile() {
               </p>
               <p className="text-gray-600">
                 Fecha de nacimiento:{" "}
-                <span className="font-medium">{backendData.fechaNacimiento}</span>
+                <span className="font-medium">
+                  {backendData.fechaNacimiento}
+                </span>
               </p>
               <p className="text-gray-600">
                 Género: <span className="font-medium">{detalles.genero}</span>
@@ -364,48 +378,51 @@ export default function UserProfile() {
                 <h3 className="font-semibold text-xl mb-2">Intolerancias</h3>
                 <p className="text-md">{detalles.intolerancias || "Ninguna"}</p>
               </div>
-
-
             </section>
             <div className="bg-blue-50 p-4 rounded-md shadow mt-6">
               <h3 className="font-semibold text-xl mb-2">Mis Reservas</h3>
               <div className="text-md flex flex-row flex-wrap space-y-2 gap-[1rem]">
                 {reservas.length > 0
                   ? reservas.map((reserva: any) => (
-                    <div
-                      key={reserva.id}
-                      className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
-                    >
-                      <p>
-                        <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Horario:</strong>{" "}
-                        {new Date(reserva.fechaHora).toLocaleString().replace(",", " a las")}
-                      </p>
-                      <p>
-                        <strong>Tipo Clase:</strong>{" "}
-                        {reserva.tipoClase || "N/A"}
-                      </p>
-                    </div>
-                  ))
+                      <div
+                        key={reserva.id}
+                        className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
+                      >
+                        <p>
+                          <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Horario:</strong>{" "}
+                          {new Date(reserva.fechaHora)
+                            .toLocaleString()
+                            .replace(",", " a las")}
+                        </p>
+                        <p>
+                          <strong>Tipo Clase:</strong>{" "}
+                          {reserva.tipoClase || "N/A"}
+                        </p>
+                      </div>
+                    ))
                   : "Aún no tienes reservas"}
               </div>
             </div>
 
             <div className="p-4 rounded-md mt-6 justify-between sm:justify-start sm:gap-4 flex flex-row">
-              <Dialog open={openLogout} onOpenChange={setOpenLogout}>
-                <DialogContent>
+              <Dialog open={openLogout} onOpenChange={setOpenLogout} >
+                <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-6 animate-fadeIn">
                   <DialogHeader>
-                    <DialogTitle>¡No te vayas!</DialogTitle>
-                    <DialogDescription>
-                      Siempre podrás volver a entrenar más tarde pero, ¿estás seguro de que quieres cerrar sesión?
-                    </DialogDescription>
+                    <DialogTitle className="text-2xl font-semibold text-gray-800 mb-2">
+                      ¡No te vayas!
+                    </DialogTitle>
+                    <p className="text-gray-600 text-base leading-relaxed">
+                      Siempre podrás volver a entrenar más tarde pero, ¿estás
+                      seguro de que quieres cerrar sesión?
+                    </p>
                   </DialogHeader>
-                  <DialogFooter>
+                  <DialogFooter className="flex justify-end gap-4 mt-6">
                     <button
                       onClick={() => setOpenLogout(false)}
-                      className="rounded bg-blue-500 text-white px-4 py-2 mr-2 cursor-pointer hover:bg-blue-700 transition-colors duration-200"
+                      className="rounded-full bg-blue-600 text-white px-6 py-2 font-semibold hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                     >
                       Seguir entrenando
                     </button>
@@ -414,7 +431,7 @@ export default function UserProfile() {
                         setOpenLogout(false);
                         handleLogOut();
                       }}
-                      className="rounded bg-red-600 text-white px-4 py-2 cursor-pointer hover:bg-red-800 transition-colors duration-200"
+                      className="rounded-full bg-red-600 text-white px-6 py-2 font-semibold hover:bg-red-800 transition-colors duration-200 cursor-pointer"
                     >
                       Sí, cerrar sesión
                     </button>
@@ -422,23 +439,27 @@ export default function UserProfile() {
                 </DialogContent>
                 <button
                   onClick={() => setOpenLogout(true)}
-                  className="rounded-full bg-red-500 hover:bg-red-700 text-white p-1 pl-4 pr-4 cursor-pointer transition-colors duration-200"
+                  className="rounded-full bg-red-600 hover:bg-red-700 text-white px-6 py-2 font-semibold cursor-pointer transition-colors duration-200"
                 >
                   Cerrar Sesión
                 </button>
               </Dialog>
+
               <Dialog open={openEliminar} onOpenChange={setOpenEliminar}>
-                <DialogContent>
+                <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-6 animate-fadeIn">
                   <DialogHeader>
-                    <DialogTitle>¿Estás seguro?</DialogTitle>
-                    <DialogDescription>
-                      Esta acción eliminará tu cuenta permanentemente. ¿Deseas continuar?
-                    </DialogDescription>
+                    <DialogTitle className="text-2xl font-semibold text-gray-800 mb-2">
+                      ¿Estás seguro?
+                    </DialogTitle>
+                    <p className="text-gray-600 text-base leading-relaxed">
+                      Esta acción eliminará tu cuenta permanentemente. ¿Deseas
+                      continuar?
+                    </p>
                   </DialogHeader>
-                  <DialogFooter>
+                  <DialogFooter className="flex justify-end gap-4 mt-6">
                     <button
                       onClick={() => setOpenEliminar(false)}
-                      className="rounded bg-blue-500 text-white px-4 py-2 mr-2 cursor-pointer hover:bg-blue-700 transition-colors duration-200"
+                      className="rounded-full bg-blue-600 text-white px-6 py-2 font-semibold hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
                     >
                       Cancelar
                     </button>
@@ -447,7 +468,7 @@ export default function UserProfile() {
                         setOpenEliminar(false);
                         handleDeleteAccount();
                       }}
-                      className="rounded bg-red-600 text-white px-4 py-2 cursor-pointer hover:bg-red-800 transition-colors duration-200"
+                      className="rounded-full bg-red-600 text-white px-6 py-2 font-semibold hover:bg-red-800 transition-colors duration-200 cursor-pointer"
                     >
                       Sí, eliminar cuenta
                     </button>
@@ -455,17 +476,14 @@ export default function UserProfile() {
                 </DialogContent>
                 <button
                   onClick={() => setOpenEliminar(true)}
-                  className="rounded-full bg-[var(--gris-medio)] hover:bg-[var(--gris-oscuro)] text-white p-1 pl-4 pr-4 cursor-pointer transition-colors duration-200"
+                  className="rounded-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 font-semibold cursor-pointer transition-colors duration-200"
                 >
                   Darme de baja
                 </button>
               </Dialog>
             </div>
-
           </section>
-
         </main>
-
       </div>
     );
   }

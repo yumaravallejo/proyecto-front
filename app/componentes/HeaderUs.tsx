@@ -125,8 +125,8 @@ export default function HeaderUs(props: Props) {
     ? [
         { nombre: "DIETAS", ruta: "/dietas" },
         { nombre: "RESERVAS", ruta: "/reservas" },
-        { nombre: "ACTIVIDADES", ruta: "/horarios-actividades" },
         { nombre: "CALENDARIO", ruta: "/calendario" },
+        { nombre: "HORARIO DE ACTIVIDADES", ruta: "/horarios-actividades" },
         { nombre: "CONTACTO", ruta: "/contacto" },
       ]
     : [

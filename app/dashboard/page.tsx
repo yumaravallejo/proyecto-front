@@ -75,7 +75,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [tipoUser, setTipoUser] = useState<"Cliente" | "Entrenador">("Cliente");
   const [userId, setUserId] = useState<number | null>(null);
-  const [infoUser, setInfoUser] = useState({});
+  const [infoUser, setInfoUser] = useState<UsuarioDTO | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API;
 
@@ -119,8 +119,8 @@ export default function Dashboard() {
   if (tipoUser === "Entrenador") {
     // Filtramos las clases de hoy por aquellas donde item.usuario.id === userId
     const misClasesHoy = clasesHoy.filter((item) => item.usuario.id === userId);
-    const nombre = infoUser ? infoUser.nombre : "Entrenador";
-    const nombreEntrenador = nombre.split(" ") || "Entrenador";
+    const nombre = infoUser && infoUser.nombre ? infoUser.nombre : "Entrenador";
+    const titulo = `PLANNING DE ${nombre.toUpperCase()}`;
 
     return (
       <div className="flex flex-col min-h-screen">
@@ -131,7 +131,7 @@ export default function Dashboard() {
           <div className="w-full flex flex-row items-center justify-center mb-10 mt-5">
             <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
             <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
-              PLANNING {} - HOY
+              {titulo}
             </h1>
             <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
           </div>
@@ -144,9 +144,7 @@ export default function Dashboard() {
                   <h3 className="text-xl font-semibold text-white">MIS CLASES HOY</h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
-                  {loading ? (
-                    <p className="text-gray-600 text-center">Cargando mis clases...</p>
-                  ) : Array.isArray(misClasesHoy) && misClasesHoy.length > 0 ? (
+                  {Array.isArray(misClasesHoy) && misClasesHoy.length > 0 ? (
                     <ul className="space-y-4 overflow-y-auto">
                       {misClasesHoy.map((item) => {
                         const horaLocal = new Date(item.fechaHora).toLocaleTimeString(

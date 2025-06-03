@@ -32,7 +32,7 @@ import { Toaster, toast } from "sonner";
 export default function Login() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname(); // Obtén la ruta actual
+  const pathname = usePathname();
 
   const [alert, setAlert] = useState<{
     message: string;
@@ -52,8 +52,8 @@ export default function Login() {
       const apiUrl = process.env.NEXT_PUBLIC_API;
       const response = await fetch(apiUrl + "login", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        credentials: 'include',
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           email: values.email,
           password: values.password,
@@ -69,7 +69,6 @@ export default function Login() {
         return;
       }
 
-      // Crear la sesión con el token y los datos del usuario
       localStorage.setItem("user", JSON.stringify(data));
 
       toast.success("Tu sesión ha sido iniciada", {
@@ -102,8 +101,8 @@ export default function Login() {
     <Dialog
       onOpenChange={(open) => {
         if (!open) {
-          alert && setAlert(null); // Limpia el alert
-          form.reset(); // Limpia campos y errores
+          alert && setAlert(null);
+          form.reset();
         }
       }}
     >
@@ -119,9 +118,11 @@ export default function Login() {
           <u className="font-bold items-center">Iniciar Sesión</u>
         </div>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
         <DialogHeader>
-          <DialogTitle className="text-left inter">Iniciar Sesión</DialogTitle>
+          <DialogTitle className="text-3xl font-semibold text-gray-800 mb-6">
+            Iniciar Sesión
+          </DialogTitle>
         </DialogHeader>
 
         {alert && (
@@ -134,68 +135,76 @@ export default function Login() {
         )}
 
         <Form {...form}>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Introduce tu email"
-                    {...field}
-                    className={
-                      form.formState.errors.email
-                        ? "border-2 border-red-500 focus:ring-red-200"
-                        : "focus:ring-yellow-200"
-                    }
-                  />
-                </FormControl>
-                <FormMessage className="text-red-500 text-sm " />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contraseña</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Introduce tu contraseña"
-                    {...field}
-                    className={
-                      form.formState.errors.password
-                        ? "border-2 border-red-500 focus:ring-red-200"
-                        : "focus:ring-yellow-200"
-                    }
-                  />
-                </FormControl>
-                <FormMessage className="text-red-500 text-sm " />
-              </FormItem>
-            )}
-          />
+          <form className="space-y-6" onSubmit={form.handleSubmit(handleLogin)}>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-700 font-medium text-lg">
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Introduce tu email"
+                      {...field}
+                      className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${
+                        form.formState.errors.email
+                          ? "border-2 border-red-500 focus:ring-red-300"
+                          : "border border-gray-300 focus:ring-yellow-300"
+                      }`}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-sm mt-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-700 font-medium text-lg">
+                    Contraseña
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Introduce tu contraseña"
+                      {...field}
+                      className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${
+                        form.formState.errors.password
+                          ? "border-2 border-red-500 focus:ring-red-300"
+                          : "border border-gray-300 focus:ring-yellow-300"
+                      }`}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-sm mt-1" />
+                </FormItem>
+              )}
+            />
 
-          <Link
-            href="/recuperar"
-            className="text-[var(--azul)] text-sm underline hover:text-[var(--azul-oscuro)] transition-colors duration-200"
-          >
-            ¿Olvidaste tu contraseña?
-          </Link>
-
-          <DialogFooter className="flex flex-row ">
-            <button
-              onClick={form.handleSubmit(handleLogin)}
-              className="bg-[var(--azul)] text-white rounded-full px-4 py-2 font-bold text-center cursor-pointer hover:bg-[var(--azul-oscuro)] transition-colors duration-200"
+            <Link
+              href="/recuperar"
+              className="text-[var(--azul)] text-sm underline hover:text-[var(--azul-oscuro)] transition-colors duration-200"
             >
-              Iniciar Sesión
-            </button>
-            <DialogClose className="bg-[var(--gris-medio)] text-white rounded-full px-4 py-2 font-bold text-center cursor-pointer hover:bg-[var(--gris-alto)] transition-colors duration-200">
-              Cerrar
-            </DialogClose>
-          </DialogFooter>
+              ¿Olvidaste tu contraseña?
+            </Link>
+
+            <DialogFooter className="flex justify-end gap-4 mt-6">
+              <button
+                type="submit"
+                className="bg-[var(--azul)] text-white rounded-full px-6 py-3 font-semibold hover:bg-[var(--azul-oscuro)] transition cursor-pointer"
+              >
+                Iniciar Sesión
+              </button>
+              <DialogClose
+                className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer"
+              >
+                Cerrar
+              </DialogClose>
+            </DialogFooter>
+          </form>
         </Form>
       </DialogContent>
     </Dialog>

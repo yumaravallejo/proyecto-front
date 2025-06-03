@@ -47,7 +47,7 @@ export default function Horarios() {
 
   return (
     <div>
-      <HeaderUs promocion={null} pagina="ACTIVIDADES" />
+      <HeaderUs promocion={null} pagina="HORARIO DE ACTIVIDADES" />
 
       <main id="horarioActividades" className="min-h-[calc(100vh-200px)]">
           <SchedulePage horariosIniciales={horarios} />
