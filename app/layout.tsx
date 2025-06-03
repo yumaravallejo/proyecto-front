@@ -6,8 +6,8 @@ const oswald = Oswald({ subsets: ['latin'], weight: ['300', '400', '500', '600']
 const inter = Inter({ subsets: ['latin'], weight: ['300', '400', '500', '600'] })
 
 export const metadata = {
-  title: "Mi Web",
-  description: "Prueba de fuentes",
+  title: "Changes Fitness Club",
+  description: "Página oficial de Changes Fitness Club, donde podrás encontrar horarios de actividades, dietas y más.",
   icons: {
     icon: "/logo.svg",
   },

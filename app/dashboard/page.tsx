@@ -3,184 +3,369 @@
 import React, { useEffect, useState } from "react";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
+import { set } from "react-hook-form";
 
-interface DetallesUsuarioDto {
-  peso: string;
-  altura: string;
-  genero: string;
-  intolerancias: string;
-  objetivo: string;
-}
+// === DEFINICIÓN DE TIPOS Y MAPEOS DE COLOR ===
 
-interface BackendData {
-  fechaNacimiento: string;
-  detallesUsuario: DetallesUsuarioDto;
-  // …otros campos que quieras mostrar (p. ej. email, nombre, etc.)
-}
+export type TipoClase =
+  | "CARDIO"
+  | "FUERZA"
+  | "RELAJACION"
+  | "TONIFICACION"
+  | "INFANTIL"
+  | "TONO_CARDIO";
 
-interface LocalUser {
+const tipoClaseColors: Record<TipoClase, string> = {
+  CARDIO: "bg-red-500",
+  FUERZA: "bg-blue-400",
+  RELAJACION: "bg-green-600",
+  TONIFICACION: "bg-yellow-500",
+  INFANTIL: "bg-purple-600",
+  TONO_CARDIO: "bg-orange-500",
+};
+
+interface UsuarioDTO {
   id: number;
   nombre: string;
+  tipo: string;
+}
+
+interface ClaseDTO {
+  id: number;
+  nombre: string;
+  capacidadMaxima: number;
+  duracion: number;
+  tipoClase: TipoClase;
+  descripcion: string;
   imagen: string;
+  exigencia: string;
+}
+
+interface ClaseHoyItem {
+  id: number;
+  usuario: UsuarioDTO;   // el instructor de esta clase
+  clase: ClaseDTO;
+  fechaHora: string;     // ISO string, ej. "2025-06-03T07:00:00"
+}
+
+interface Evento {
+  id: number;
+  nombre: string;
+  detallesEvento: string;
+  fechaInicio: string;
+  fechaFin: string;
+}
+
+interface Dieta {
+  idDieta: number;
+  descripcion: string;
+  fecha: string;
+}
+
+interface InfoHoyDTO {
+  clasesHoy: ClaseHoyItem[];
+  eventosHoy: Evento[];
+  dietaHoy: Dieta | null;
 }
 
 export default function Dashboard() {
-  const [localUser, setLocalUser] = useState<LocalUser | null>(null);
-  const [backendData, setBackendData] = useState<BackendData | null>(null);
+  const [clasesHoy, setClasesHoy] = useState<ClaseHoyItem[]>([]);
+  const [eventosHoy, setEventosHoy] = useState<Evento[]>([]);
+  const [dietaHoy, setDietaHoy] = useState<Dieta | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [reservas, setReservas] = useState([]);
+  const [tipoUser, setTipoUser] = useState<"Cliente" | "Entrenador">("Cliente");
+  const [userId, setUserId] = useState<number | null>(null);
+  const [infoUser, setInfoUser] = useState({});
 
-  const calcularEdad = (fecha: string) => {
-    const hoy = new Date();
-    const nacimiento = new Date(fecha);
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    const m = hoy.getMonth() - nacimiento.getMonth();
-    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
-      edad--;
-    }
-    return edad;
-  };
+  const API_URL = process.env.NEXT_PUBLIC_API;
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
-      setError("No se encontró usuario en localStorage");
-      setLoading(false);
-      return;
-    }
+    const fetchInfoHoy = async () => {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) {
+        setLoading(false);
+        return;
+      }
 
-    let parsedUser: LocalUser;
-    try {
-      parsedUser = JSON.parse(storedUser);
-      setLocalUser(parsedUser);
-    } catch {
-      setError("Error al parsear datos de usuario en localStorage");
-      setLoading(false);
-      return;
-    }
+      const parsedUser: UsuarioDTO & { id: number } = JSON.parse(storedUser);
+      setUserId(parsedUser.id);
+      setInfoUser(parsedUser);
+      if (parsedUser.tipo === "Entrenador") {
+        setTipoUser("Entrenador");
+      }
 
-    const fetchData = async () => {
       try {
-        const URL = process.env.NEXT_PUBLIC_API;
-        const res = await fetch(`${URL}usuarios/detalles/${parsedUser.id}`);
-        if (!res.ok) {
-          const msg = await res.text();
-          throw new Error(`Detalles usuario: ${msg}`);
-        }
-        const data: BackendData = await res.json();
-        setBackendData(data);
+        const res = await fetch(`${API_URL}usuarios/info-hoy/${parsedUser.id}`);
+        if (!res.ok) throw new Error("Error al obtener InfoHoyDTO");
+        const data: InfoHoyDTO = await res.json();
 
-        const reservas = await fetch(
-          `${URL}usuarios/mis-reservas/${parsedUser.id}`
-        );
-        if (!reservas.ok) {
-          const msg = await reservas.text();
-          throw new Error(`Mis reservas: ${msg}`);
-        }
-        const data2 = await reservas.json();
-        setReservas(data2);
-      } catch (err: any) {
-        console.error("Error al cargar datos:", err.message);
-        setError(err.message);
+        setClasesHoy(Array.isArray(data.clasesHoy) ? data.clasesHoy : []);
+        setEventosHoy(Array.isArray(data.eventosHoy) ? data.eventosHoy : []);
+        setDietaHoy(data.dietaHoy);
+      } catch (error) {
+        console.error("Error cargando datos del dashboard:", error);
+        setClasesHoy([]);
+        setEventosHoy([]);
+        setDietaHoy(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchInfoHoy();
   }, []);
 
-  if (error) return <p className="text-red-600">Error: {error}</p>;
-  if (!localUser || !backendData) return;
+  // ------ RENDERIZADO PARA ENTRENADOR ------
+  if (tipoUser === "Entrenador") {
+    // Filtramos las clases de hoy por aquellas donde item.usuario.id === userId
+    const misClasesHoy = clasesHoy.filter((item) => item.usuario.id === userId);
+    const nombre = infoUser ? infoUser.nombre : "Entrenador";
+    const nombreEntrenador = nombre.split(" ") || "Entrenador";
 
-  const detalles = backendData.detallesUsuario;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <HeaderUs promocion={null} pagina="DASHBOARD" />
 
-  const imagen =
-    localUser.imagen == ""
-      ? "/usuario.svg"
-      : `${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${localUser.imagen}`;
-
-  return (
-    <div>
-      <HeaderUs promocion={null} pagina="DASHBOARD" />
-      <main className="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md mt-10 mb-10">
-        <h1 className="text-3xl font-bold mb-6">Seguimiento Personal</h1>
-
-        <section className="flex items-center gap-6 mb-8">
-          <img
-            src={imagen}
-            alt={`Imagen de perfil de ${localUser.nombre}`}
-            className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
-          />
-          <div>
-            <h2 className="text-xl font-semibold">{localUser.nombre}</h2>
-            <p className="text-gray-600">
-              Edad:{" "}
-              <span className="font-medium">
-                {calcularEdad(backendData.fechaNacimiento)} años
-              </span>
-            </p>
-            <p className="text-gray-600">
-              Fecha de nacimiento:{" "}
-              <span className="font-medium">{backendData.fechaNacimiento}</span>
-            </p>
-            <p className="text-gray-600">
-              Género: <span className="font-medium">{detalles.genero}</span>
-            </p>
+        <main className="flex-grow bg-[var(--gris-oscuro)] text-gray-900">
+          {/* Encabezado entrenador */}
+          <div className="w-full flex flex-row items-center justify-center mb-10 mt-5">
+            <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
+            <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
+              PLANNING {} - HOY
+            </h1>
+            <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
           </div>
-        </section>
 
-        <section>
-          <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-4 rounded-md shadow">
-              <h3 className="font-semibold text-xl mb-2">Peso</h3>
-              <p className="text-md ">{detalles.peso || "-"} Kg</p>
-            </div>
+          <div className="px-4 py-6 max-w-6xl mx-auto space-y-8 sm:space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* ===== MIS CLASES DE HOY ===== */}
+              <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <div className="p-4 bg-[var(--dorado)]">
+                  <h3 className="text-xl font-semibold text-white">MIS CLASES HOY</h3>
+                </div>
+                <div className="p-4 flex-grow flex flex-col text-gray-900">
+                  {loading ? (
+                    <p className="text-gray-600 text-center">Cargando mis clases...</p>
+                  ) : Array.isArray(misClasesHoy) && misClasesHoy.length > 0 ? (
+                    <ul className="space-y-4 overflow-y-auto">
+                      {misClasesHoy.map((item) => {
+                        const horaLocal = new Date(item.fechaHora).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        );
+                        const stripeClass = tipoClaseColors[item.clase.tipoClase];
+                        return (
+                          <li
+                            key={item.id}
+                            className="bg-gray-100 rounded-md flex overflow-hidden"
+                            aria-label={`Clase ${item.clase.nombre} a las ${horaLocal}`}
+                          >
+                            {/* Raya lateral */}
+                            <div className={`${stripeClass} w-2`} />
+                            {/* Contenido */}
+                            <div className="p-3 flex flex-col flex-grow">
+                              <p className="font-bold text-lg truncate text-gray-800">
+                                {item.clase.nombre}
+                              </p>
+                              <p className="text-gray-600 text-sm">Hora: {horaLocal}</p>
+                              <p className="text-gray-600 text-sm truncate">
+                                Tipo: {item.clase.tipoClase}
+                              </p>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+                      No tienes clases asignadas hoy
+                    </p>
+                  )}
+                </div>
+              </section>
 
-            <div className="bg-blue-50 p-4 rounded-md shadow">
-              <h3 className="font-semibold text-xl mb-2">Altura</h3>
-              <p className="text-md ">{detalles.altura || "-"} cm</p>
+              {/* ===== EVENTOS DE HOY ===== */}
+              <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
+                  <h3 className="text-xl font-semibold text-white">EVENTOS HOY</h3>
+                </div>
+                <div className="p-4 flex-grow flex flex-col text-gray-900">
+                  {loading ? (
+                    <p className="text-gray-600 text-center">Cargando eventos...</p>
+                  ) : Array.isArray(eventosHoy) && eventosHoy.length > 0 ? (
+                    <ul className="space-y-4 overflow-y-auto">
+                      {eventosHoy.map((evento) => {
+                        const inicio = new Date(evento.fechaInicio).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        );
+                        const fin = new Date(evento.fechaFin).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                        return (
+                          <li
+                            key={evento.id}
+                            className="bg-gray-100 rounded-md p-3 flex flex-col"
+                            aria-label={`Evento ${evento.nombre} desde las ${inicio} hasta las ${fin}`}
+                          >
+                            <p className="font-bold text-lg truncate">{evento.nombre}</p>
+                            <p className="text-gray-600 text-sm line-clamp-2">
+                              {evento.detallesEvento}
+                            </p>
+                            <p className="text-gray-600 text-sm mt-1">
+                              <span className="font-semibold">Horario:</span> {inicio} – {fin}
+                            </p>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+                      No hay eventos hoy
+                    </p>
+                  )}
+                </div>
+              </section>
             </div>
+          </div>
+        </main>
 
-            <div className="bg-blue-50 p-4 rounded-md shadow">
-              <h3 className="font-semibold text-xl mb-2">Objetivo</h3>
-              <p className="text-md">{detalles.objetivo || "-"}</p>
-            </div>
+        <Footer />
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <HeaderUs promocion={null} pagina="DASHBOARD" />
 
-            <div className="bg-blue-50 p-4 rounded-md shadow">
-              <h3 className="font-semibold text-xl mb-2">Intolerancias</h3>
-              <p className="text-md">{detalles.intolerancias || "Ninguna"}</p>
-            </div>
-          </section>
-          <div className="bg-blue-50 p-4 rounded-md shadow mt-6">
-            <h3 className="font-semibold text-xl mb-2">Mis Reservas</h3>
-            <div className="text-md flex flex-row flex-wrap space-y-2 gap-[1rem]">
-              {reservas.length > 0
-                ? reservas.map((reserva: any) => (
-                    <div
-                      key={reserva.id}
-                      className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
-                    >
-                      <p>
-                        <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Fecha Reserva:</strong>{" "}
-                        {new Date(reserva.fechaHora).toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>Tipo Clase:</strong>{" "}
-                        {reserva.tipoClase || "N/A"}
-                      </p>
+        <main className="flex-grow bg-[var(--gris-oscuro)] text-gray-900">
+          {/* Encabezado */}
+          <div className="w-full flex flex-row items-center justify-center mb-10 lg:mt-10 mt-5">
+            <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
+            <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
+              PLANNING DE HOY
+            </h1>
+            <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
+          </div>
+
+          {/* Contenedor principal */}
+          <div className="px-4 py-6 max-w-6xl mx-auto space-y-8 sm:space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* ===== SECCIÓN: Clases de hoy (FONDO DORADO) ===== */}
+              <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <div className="p-4 bg-[var(--dorado)]">
+                  <h3 className="text-xl font-semibold text-white">CLASES DE HOY</h3>
+                </div>
+                <div className="p-4 flex-grow flex flex-col text-gray-900">
+                  {Array.isArray(clasesHoy) && clasesHoy.length > 0 ? (
+                    <ul className="space-y-4 overflow-y-auto">
+                      {clasesHoy.map((item) => {
+                        const horaLocal = new Date(item.fechaHora).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        );
+                        // Sacamos la clase de color según item.clase.tipoClase
+                        const stripeClass = tipoClaseColors[item.clase.tipoClase];
+                        return (
+                          <li
+                            key={item.id}
+                            className="bg-gray-100 rounded-md flex overflow-hidden"
+                            aria-label={`Clase ${item.clase.nombre} a las ${horaLocal}`}
+                          >
+                            {/* Raya lateral */}
+                            <div className={`${stripeClass} w-2`} />
+                            {/* Contenido de la tarjeta */}
+                            <div className="p-3 flex flex-col flex-grow">
+                              <p className="font-bold text-lg truncate text-gray-800">
+                                {item.clase.nombre}
+                              </p>
+                              <p className="text-gray-600 text-sm">Hora: {horaLocal}</p>
+                              <p className="text-gray-600 text-sm truncate">
+                                Entrenador: {item.usuario.nombre}
+                              </p>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+                      No hay clases programadas para hoy
+                    </p>
+                  )}
+                </div>
+              </section>
+
+              {/* ===== SECCIÓN: Eventos de hoy (DEGRADADO DORADO → AZUL) ===== */}
+              <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
+                  <h3 className="text-xl font-semibold text-white">EVENTOS DE HOY</h3>
+                </div>
+                <div className="p-4 flex-grow flex flex-col text-gray-900">
+                  {Array.isArray(eventosHoy) && eventosHoy.length > 0 ? (
+                    <ul className="space-y-4 overflow-y-auto">
+                      {eventosHoy.map((evento) => {
+                        const inicio = new Date(evento.fechaInicio).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        );
+                        const fin = new Date(evento.fechaFin).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                        return (
+                          <li
+                            key={evento.id}
+                            className="bg-gray-100 rounded-md p-3 flex flex-col"
+                            aria-label={`Evento ${evento.nombre} desde las ${inicio} hasta las ${fin}`}
+                          >
+                            <p className="font-bold text-lg truncate">
+                              {evento.nombre}
+                            </p>
+                            <p className="text-gray-600 text-sm line-clamp-2">
+                              {evento.detallesEvento}
+                            </p>
+                            <p className="text-gray-600 text-sm mt-1">
+                              <span className="font-semibold">Horario:</span> {inicio} – {fin}
+                            </p>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+                      No hay eventos programados para hoy
+                    </p>
+                  )}
+                </div>
+              </section>
+
+              {/* ===== SECCIÓN: Dieta de hoy (FONDO AZUL) ===== */}
+              <section className="col-span-1 bg-white rounded-lg shadoaw-lg overflow-hidden flex flex-col">
+                <div className="p-4 bg-[var(--azul)]">
+                  <h3 className="text-xl font-semibold text-white">COMIDAS DE HOY</h3>
+                </div>
+                <div className="p-4 flex-grow flex flex-col text-gray-900">
+                  {!dietaHoy ? (
+                    <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+                      No tienes ninguna dieta asignada
+                    </p>
+                  ) : (
+                    <div className="prose prose-sm max-w-none overflow-auto text-gray-700">
+                      <p className="whitespace-pre-line">{dietaHoy.descripcion}</p>
                     </div>
-                  ))
-                : "Aún no tienes reservas"}
+                  )}
+                </div>
+              </section>
             </div>
           </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
+        </main>
+
+        <Footer />
+      </div>
+    );
+  }
+
+
 }

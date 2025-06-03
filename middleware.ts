@@ -16,8 +16,5 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  console.log("Token en middleware:", req.cookies.get("token")?.value);
-  console.log("Ruta actual en middleware:", pathname);
-
   return NextResponse.next();
 }

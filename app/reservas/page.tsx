@@ -22,7 +22,9 @@ export default function Reservas() {
     return (
         <div>
             <HeaderUs promocion={null} pagina="RESERVAS"/>
-
+            <main className="min-h-screen">
+                
+            </main>
             <Footer />
         </div>
     );

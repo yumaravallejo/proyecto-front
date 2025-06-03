@@ -50,11 +50,7 @@ export default function Horarios() {
       <HeaderUs promocion={null} pagina="ACTIVIDADES" />
 
       <main id="horarioActividades" className="min-h-[calc(100vh-200px)]">
-        {cargando ? (
-          <p className="text-center mt-8">Cargando horarios…</p>
-        ) : (
-          <SchedulePage horarios={horarios} />
-        )}
+          <SchedulePage horariosIniciales={horarios} />
       </main>
 
       <Footer />

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
+import HorarioDietas from "../componentes/HorarioDietas";
 
 export default function Dietas() {
     const router = useRouter();
@@ -22,9 +23,7 @@ export default function Dietas() {
     return (
         <div>
             <HeaderUs promocion={null} pagina="DIETAS" />
-            <main>
-                
-            </main>
+            <HorarioDietas />
             <Footer />
         </div>
     );

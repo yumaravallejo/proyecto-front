@@ -22,7 +22,9 @@ export default function Calendario() {
     return (
         <div>
             <HeaderUs promocion={null} pagina="CALENDARIO" />
-
+            <main className="min-h-screen">
+                
+            </main>
             <Footer />
         </div>
     );

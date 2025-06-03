@@ -23,7 +23,7 @@ export interface Horario {
 
 const tipoClaseColors: Record<TipoClase, string> = {
   CARDIO: "bg-red-500",
-  FUERZA: "bg-blue-600",
+  FUERZA: "bg-blue-400",
   RELAJACION: "bg-green-600",
   TONIFICACION: "bg-yellow-500",
   INFANTIL: "bg-purple-600",
@@ -31,7 +31,7 @@ const tipoClaseColors: Record<TipoClase, string> = {
 };
 
 const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-const hours = Array.from({ length: 16 }, (_, i) => 6 + i);
+const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
 
 interface SchedulePageProps {
   horariosIniciales: Horario[];
@@ -44,6 +44,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
   const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales || []);
   const [isLoadingReservas, setIsLoadingReservas] = useState(true);
   const URL = process.env.NEXT_PUBLIC_API;
+  const [tipoFiltro, setTipoFiltro] = useState<TipoClase | "TODAS">("TODAS");
 
   const getDayIndex = (fechaHora: string): number => {
     const day = new Date(fechaHora).getDay();
@@ -59,12 +60,13 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
       if (claseDayIdx !== dayIdx) return false;
 
       let claseHour = date.getHours();
-      const claseMinutes = date.getMinutes();
-      if (claseMinutes >= 30) claseHour += 1;
+
+      if (tipoFiltro !== "TODAS" && clase.tipoClase !== tipoFiltro) return false;
 
       return claseHour === hour;
     });
   };
+
 
   const fetchUsuarioYReservas = async () => {
     const storedUser = localStorage.getItem("user");
@@ -75,7 +77,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
       try {
         const res = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
         const data = await res.json();
-        const horariosIds = data.map((reserva: { id: number }) => reserva.id);
+        const horariosIds = data.map((reserva: { idHorario: number }) => reserva.idHorario);
         setUserReservations(horariosIds);
       } catch (error) {
         console.error("Error fetching reservas:", error);
@@ -167,11 +169,13 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
     const color = tipoClaseColors[clase.tipoClase];
 
     const isReservado = userReservations.includes(clase.idHorario);
+    const now = new Date();
+    const isPast = date < now;
 
     return (
       <div
-        key={`${clase.idHorario}-${clase.numReservas}`}
-        className={`rounded-lg p-3 text-white shadow-lg ${color} flex flex-col gap-1`}
+        key={`${clase.idHorario}`}
+        className={`rounded-lg p-3 text-white shadow-lg ${color} flex flex-col gap-1 w-[90%] sm:w-full`}
       >
         <div className="font-bold truncate text-lg">{clase.nombreClase}</div>
         <div className="text-sm">
@@ -185,11 +189,10 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         </div>
         {!isLoadingReservas && (
           <button
-            className={`cursor-pointer transform transition-transform duration-200 hover:scale-[1.03] py-2 rounded-md font-semibold text-sm transition-all duration-300
-              ${
-                isReservado
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-blue-600 hover:bg-blue-700 "
+            className={`transform transition-transform duration-200  py-2 rounded-md font-semibold text-sm transition-all duration-300
+              ${isReservado 
+                ?  isPast ? "cursor-not-allowed bg-gray-500" : "bg-red-600 hover:bg-red-700 hover:scale-[1.03] cursor-pointer " 
+                : isPast ? "cursor-not-allowed bg-gray-500" : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.03] cursor-pointer "
               }
               active:scale-95`}
             onClick={() =>
@@ -197,8 +200,9 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
                 ? handleCancelar(clase.idHorario)
                 : handleReservar(clase.idHorario)
             }
+            disabled={isPast}
           >
-            {isReservado ? "Cancelar Reserva" : "Reservar"}
+            {isReservado && !isPast ? "Cancelar Reserva" : isPast ? "No disponible" : "Reservar"}
           </button>
         )}
       </div>
@@ -215,6 +219,48 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         </h1>
         <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
       </div>
+      <section className="filtros-actividades w-full flex overflow-x-auto gap-2">
+        <article
+          className="flex flex-row items-center justify-center gap-x-2 p-5 cursor-pointer filter-act"
+          onClick={() => setTipoFiltro("TODAS")}
+        >
+          <span className="w-5 h-5 bg-[#d1d1d1] border-2"></span>
+          <span
+            className={`text-md text-left text-white min-w-max ${tipoFiltro === "TODAS" ? "underline font-semibold" : ""
+              }`}
+          >
+            TODAS
+          </span>
+        </article>
+
+        {Object.entries(tipoClaseColors).map(([tipo, color]) => {
+          const label =
+            tipo === "RELAJACION"
+              ? "CUERPO Y MENTE"
+              : tipo === "TONIFICACION"
+                ? "TONIFICACIÓN"
+                : tipo === "TONO_CARDIO"
+                  ? "TONO Y CARDIO"
+                  : tipo;
+
+          return (
+            <article
+              key={tipo}
+              className="flex flex-row items-center justify-center gap-x-2 p-5 cursor-pointer filter-act"
+              onClick={() => setTipoFiltro(tipo as TipoClase)}
+            >
+              <span className={`w-5 h-5 ${color} border-2`}></span>
+              <span
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === tipo ? "underline font-semibold" : ""
+                  }`}
+              >
+                {label}
+              </span>
+            </article>
+          );
+        })}
+      </section>
+
       {/* Vista móvil */}
       <div className="lg:hidden p-4 rounded-lg shadow-lg border border-gray-300 bg-white max-w-2xl mx-auto border-3">
         <div className="flex items-center justify-between mb-6">
@@ -268,7 +314,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
                 {getClassesFor(currentDayIdx, hour).length > 0 ? (
                   getClassesFor(currentDayIdx, hour).map(renderClase)
                 ) : (
-                  <div className="text-gray-400 text-center italic py-2 select-none min-h-[56px]"></div>
+                  <div className="text-gray-400 text-center italic py-2 select-none min-h-[56px] "></div>
                 )}
               </div>
             </React.Fragment>
