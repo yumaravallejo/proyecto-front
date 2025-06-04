@@ -77,7 +77,7 @@ export default function HeaderUs(props: Props) {
           </label>
 
           <Link href="/" className="flex items-center gap-4">
-            <Image src="/logo.svg" alt="Logo de Changes" width={80} height={50} className="rounded-full" />
+            <img src="/logo.svg" alt="Logo de Changes" width={80} height={50} className="rounded-full" />
             <span className="text-xl font-bold text-white flex flex-col">
               <span className="amarillo oswald">CHANGES</span>
               <span className="azul oswald">FITNESS CLUB</span>
@@ -96,10 +96,10 @@ export default function HeaderUs(props: Props) {
               </Link>
             ))}
             <nav id="redes" className="flex gap-4 absolute bottom-30">
-              <Image src="/instagram-am.svg" alt="Instagram" width={40} height={40} />
-              <Image src="/tiktok-am.svg" alt="Tiktok" width={40} height={40} />
-              <Image src="/whatsapp-am.svg" alt="Whatsapp" width={40} height={40} />
-              <Image src="/facebook-am.svg" alt="Facebook" width={40} height={40} />
+              <img src="/instagram-am.svg" alt="Instagram" width={40} height={40} />
+              <img src="/tiktok-am.svg" alt="Tiktok" width={40} height={40} />
+              <img src="/whatsapp-am.svg" alt="Whatsapp" width={40} height={40} />
+              <img src="/facebook-am.svg" alt="Facebook" width={40} height={40} />
             </nav>
           </nav>
 
@@ -155,7 +155,7 @@ export default function HeaderUs(props: Props) {
         </label>
 
         <Link href="/" className="flex items-center gap-4">
-          <Image src="/logo.svg" alt="Logo de Changes" width={80} height={50} className="rounded-full" />
+          <img src="/logo.svg" alt="Logo de Changes" width={80} height={50} className="rounded-full" />
           <span className="text-xl font-bold text-white flex flex-col">
             <span className="amarillo oswald">CHANGES</span>
             <span className="azul oswald">FITNESS CLUB</span>
@@ -174,10 +174,10 @@ export default function HeaderUs(props: Props) {
             </Link>
           ))}
           <nav id="redes" className="flex gap-4 absolute bottom-30">
-            <Image src="/instagram-am.svg" alt="Instagram" width={40} height={40} />
-            <Image src="/tiktok-am.svg" alt="Tiktok" width={40} height={40} />
-            <Image src="/whatsapp-am.svg" alt="Whatsapp" width={40} height={40} />
-            <Image src="/facebook-am.svg" alt="Facebook" width={40} height={40} />
+            <img src="/instagram-am.svg" alt="Instagram" width={40} height={40} />
+            <img src="/tiktok-am.svg" alt="Tiktok" width={40} height={40} />
+            <img src="/whatsapp-am.svg" alt="Whatsapp" width={40} height={40} />
+            <img src="/facebook-am.svg" alt="Facebook" width={40} height={40} />
           </nav>
         </nav>
 
@@ -197,7 +197,7 @@ export default function HeaderUs(props: Props) {
                   />
                 </Avatar>
               ) : (
-                <Image src="/usuario.svg" alt="Usuario" width={50} height={50} className="usuario" />
+                <img src="/usuario.svg" alt="Usuario" width={50} height={50} className="usuario" />
               )}
             </Link>
           </div>

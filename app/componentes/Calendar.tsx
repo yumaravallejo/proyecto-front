@@ -20,7 +20,7 @@ interface Evento {
     nombre: string
     detallesEvento: string
     fechaInicio: string
-    fechaFin?: string
+    fechaFin?: string // ? --> indica que es opcional
 }
 
 interface Dia {
@@ -39,7 +39,6 @@ export default function Calendar() {
     const [quieresEditar, setQuieresEditar] = useState(false)
     const [eventoEditar, setEventoEditar] = useState<Evento | null>(null)
 
-    // Generar placeholders de días del mes actual (antes de que lleguen los eventos)
     useEffect(() => {
         const hoy = new Date()
         const inicio = startOfMonth(hoy)
@@ -75,7 +74,6 @@ export default function Calendar() {
         }
     }
 
-    // Una vez tengamos eventos, agruparlos en eventosPorDia
     useEffect(() => {
         if (!eventosPorDia.length || !eventos.length) return
 

@@ -266,6 +266,7 @@ export default function Registro() {
                 </FormLabel>
                 <FormControl>
                   <Input
+                    min={new Date().toISOString().split("T")[0]}
                     type="date"
                     {...field}
                     className={

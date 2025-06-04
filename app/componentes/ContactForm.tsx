@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import PersAlert from "../componentes/PersAlert";
+import { Textarea } from "@/components/ui/textarea";
+import { toast, Toaster } from "sonner";
 
 export default function ContactForm() {
     const objetivos = [
@@ -32,12 +34,6 @@ export default function ContactForm() {
         { value: 'otro', label: 'Otro' }
     ];
 
-    const [alert, setAlert] = useState<{
-        message: string;
-        title: string;
-        variant: "default" | "destructive" | "success";
-    } | null>(null);
-
     const formSchema = z.object({
         nombre: z.string().min(1, "Este campo es obligatorio"),
         email: z.string().min(1, "Este campo es obligatorio").email("Email no válido"),
@@ -47,14 +43,14 @@ export default function ContactForm() {
                 val => !val || /^[0-9]+$/.test(val),
                 { message: "El teléfono tiene que ser un número" }
             ),
-        objetivo: z.string().min(1, "Este campo es obligatorio")
+        objetivo: z.string().min(1, "Este campo es obligatorio"),
+        detalles: z.string().optional(),
     });
 
     function handleForm(values: z.infer<typeof formSchema>) {
-        setAlert({
-            title: "¡Muchas Gracias " + values.nombre + "!",
-            message: "Tu solicitud ha sido enviada",
-            variant: "success",
+        toast.success("Solicitud enviada correctamente", {
+            duration: 3000,
+            position: "top-center",
         });
         form.reset();
     }
@@ -66,23 +62,14 @@ export default function ContactForm() {
             email: "",
             telefono: "",
             objetivo: "",
+            detalles: "",
         }
     });
 
     return (
         <div className="flex flex-col gap-y-10 contact-form w-3/4 sm:w-full h-full items-center justify-center pb-10">
+            <Toaster richColors position="top-center" theme="dark" />
             <Form {...form}>
-                {alert && (
-                    <div className="w-full -mt-6">
-                        <PersAlert
-                            title={alert.title}
-                            message={alert.message}
-                            variant={alert.variant}
-                            spinner={false}
-                        />
-                    </div>
-                )}
-
                 <form className="flex flex-col gap-6 w-full max-w-lg rounded-xl ">
                     <FormField
                         control={form.control}
@@ -175,6 +162,26 @@ export default function ContactForm() {
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
+                                </Select>
+                                <FormMessage className="text-red-400 text-sm" />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="detalles"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-white text-md">Cúentanos tu problema</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <Textarea 
+                                            placeholder="Cuéntanos qué te ocurre"
+                                            {...field}
+                                            className="bg-white px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
+                                            rows={4}
+                                        />
+                                    </FormControl>
                                 </Select>
                                 <FormMessage className="text-red-400 text-sm" />
                             </FormItem>

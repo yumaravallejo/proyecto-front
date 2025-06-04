@@ -9,25 +9,25 @@ export default function Footer() {
       <div className="bg-[var(--dorado)] w-full text-white flex flex-col gap-2 p-3">
        
         <div className="flex flex-row gap-4 justify-center">
-          <Image
+          <img
             alt="Logo de instagram"
             src={"/Rounded-instagram.svg"}
             width={40}
             height={50}
           />
-          <Image
+          <img
             alt="Logo de tiktok"
             src={"/Tiktok-rounded.svg"}
             width={40}
             height={50}
           />
-          <Image
+          <img
             alt="Logo de whatsapp"
             src={"/Whatsapp-rounded.svg"}
             width={40}
             height={50}
           />
-          <Image
+          <img
             alt="Logo de facebook"
             src={"/Facebook-rounded.svg"}
             width={40}
@@ -55,26 +55,26 @@ export default function Footer() {
         </div>
         <h3 className="text-[var(--azul-medio)] font-bold">Métodos de pago</h3>
         <div className="flex flex-row pt-2 pb-2 h-12 justify-between">
-          <Image alt="Logo de visa" src={"/Visa.png"} width={50} height={20} />
-          <Image
+          <img alt="Logo de visa" src={"/Visa.png"} width={50} height={20} />
+          <img
             alt="Logo de Mastercard"
             src={"/Mastercard.png"}
             width={50}
             height={50}
           />
-          <Image
+          <img
             alt="Logo de paypal"
             src={"/logos_paypal.png"}
             width={30}
             height={50}
           />
-          <Image
+          <img
             alt="Logo de American Express"
             src={"/American-Express.png"}
             width={40}
             height={50}
           />
-          <Image
+          <img
             alt="Bandera de España"
             src={"/Spain.png"}
             width={60}

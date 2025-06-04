@@ -6,6 +6,8 @@ import NuevoHorarioDialog from "./NuevoHorario";
 import DeleteHorarioDialog from "./DeleteHorario";
 import ClaseItem from "./ClaseItem";
 
+// React.Fragment --> Componente especial de React que te permite agrupar varios elementos hijos sin añadir un nodo extra al DOM.
+
 export type TipoClase =
   | "CARDIO"
   | "FUERZA"
@@ -65,6 +67,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [horarioAEliminar, setHorarioAEliminar] = useState<number | null>(null);
+  const [idEntrenador, setIdEntrenador] = useState(0);
 
   const handleEditar = (horario: Horario) => {
     setHorarioEdit(horario);
@@ -200,6 +203,10 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
     if (userString) {
       const user = JSON.parse(userString);
       setTipoUsuario(user.tipo || "Cliente");
+
+      if (user.tipo === "Entrenador" && user.id) {
+        setIdEntrenador(user.id);
+      }
     }
   }, []);
 
@@ -252,8 +259,6 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
       toast.error("No se pudo cancelar la reserva");
     }
   };
-
-  // al inicio del archivo
 
   const renderClase = (clase: Horario) => (
     <ClaseItem
@@ -450,7 +455,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
           })}
 
           {hours.map((hour) => (
-            <React.Fragment key={hour}>
+            <React.Fragment key={hour}> 
               <div className="text-xs text-gray-500 bg-gray-100 flex items-center justify-center rounded-md select-none">
                 {hour}:00
               </div>
@@ -474,7 +479,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
             ? {
               idHorario: horarioEdit.idHorario,
               fechaHora: horarioEdit.fechaHora,
-              idEntrenador: (horarioEdit as any).idEntrenador ?? 0,
+              idEntrenador: idEntrenador,
               nombreEntrenador: horarioEdit.nombreEntrenador,
             }
             : null

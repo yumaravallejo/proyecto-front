@@ -18,47 +18,54 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"; // Si tienes este componente
+import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-interface NuevoEventoDialogProps {
+interface Props {
   open: boolean;
   onClose: () => void;
   recargarEventos: () => void; // Si necesitas recargar eventos después de crear uno
 }
 
-const formSchema = z
-  .object({
-    nombre: z.string().min(1, "El nombre es obligatorio"),
-    detallesEvento: z.string().optional(),
-    fechaInicio: z
-      .string()
-      .min(1, "La fecha y hora de inicio es obligatoria")
-      .refine((value) => !isNaN(new Date(value).getTime()), "Fecha de inicio inválida"),
-    fechaFin: z
-      .string()
-      .optional()
-      .refine((value) => !value || !isNaN(new Date(value).getTime()), "Fecha de fin inválida"),
-  })
-  .refine(
-    ({ fechaInicio, fechaFin }) => {
-      if (!fechaFin) return true;
-      return new Date(fechaFin) >= new Date(fechaInicio);
-    },
-    {
-      message: "La fecha de fin debe ser igual o posterior a la fecha de inicio",
-      path: ["fechaFin"],
-    }
-  );
-
 export default function NuevoEventoDialog({
   open,
   onClose,
-  recargarEventos, 
-}: NuevoEventoDialogProps) {
+  recargarEventos,
+}: Props) {
+  const formSchema = z
+    .object({
+      nombre: z.string().min(1, "El nombre es obligatorio"),
+      detallesEvento: z.string().optional(),
+      fechaInicio: z
+        .string()
+        .min(1, "La fecha y hora de inicio es obligatoria")
+        .refine(
+          (value) => !isNaN(new Date(value).getTime()),
+          "Fecha de inicio inválida"
+        ),
+      fechaFin: z
+        .string()
+        .optional()
+        .refine(
+          (value) => !value || !isNaN(new Date(value).getTime()),
+          "Fecha de fin inválida"
+        ),
+    })
+    .refine(
+      ({ fechaInicio, fechaFin }) => {
+        if (!fechaFin) return true;
+        return new Date(fechaFin) >= new Date(fechaInicio);
+      },
+      {
+        message:
+          "La fecha de fin debe ser igual o posterior a la fecha de inicio",
+        path: ["fechaFin"],
+      }
+    );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -93,7 +100,7 @@ export default function NuevoEventoDialog({
         } else {
           toast.success("Evento creado exitosamente");
           form.reset();
-          recargarEventos(); 
+          recargarEventos();
           onClose();
         }
       })
@@ -120,13 +127,18 @@ export default function NuevoEventoDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6 mt-6"
+          >
             <FormField
               control={form.control}
               name="nombre"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700 font-medium text-lg">Nombre</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium text-lg">
+                    Nombre
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}

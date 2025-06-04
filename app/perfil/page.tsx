@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { parse } from "path";
 
 interface DetallesUsuarioDto {
   peso: string;
@@ -40,8 +41,10 @@ interface DetallesUsuarioDto {
 }
 
 interface BackendData {
-  fechaNacimiento: string;
-  detallesUsuario: DetallesUsuarioDto;
+  fechaNacimiento?: string;
+  detallesUsuario?: DetallesUsuarioDto;
+  fechaEntrada?: string;
+  tiempoContrato?: string;
   // …otros campos que quieras mostrar (p. ej. email, nombre, etc.)
 }
 
@@ -50,6 +53,8 @@ interface LocalUser {
   nombre: string;
   imagen: string;
   tipo: "Cliente" | "Entrenador";
+  email: string;
+  token: string;
 }
 
 export default function UserProfile() {
@@ -102,33 +107,65 @@ export default function UserProfile() {
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const URL = process.env.NEXT_PUBLIC_API;
-        const res = await fetch(`${URL}usuarios/detalles/${parsedUser.id}`);
-        if (!res.ok) {
-          const msg = await res.text();
-          alert(`Detalles usuario: ${msg}`);
-        }
-        const data: BackendData = await res.json();
-        setBackendData(data);
+    let fetchData;
 
-        const reservas = await fetch(
-          `${URL}usuarios/mis-reservas/${parsedUser.id}`
-        );
-        if (!reservas.ok) {
-          const msg = await reservas.text();
-          alert(`Mis reservas: ${msg}`);
+    if (parsedUser.tipo !== "Entrenador") {
+      fetchData = async () => {
+        try {
+          const URL = process.env.NEXT_PUBLIC_API;
+          const res = await fetch(`${URL}usuarios/detalles/${parsedUser.id}`);
+          if (!res.ok) {
+            const msg = await res.text();
+            alert(`Detalles usuario: ${msg}`);
+          }
+          const data: BackendData = await res.json();
+          setBackendData(data);
+
+          const reservas = await fetch(
+            `${URL}usuarios/mis-reservas/${parsedUser.id}`
+          );
+          if (!reservas.ok) {
+            const msg = await reservas.text();
+            alert(`Mis reservas: ${msg}`);
+          }
+          const data2 = await reservas.json();
+          setReservas(data2);
+        } catch (err: any) {
+          console.error("Error al cargar datos:", err.message);
+          setError(err.message);
+        } finally {
+          setLoading(false);
         }
-        const data2 = await reservas.json();
-        setReservas(data2);
-      } catch (err: any) {
-        console.error("Error al cargar datos:", err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
+    } else {
+      fetchData = async () => {
+        try {
+          const URL = process.env.NEXT_PUBLIC_API;
+          const res = await fetch(
+            `${URL}entrenador/detalles/${parsedUser.id}`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${parsedUser.token}`,
+              },
+            }
+          );
+          if (!res.ok) {
+            const msg = await res.text();
+            alert(`Detalles entrenador: ${msg}`);
+          }
+          const data: BackendData = await res.json();
+          setBackendData(data);
+        } catch (err: any) {
+          console.error("Error al cargar datos:", err.message);
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+    }
 
     fetchData();
   }, []);
@@ -243,47 +280,146 @@ export default function UserProfile() {
       <div>
         <Toaster />
         <HeaderUs promocion={null} />
-        <main className="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md mt-10 mb-10">
-          <h1 className="text-3xl font-bold mb-6">Perfil Entrenador</h1>
-          {/* Aquí puedes poner la información y acciones específicas para el entrenador */}
-          <p>
-            Bienvenido, {localUser.nombre}. Aquí irá el contenido para
-            entrenadores.
-          </p>
-          {/* ...más contenido para entrenadores... */}
-          <div className="p-4 rounded-md mt-6 justify-between sm:justify-start sm:gap-4 flex flex-row">
+        <main className="max-w-3xl mx-auto p-10 bg-white rounded-md sm:shadow-md mt-5 mb-10 sm:mt-10">
+          <h1 className="text-3xl font-bold mb-6 text-center sm:text-left">
+            Perfil Entrenador
+          </h1>
+          <section className="flex flex-col sm:flex-row items-center gap-6 mb-8">
+            <article className="flex flex-col items-center gap-5 w-1/3">
+              <img
+                src={imagen}
+                alt={`Imagen de perfil de ${localUser.nombre}`}
+                className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
+              />
+              <Form {...form}>
+                <FormField
+                  control={form.control}
+                  name="imagen"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        htmlFor="file"
+                        className="cursor-pointer text-[var(--azul)] hover:text-[var(--azul-oscuro)] text-md underline mt-[-1rem] translate-2s"
+                      >
+                        Editar
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          placeholder="Introduce tu nombre"
+                          className="hidden"
+                          id="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            form.setValue("imagen", e.target.files);
+                            if (e.target.files && e.target.files[0]) {
+                              editarImagen(e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </Form>
+            </article>
+            <article className="w-full">
+              <div className="bg-blue-50 p-4 rounded-md shadow w-full ">
+                <h2 className="text-xl font-semibold">{localUser.nombre}</h2>
+                <p className="text-gray-600 mt-2">
+                  Email: <span className="font-medium">{localUser.email}</span>
+                </p>
+                <p className="text-gray-600">
+                  Tipo de usuario:{" "}
+                  <span className="font-medium">{localUser.tipo}</span>
+                </p>
+                <p className="text-gray-600">
+                  Fecha de Entrada:{" "}
+                  <span className="font-medium">
+                    {backendData.fechaEntrada}
+                  </span>
+                </p>
+                <p className="text-gray-600">
+                  Tiempo en el gimnasio:{" "}
+                  <span className="font-medium">
+                    {backendData.tiempoContrato}
+                  </span>
+                </p>
+              </div>
+            </article>
+          </section>
+
+          <div className="rounded-md mt-6 justify-between sm:justify-start sm:gap-4 flex flex-row">
             <Dialog open={openLogout} onOpenChange={setOpenLogout}>
-              <DialogContent>
+              <DialogTrigger asChild>
+                <span className="rounded-full h-12 font-bold bg-red-500 hover:bg-red-600 text-white px-6 flex font-semibold cursor-pointer transition-colors duration-200 items-center">
+                  Cerrar Sesión
+                </span>
+              </DialogTrigger>
+
+              <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
                 <DialogHeader>
-                  <DialogTitle>¿Quieres irte?</DialogTitle>
-                  <DialogDescription>
-                    Recuerda que trabajas aquí eh...
-                  </DialogDescription>
+                  <DialogTitle className="text-3xl font-semibold text-gray-800 mb-6">
+                    ¿Ya estás cansado?
+                  </DialogTitle>
+                  <p className="text-gray-600 text-base leading-relaxed">
+                    Siempre podrás volver a entrenar más tarde
+                  </p>
                 </DialogHeader>
-                <DialogFooter>
-                  <button
-                    onClick={() => setOpenLogout(false)}
-                    className="rounded bg-blue-500 text-white px-4 py-2 mr-2 cursor-pointer hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    Seguir trabajando
-                  </button>
+
+                <DialogFooter className="flex justify-end gap-4 mt-6">
+                  <DialogClose asChild>
+                    <span className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer">
+                      Cancelar
+                    </span>
+                  </DialogClose>
                   <button
                     onClick={() => {
                       setOpenLogout(false);
                       handleLogOut();
                     }}
-                    className="rounded bg-red-600 text-white px-4 py-2 cursor-pointer hover:bg-red-800 transition-colors duration-200"
+                    className="bg-red-600 text-white rounded-full px-6 py-3 font-semibold hover:bg-red-800 transition cursor-pointer"
                   >
                     Sí, cerrar sesión
                   </button>
                 </DialogFooter>
               </DialogContent>
-              <button
-                onClick={() => setOpenLogout(true)}
-                className="rounded-full bg-red-500 hover:bg-red-700 text-white p-1 pl-4 pr-4 cursor-pointer transition-colors duration-200"
-              >
-                Cerrar Sesión
-              </button>
+            </Dialog>
+            <Dialog open={openEliminar} onOpenChange={setOpenEliminar}>
+              <DialogTrigger>
+                <span className="flex items-center gap-2 font-bold text-white rounded-full text-center cursor-pointer px-6 py-3 bg-gray-500 hover:bg-gray-600 transition-colors duration-200">
+                  Darme de baja
+                </span>
+              </DialogTrigger>
+
+              <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
+                <DialogHeader>
+                  <DialogTitle className="text-3xl font-semibold text-gray-800 mb-6">
+                    ¡No te vayas!
+                  </DialogTitle>
+                  <p className="text-gray-600 text-base leading-relaxed">
+                    Esta acción eliminará tu cuenta permanentemente. ¿Deseas
+                    continuar?
+                  </p>
+                </DialogHeader>
+
+                <DialogFooter className="flex justify-end gap-4 mt-6">
+                  <DialogClose asChild>
+                    <span className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer">
+                      Cancelar
+                    </span>
+                  </DialogClose>
+                  <button
+                    onClick={() => {
+                      setOpenEliminar(false);
+                      handleDeleteAccount();
+                    }}
+                    className="bg-red-600 text-white rounded-full px-6 py-3 font-semibold hover:bg-red-800 transition cursor-pointer"
+                  >
+                    Sí, eliminar cuenta
+                  </button>
+                </DialogFooter>
+              </DialogContent>
             </Dialog>
           </div>
         </main>
@@ -344,7 +480,9 @@ export default function UserProfile() {
               <p className="text-gray-600 mt-2">
                 Edad:{" "}
                 <span className="font-medium">
-                  {calcularEdad(backendData.fechaNacimiento)} años
+                  {backendData.fechaNacimiento
+                    ? `${calcularEdad(backendData.fechaNacimiento)} años`
+                    : "-"}
                 </span>
               </p>
               <p className="text-gray-600">
@@ -354,7 +492,7 @@ export default function UserProfile() {
                 </span>
               </p>
               <p className="text-gray-600">
-                Género: <span className="font-medium">{detalles.genero}</span>
+                Género: <span className="font-medium">{detalles?.genero}</span>
               </p>
             </div>
           </section>
@@ -363,22 +501,24 @@ export default function UserProfile() {
             <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="bg-blue-50 p-4 rounded-md shadow">
                 <h3 className="font-semibold text-xl mb-2">Peso</h3>
-                <p className="text-md ">{detalles.peso || "-"} Kg</p>
+                <p className="text-md ">{detalles?.peso || "-"} Kg</p>
               </div>
 
               <div className="bg-blue-50 p-4 rounded-md shadow">
                 <h3 className="font-semibold text-xl mb-2">Altura</h3>
-                <p className="text-md ">{detalles.altura || "-"} cm</p>
+                <p className="text-md ">{detalles?.altura || "-"} cm</p>
               </div>
 
               <div className="bg-blue-50 p-4 rounded-md shadow">
                 <h3 className="font-semibold text-xl mb-2">Objetivo</h3>
-                <p className="text-md">{detalles.objetivo || "-"}</p>
+                <p className="text-md">{detalles?.objetivo || "-"}</p>
               </div>
 
               <div className="bg-blue-50 p-4 rounded-md shadow">
                 <h3 className="font-semibold text-xl mb-2">Intolerancias</h3>
-                <p className="text-md">{detalles.intolerancias || "Ninguna"}</p>
+                <p className="text-md">
+                  {detalles?.intolerancias || "Ninguna"}
+                </p>
               </div>
             </section>
             <div className="bg-blue-50 p-4 rounded-md shadow mt-6">
@@ -386,25 +526,25 @@ export default function UserProfile() {
               <div className="text-md flex flex-row flex-wrap space-y-2 gap-[1rem]">
                 {reservas.length > 0
                   ? reservas.map((reserva: any) => (
-                    <div
-                      key={reserva.id}
-                      className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
-                    >
-                      <p>
-                        <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Horario:</strong>{" "}
-                        {new Date(reserva.fechaHora)
-                          .toLocaleString()
-                          .replace(",", " a las")}
-                      </p>
-                      <p>
-                        <strong>Tipo Clase:</strong>{" "}
-                        {reserva.tipoClase || "N/A"}
-                      </p>
-                    </div>
-                  ))
+                      <div
+                        key={reserva.id}
+                        className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
+                      >
+                        <p>
+                          <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Horario:</strong>{" "}
+                          {new Date(reserva.fechaHora)
+                            .toLocaleString()
+                            .replace(",", " a las")}
+                        </p>
+                        <p>
+                          <strong>Tipo Clase:</strong>{" "}
+                          {reserva.tipoClase || "N/A"}
+                        </p>
+                      </div>
+                    ))
                   : "Aún no tienes reservas"}
               </div>
             </div>
@@ -412,8 +552,9 @@ export default function UserProfile() {
             <div className="p-4 rounded-md mt-6 justify-between sm:justify-start sm:gap-4 flex flex-row">
               <Dialog open={openLogout} onOpenChange={setOpenLogout}>
                 <DialogTrigger asChild>
-                  <span className="rounded-full font-bold bg-red-500 hover:bg-red-600 text-white px-6 flex font-semibold cursor-pointer transition-colors duration-200 items-center"
-                  >Cerrar Sesión</span>
+                  <span className="rounded-full h-12 font-bold bg-red-500 hover:bg-red-600 text-white px-6 flex font-semibold cursor-pointer transition-colors duration-200 items-center">
+                    Cerrar Sesión
+                  </span>
                 </DialogTrigger>
 
                 <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
@@ -428,11 +569,9 @@ export default function UserProfile() {
 
                   <DialogFooter className="flex justify-end gap-4 mt-6">
                     <DialogClose asChild>
-                      <button
-                        className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer"
-                      >
+                      <span className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer">
                         Cancelar
-                      </button>
+                      </span>
                     </DialogClose>
                     <button
                       onClick={() => {
@@ -449,11 +588,9 @@ export default function UserProfile() {
 
               <Dialog open={openEliminar} onOpenChange={setOpenEliminar}>
                 <DialogTrigger>
-                  <button
-                    className="flex items-center gap-2 font-bold text-white rounded-full text-center cursor-pointer px-6 py-3 bg-gray-500 hover:bg-gray-600 transition-colors duration-200"
-                  >
+                  <span className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer">
                     Darme de baja
-                  </button>
+                  </span>
                 </DialogTrigger>
 
                 <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
@@ -462,17 +599,16 @@ export default function UserProfile() {
                       ¡No te vayas!
                     </DialogTitle>
                     <p className="text-gray-600 text-base leading-relaxed">
-                      Esta acción eliminará tu cuenta permanentemente. ¿Deseas continuar?
+                      Esta acción eliminará tu cuenta permanentemente. ¿Deseas
+                      continuar?
                     </p>
                   </DialogHeader>
 
                   <DialogFooter className="flex justify-end gap-4 mt-6">
                     <DialogClose asChild>
-                      <button
-                        className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer"
-                      >
+                      <span className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer">
                         Cancelar
-                      </button>
+                      </span>
                     </DialogClose>
                     <button
                       onClick={() => {

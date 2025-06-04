@@ -88,7 +88,7 @@ export default function EditarHorario({
         if (!res.ok) alert("Error al obtener entrenadores");
 
         const data = await res.json();
-        setEntrenadores(data.body || []);
+        setEntrenadores(data || []);
       } catch (error) {
         console.error("Error fetching entrenadores:", error);
         toast.error("No se pudo cargar la lista de entrenadores");
@@ -100,7 +100,8 @@ export default function EditarHorario({
 
   // Setear valores cuando cambia el horario
   useEffect(() => {
-    if (horario) {
+    if (horario && entrenadores.length > 0) {
+      console.log("Horario recibido:", horario); 
       const dateObj = new Date(horario.fechaHora);
       form.reset({
         fecha: dateObj.toISOString().slice(0, 10),
@@ -108,15 +109,22 @@ export default function EditarHorario({
         idEntrenador: horario.idEntrenador.toString(),
       });
     }
-  }, [horario, form]);
+  }, [horario, entrenadores, form]);
 
   if (!open || !horario) return null;
 
   function handleSubmit(values: z.infer<typeof formSchema>) {
-    const cambios = {
+    const cambios: { fechaHora?: string; idEntrenador?: number } = {
       fechaHora: `${values.fecha}T${values.hora}:00`,
-      idEntrenador: parseInt(values.idEntrenador),
     };
+
+    if (values.idEntrenador && values.idEntrenador !== "") {
+      cambios.idEntrenador = parseInt(values.idEntrenador);
+    } else {
+      // Usar el entrenador actual si no se seleccionó otro
+      cambios.idEntrenador = horario?.idEntrenador;
+    }
+    console.log("Cambios a guardar:", cambios);
     if (horario) {
       onSave(horario.idHorario, cambios);
       toast.success("Horario actualizado");
@@ -142,7 +150,10 @@ export default function EditarHorario({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6 mt-6"
+          >
             <FormField
               control={form.control}
               name="fecha"
@@ -153,6 +164,7 @@ export default function EditarHorario({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      min={new Date().toISOString().split("T")[0]}
                       type="date"
                       {...field}
                       className="w-full rounded-md border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -196,7 +208,6 @@ export default function EditarHorario({
                       {...field}
                       className="w-full rounded-md border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
-                      <option value="">Selecciona un entrenador</option>
                       {entrenadores.map((ent) => (
                         <option key={ent.id} value={ent.id.toString()}>
                           {ent.nombre}

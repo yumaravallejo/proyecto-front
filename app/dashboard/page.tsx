@@ -140,7 +140,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* ===== MIS CLASES DE HOY ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                <div className="p-4 bg-[var(--dorado)]">
+                <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
                   <h3 className="text-xl font-semibold text-white">MIS CLASES HOY</h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
@@ -250,54 +250,9 @@ export default function Dashboard() {
           {/* Contenedor principal */}
           <div className="px-4 py-6 max-w-6xl mx-auto space-y-8 sm:space-y-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* ===== SECCIÓN: Clases de hoy (FONDO DORADO) ===== */}
+              {/* ===== SECCIÓN: Eventos de hoy ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                <div className="p-4 bg-[var(--dorado)]">
-                  <h3 className="text-xl font-semibold text-white">CLASES DE HOY</h3>
-                </div>
-                <div className="p-4 flex-grow flex flex-col text-gray-900">
-                  {Array.isArray(clasesHoy) && clasesHoy.length > 0 ? (
-                    <ul className="space-y-4 overflow-y-auto">
-                      {clasesHoy.map((item) => {
-                        const horaLocal = new Date(item.fechaHora).toLocaleTimeString(
-                          [],
-                          { hour: "2-digit", minute: "2-digit" }
-                        );
-                        // Sacamos la clase de color según item.clase.tipoClase
-                        const stripeClass = tipoClaseColors[item.clase.tipoClase];
-                        return (
-                          <li
-                            key={item.id}
-                            className="bg-gray-100 rounded-md flex overflow-hidden"
-                            aria-label={`Clase ${item.clase.nombre} a las ${horaLocal}`}
-                          >
-                            {/* Raya lateral */}
-                            <div className={`${stripeClass} w-2`} />
-                            {/* Contenido de la tarjeta */}
-                            <div className="p-3 flex flex-col flex-grow">
-                              <p className="font-bold text-lg truncate text-gray-800">
-                                {item.clase.nombre}
-                              </p>
-                              <p className="text-gray-600 text-sm">Hora: {horaLocal}</p>
-                              <p className="text-gray-600 text-sm truncate">
-                                Entrenador: {item.usuario.nombre}
-                              </p>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
-                      No hay clases programadas para hoy
-                    </p>
-                  )}
-                </div>
-              </section>
-
-              {/* ===== SECCIÓN: Eventos de hoy (DEGRADADO DORADO → AZUL) ===== */}
-              <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
+                <div className="p-4 bg-[var(--dorado)] ">
                   <h3 className="text-xl font-semibold text-white">EVENTOS DE HOY</h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
@@ -339,9 +294,9 @@ export default function Dashboard() {
                 </div>
               </section>
 
-              {/* ===== SECCIÓN: Dieta de hoy (FONDO AZUL) ===== */}
+              {/* ===== SECCIÓN: Dieta de hoy ===== */}
               <section className="col-span-1 bg-white rounded-lg shadoaw-lg overflow-hidden flex flex-col">
-                <div className="p-4 bg-[var(--azul)]">
+                <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
                   <h3 className="text-xl font-semibold text-white">COMIDAS DE HOY</h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
@@ -353,6 +308,51 @@ export default function Dashboard() {
                     <div className="prose prose-sm max-w-none overflow-auto text-gray-700">
                       <p className="whitespace-pre-line">{dietaHoy.descripcion}</p>
                     </div>
+                  )}
+                </div>
+              </section>
+
+                            {/* ===== SECCIÓN: Clases de hoy  ===== */}
+              <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <div className="p-4 bg-[var(--azul)]">
+                  <h3 className="text-xl font-semibold text-white">CLASES DE HOY</h3>
+                </div>
+                <div className="p-4 flex-grow flex flex-col text-gray-900">
+                  {Array.isArray(clasesHoy) && clasesHoy.length > 0 ? (
+                    <ul className="space-y-4 overflow-y-auto">
+                      {clasesHoy.map((item) => {
+                        const horaLocal = new Date(item.fechaHora).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        );
+                        // Sacamos la clase de color según item.clase.tipoClase
+                        const stripeClass = tipoClaseColors[item.clase.tipoClase];
+                        return (
+                          <li
+                            key={item.id}
+                            className="bg-gray-100 rounded-md flex overflow-hidden"
+                            aria-label={`Clase ${item.clase.nombre} a las ${horaLocal}`}
+                          >
+                            {/* Raya lateral */}
+                            <div className={`${stripeClass} w-2`} />
+                            {/* Contenido de la tarjeta */}
+                            <div className="p-3 flex flex-col flex-grow">
+                              <p className="font-bold text-lg truncate text-gray-800">
+                                {item.clase.nombre}
+                              </p>
+                              <p className="text-gray-600 text-sm">Hora: {horaLocal}</p>
+                              <p className="text-gray-600 text-sm truncate">
+                                Entrenador: {item.usuario.nombre}
+                              </p>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+                      No hay clases programadas para hoy
+                    </p>
                   )}
                 </div>
               </section>

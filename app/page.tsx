@@ -74,7 +74,7 @@ export default function Home() {
         className="flex flex-col items-center justify-center gap-6 pb-4 "
       >
         <h2 className="font-bold text-white text-2xl mb-4">ENCUÉNTRANOS</h2>
-        <Image
+        <img
           src="/img/localizacion.webp"
           alt="Imagen de usuario"
           width={300}
@@ -83,7 +83,7 @@ export default function Home() {
         />
         <div className="flex flex-col gap-y-5 mt-5 pl-13 pr-13">
           <span className="flex flex-row gap-5 items-center text-white font-bold">
-            <Image
+            <img
               src="/place-icon.svg"
               alt="Imagen de usuario"
               width={40}
@@ -92,7 +92,7 @@ export default function Home() {
             Calle Ejemplo, 23, Marbella Málaga
           </span>
           <span className="flex flex-row gap-5 items-center text-white font-bold">
-            <Image
+            <img
               src="/mail-icon.svg"
               alt="Imagen de usuario"
               width={40}
@@ -101,7 +101,7 @@ export default function Home() {
             contacto@changesfitnessclub.com
           </span>
           <span className="flex flex-row gap-5 items-center text-white font-bold">
-            <Image
+            <img
               src="/phone-icon.svg"
               alt="Imagen de usuario"
               width={40}

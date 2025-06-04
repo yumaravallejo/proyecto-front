@@ -108,7 +108,7 @@ export default function Login() {
     >
       <DialogTrigger>
         <div className="sesion unlogged flex items-center gap-2 font-bold text-white rounded-full border-2 text-center cursor-pointer">
-          <Image
+          <img
             src="/usuario.svg"
             alt="Imagen de usuario"
             width={50}
