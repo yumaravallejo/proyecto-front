@@ -96,7 +96,7 @@ export default function Dashboard() {
 
       try {
         const res = await fetch(`${API_URL}usuarios/info-hoy/${parsedUser.id}`);
-        if (!res.ok) throw new Error("Error al obtener InfoHoyDTO");
+        if (!res.ok) alert("Error al obtener InfoHoyDTO");
         const data: InfoHoyDTO = await res.json();
 
         setClasesHoy(Array.isArray(data.clasesHoy) ? data.clasesHoy : []);

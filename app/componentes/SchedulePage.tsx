@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
 import EditarHorario from "./EditarHorario";
-import ResetWeekDialog from "./ResetWeek";
 import NuevoHorarioDialog from "./NuevoHorario";
+import DeleteHorarioDialog from "./DeleteHorario";
+import ClaseItem from "./ClaseItem";
 
 export type TipoClase =
   | "CARDIO"
@@ -44,9 +45,10 @@ const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
 
 interface SchedulePageProps {
   horariosIniciales: Horario[];
+  cargando?: boolean;
 }
 
-const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
+const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando }) => {
   const [currentDayIdx, setCurrentDayIdx] = useState(0);
   const [userReservations, setUserReservations] = useState<number[]>([]);
   const [idUsuario, setIdUsuario] = useState<number | null>(null);
@@ -61,37 +63,40 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [horarioAEliminar, setHorarioAEliminar] = useState<number | null>(null);
 
-  const handleAddHorario = (nuevo: NuevoHorario) => {
+  const handleEditar = (horario: Horario) => {
+    setHorarioEdit(horario);
+    setDialogOpen(true);
+  };
 
-  }
-
-  const handleBorrarSemana = async (dayIdx: number) => {
+  const handleEliminarHorario = async (idHorario: number) => {
     try {
       const user = localStorage.getItem("user");
       const parsedUser = user ? JSON.parse(user) : null;
       const token = parsedUser?.token;
-      const res = await fetch(`${URL}entrenador/borrarSemana/${dayIdx}`, {
+
+      const res = await fetch(`${URL}entrenador/borrarHorario/${idHorario}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.ok) throw new Error("Error al borrar semana");
-      await fetchHorarios(); // Recarga horarios
 
-      toast.success("Semana borrada correctamente");
+      if (!res.ok) {
+        throw new Error("Error al eliminar el horario");
+      }
+
+      setHorarios((prev) => prev.filter((h) => h.idHorario !== idHorario));
+      toast.success("Horario eliminado correctamente");
     } catch (error) {
       console.error(error);
-      toast.error("No se pudo borrar la semana");
+      toast.error("No se pudo eliminar el horario");
     }
   };
 
-  const handleEditar = (horario: Horario) => {
-    setHorarioEdit(horario);
-    setDialogOpen(true);
-  };
 
   const handleGuardarEdicion = async (
     idHorario: number,
@@ -112,7 +117,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         body: JSON.stringify(cambios),
       });
 
-      if (!res.ok) throw new Error("Error al editar horario");
+      if (!res.ok) alert("Error al editar horario");
 
       const horarioActualizado = await res.json();
 
@@ -155,22 +160,24 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) return;
     const parsedUser = JSON.parse(storedUser);
-    if (parsedUser?.id) {
-      setIdUsuario(parsedUser.id);
-      try {
-        const res = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
-        const data = await res.json();
-        const horariosIds = data.map(
-          (reserva: { idHorario: number }) => reserva.idHorario
-        );
-        setUserReservations(horariosIds);
-      } catch (error) {
-        console.error("Error fetching reservas:", error);
-      } finally {
+    if (parsedUser?.tipo === "Cliente") {
+      if (parsedUser?.id) {
+        setIdUsuario(parsedUser.id);
+        try {
+          const res = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
+          const data = await res.json();
+          const horariosIds = data.map(
+            (reserva: { idHorario: number }) => reserva.idHorario
+          );
+          setUserReservations(horariosIds);
+        } catch (error) {
+          console.error("Error fetching reservas:", error);
+        } finally {
+          setIsLoadingReservas(false);
+        }
+      } else {
         setIsLoadingReservas(false);
       }
-    } else {
-      setIsLoadingReservas(false);
     }
   };
 
@@ -212,7 +219,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         `${URL}usuarios/reservar?idHorario=${idHorario}&idCliente=${idUsuario}`,
         { method: "POST", headers: { "Content-Type": "application/json" } }
       );
-      if (!res.ok) throw new Error("Error al reservar");
+      if (!res.ok) alert("Error al reservar");
 
       toast.success("Reserva realizada con éxito");
     } catch (error) {
@@ -237,7 +244,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         `${URL}usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
         { method: "DELETE", headers: { "Content-Type": "application/json" } }
       );
-      if (!res.ok) throw new Error("Error al cancelar");
+      if (!res.ok) alert("Error al cancelar");
 
       toast.success("Reserva cancelada con éxito");
     } catch (error) {
@@ -246,84 +253,28 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
     }
   };
 
-  const renderClase = (clase: Horario) => {
-    const date = new Date(clase.fechaHora);
-    const endDate = new Date(date.getTime() + clase.duracion * 60000);
-    const startTime = `${date.getHours().toString().padStart(2, "0")}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-    const endTime = `${endDate.getHours().toString().padStart(2, "0")}:${endDate
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-    const color = tipoClaseColors[clase.tipoClase];
+  // al inicio del archivo
 
-    const isReservado = userReservations.includes(clase.idHorario);
-    const now = new Date();
-    const isPast = date < now;
+  const renderClase = (clase: Horario) => (
+    <ClaseItem
+      key={clase.idHorario}
+      clase={clase}
+      tipoUsuario={tipoUsuario}
+      isReservado={userReservations.includes(clase.idHorario)}
+      isLoadingReservas={isLoadingReservas}
+      onReservar={() => handleReservar(clase.idHorario)}
+      onCancelar={() => handleCancelar(clase.idHorario)}
+      onEditar={() => handleEditar(clase)}
+      onEliminar={() => {
+        setHorarioAEliminar(clase.idHorario);
+        setIsDeleteDialogOpen(true);
+      }}
+    />
+  );
 
-    return (
-      <div
-        key={`${clase.idHorario}`}
-        className={`rounded-lg p-3 text-white shadow-lg ${color} flex flex-col gap-1 w-[90%] sm:w-full`}
-      >
-        <div className="font-bold truncate text-lg">{clase.nombreClase}</div>
-        <div className="text-sm">
-          {startTime} – {endTime}
-        </div>
-        <div className="text-sm truncate">
-          Entrenador: {clase.nombreEntrenador}
-        </div>
-        <div className="text-sm mb-3">
-          {clase.numReservas} / {clase.capacidadMaxima}
-        </div>
-        {tipoUsuario === "Cliente"
-          ? !isLoadingReservas && (
-              <button
-                className={`transform transition-transform duration-200  py-2 rounded-md font-semibold text-sm transition-all duration-300
-              ${
-                isReservado
-                  ? isPast
-                    ? "cursor-not-allowed bg-gray-500"
-                    : "bg-red-600 hover:bg-red-700 hover:scale-[1.03] cursor-pointer "
-                  : isPast
-                  ? "cursor-not-allowed bg-gray-500"
-                  : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.03] cursor-pointer "
-              }
-              active:scale-95`}
-                onClick={() =>
-                  isReservado
-                    ? handleCancelar(clase.idHorario)
-                    : handleReservar(clase.idHorario)
-                }
-                disabled={isPast}
-              >
-                {isReservado && !isPast
-                  ? "Cancelar Reserva"
-                  : isPast
-                  ? "No disponible"
-                  : "Reservar"}
-              </button>
-            )
-          : !isLoadingReservas && (
-              <button
-                className={`transform transition-transform duration-200  py-2 rounded-md font-semibold text-sm transition-all duration-300
-              ${
-                isPast
-                  ? "cursor-not-allowed bg-gray-500"
-                  : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.03] cursor-pointer "
-              }
-              active:scale-95`}
-                onClick={() => handleEditar(clase)}
-                disabled={isPast}
-              >
-                {isPast ? "No disponible" : "Editar horario"}
-              </button>
-            )}
-      </div>
-    );
-  };
+  if (cargando) {
+    return <div className="text-center p-10 min-h-screen bg-[var(--gris-oscuro)]">Cargando horarios...</div>;
+  }
 
   return (
     <div className="p-6 max-w-8xl mx-auto bg-[var(--gris-oscuro)]">
@@ -338,7 +289,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
 
       {tipoUsuario === "Entrenador" ? (
         <div className="text-center text-white mt-4 mb-6 w-full items-center flex flex-row justify-center gap-4">
-          <button onClick={()=>{setIsDialogOpen(!isDialogOpen)}} className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors active:scale-95 flex items-center gap-2">
+          <button onClick={() => { setIsDialogOpen(!isDialogOpen) }} className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors active:scale-95 flex items-center gap-2">
             <img
               src={"/addHorario.svg"}
               title="Añadir Horario"
@@ -358,9 +309,8 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         >
           <span className="w-5 h-5 bg-[#d1d1d1] border-2"></span>
           <span
-            className={`text-md text-left text-white min-w-max ${
-              tipoFiltro === "TODAS" ? "underline font-semibold" : ""
-            }`}
+            className={`text-md text-left text-white min-w-max ${tipoFiltro === "TODAS" ? "underline font-semibold" : ""
+              }`}
           >
             TODAS
           </span>
@@ -371,10 +321,10 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
             tipo === "RELAJACION"
               ? "CUERPO Y MENTE"
               : tipo === "TONIFICACION"
-              ? "TONIFICACIÓN"
-              : tipo === "TONO_CARDIO"
-              ? "TONO Y CARDIO"
-              : tipo;
+                ? "TONIFICACIÓN"
+                : tipo === "TONO_CARDIO"
+                  ? "TONO Y CARDIO"
+                  : tipo;
 
           return (
             <article
@@ -384,9 +334,8 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
             >
               <span className={`w-5 h-5 ${color} border-2`}></span>
               <span
-                className={`text-md text-left text-white min-w-max ${
-                  tipoFiltro === tipo ? "underline font-semibold" : ""
-                }`}
+                className={`text-md text-left text-white min-w-max ${tipoFiltro === tipo ? "underline font-semibold" : ""
+                  }`}
               >
                 {label}
               </span>
@@ -424,22 +373,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
               <div>
                 <div className="text-lg font-bold font-inter text-gray-700 select-none flex items-center gap-1">
                   {daysOfWeek[currentDayIdx]} - {formatted}
-                  {tipoUsuario === "Entrenador" && (
-                    <div className="grid">
-                      <button
-                        onClick={() => setConfirmResetDayIdx(currentDayIdx)}
-                        className="flex items-center justify-center h-full w-full mt-0 cursor-pointer"
-                      >
-                        <img
-                          src="/bin.svg"
-                          alt="Borrar semana"
-                          className="w-7 h-7 "
-                          title="Eliminar horario de la semana"
-                          style={{ display: "block", margin: "0 auto" }}
-                        />
-                      </button>
-                    </div>
-                  )}
+
                 </div>
               </div>
             );
@@ -510,29 +444,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
                   <div>{day}</div>
                   <div className="text-xs text-gray-500">{formatted}</div>
                 </div>
-                <div className="grid">
-                  <button
-                    onClick={() => setConfirmResetDayIdx(index)}
-                    className="flex items-center justify-center h-full w-full mt-0 cursor-pointer"
-                  >
-                    <img
-                      src="/bin.svg"
-                      alt="Borrar semana"
-                      className="w-7 h-7 "
-                      title="Eliminar horario de la semana"
-                      style={{ display: "block", margin: "0 auto" }}
-                    />
-                  </button>
-                </div>
-                {confirmResetDayIdx !== null && (
-                  <ResetWeekDialog
-                    open={confirmResetDayIdx !== null}
-                    dayIdx={confirmResetDayIdx}
-                    daysOfWeek={daysOfWeek}
-                    onCancel={() => setConfirmResetDayIdx(null)}
-                    onConfirm={handleBorrarSemana}
-                  />
-                )}
+
               </div>
             );
           })}
@@ -560,11 +472,11 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
         horario={
           horarioEdit
             ? {
-                idHorario: horarioEdit.idHorario,
-                fechaHora: horarioEdit.fechaHora,
-                idEntrenador: (horarioEdit as any).idEntrenador ?? 0,
-                nombreEntrenador: horarioEdit.nombreEntrenador,
-              }
+              idHorario: horarioEdit.idHorario,
+              fechaHora: horarioEdit.fechaHora,
+              idEntrenador: (horarioEdit as any).idEntrenador ?? 0,
+              nombreEntrenador: horarioEdit.nombreEntrenador,
+            }
             : null
         }
         onSave={handleGuardarEdicion}
@@ -573,11 +485,18 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
       <NuevoHorarioDialog
         open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        onCreate={(nuevo: NuevoHorario) => {
-          handleAddHorario(nuevo);
-          
-        }}
+        onCreate={fetchHorarios}
       />
+      <DeleteHorarioDialog
+        open={isDeleteDialogOpen}
+        id={horarioAEliminar}
+        onCancel={() => {
+          setIsDeleteDialogOpen(false);
+          setHorarioAEliminar(null);
+        }}
+        onConfirm={handleEliminarHorario}
+      />
+
     </div>
   );
 };

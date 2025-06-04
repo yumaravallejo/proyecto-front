@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
+import Calendar from "../componentes/Calendar";
 
 export default function Calendario() {
     const router = useRouter();
@@ -23,7 +24,7 @@ export default function Calendario() {
         <div>
             <HeaderUs promocion={null} pagina="CALENDARIO" />
             <main className="min-h-screen">
-                
+            <Calendar />
             </main>
             <Footer />
         </div>

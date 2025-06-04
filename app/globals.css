@@ -247,8 +247,8 @@ label.menu-abierto span:nth-child(2) {
 
 .general {
   width: 18rem;
-  height: calc(100vh - 4.4rem);
-  top: 4.4rem;
+  height: calc(100vh - 70px);
+  top: 70px;
   row-gap: 2rem;
   transition: left 0.5s ease;
   padding-top: 4rem;

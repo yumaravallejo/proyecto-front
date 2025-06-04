@@ -15,6 +15,8 @@ import {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -106,7 +108,7 @@ export default function UserProfile() {
         const res = await fetch(`${URL}usuarios/detalles/${parsedUser.id}`);
         if (!res.ok) {
           const msg = await res.text();
-          throw new Error(`Detalles usuario: ${msg}`);
+          alert(`Detalles usuario: ${msg}`);
         }
         const data: BackendData = await res.json();
         setBackendData(data);
@@ -116,7 +118,7 @@ export default function UserProfile() {
         );
         if (!reservas.ok) {
           const msg = await reservas.text();
-          throw new Error(`Mis reservas: ${msg}`);
+          alert(`Mis reservas: ${msg}`);
         }
         const data2 = await reservas.json();
         setReservas(data2);
@@ -202,39 +204,39 @@ export default function UserProfile() {
   }
 
   async function editarImagen(file: File) {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API;
-    const formData = new FormData();
-    formData.append("imagen", file);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API;
+      const formData = new FormData();
+      formData.append("imagen", file);
 
-    const response = await fetch(
-      `${apiUrl}usuarios/${localUser?.id}/editarAvatar`,
-      {
-        method: "POST",
-        body: formData,
+      const response = await fetch(
+        `${apiUrl}usuarios/${localUser?.id}/editarAvatar`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        toast.error("Error al editar la imagen", {
+          description: "Inténtalo de nuevo más tarde",
+        });
+        return;
       }
-    );
 
-    if (!response.ok) {
-      toast.error("Error al editar la imagen", {
-        description: "Inténtalo de nuevo más tarde",
+      const data = await response.text();
+
+      setLocalUser((prevUser) => {
+        if (!prevUser) return prevUser;
+        const updatedUser = { ...prevUser, imagen: data };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        return updatedUser;
       });
-      return;
+      window.dispatchEvent(new Event("icon-updated"));
+    } catch (error) {
+      console.error("Error al editar la imagen. " + error);
     }
-
-    const data = await response.text();
-
-    setLocalUser((prevUser) => {
-      if (!prevUser) return prevUser;
-      const updatedUser = { ...prevUser, imagen: data };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      return updatedUser;
-    });
-    window.dispatchEvent(new Event("icon-updated"));
-  } catch (error) {
-    console.error("Error al editar la imagen. " + error);
   }
-}
 
   if (localUser.tipo === "Entrenador") {
     return (
@@ -384,102 +386,105 @@ export default function UserProfile() {
               <div className="text-md flex flex-row flex-wrap space-y-2 gap-[1rem]">
                 {reservas.length > 0
                   ? reservas.map((reserva: any) => (
-                      <div
-                        key={reserva.id}
-                        className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
-                      >
-                        <p>
-                          <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
-                        </p>
-                        <p>
-                          <strong>Horario:</strong>{" "}
-                          {new Date(reserva.fechaHora)
-                            .toLocaleString()
-                            .replace(",", " a las")}
-                        </p>
-                        <p>
-                          <strong>Tipo Clase:</strong>{" "}
-                          {reserva.tipoClase || "N/A"}
-                        </p>
-                      </div>
-                    ))
+                    <div
+                      key={reserva.id}
+                      className="p-2 border rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
+                    >
+                      <p>
+                        <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Horario:</strong>{" "}
+                        {new Date(reserva.fechaHora)
+                          .toLocaleString()
+                          .replace(",", " a las")}
+                      </p>
+                      <p>
+                        <strong>Tipo Clase:</strong>{" "}
+                        {reserva.tipoClase || "N/A"}
+                      </p>
+                    </div>
+                  ))
                   : "Aún no tienes reservas"}
               </div>
             </div>
 
             <div className="p-4 rounded-md mt-6 justify-between sm:justify-start sm:gap-4 flex flex-row">
-              <Dialog open={openLogout} onOpenChange={setOpenLogout} >
-                <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-6 animate-fadeIn">
+              <Dialog open={openLogout} onOpenChange={setOpenLogout}>
+                <DialogTrigger asChild>
+                  <span className="rounded-full font-bold bg-red-500 hover:bg-red-600 text-white px-6 flex font-semibold cursor-pointer transition-colors duration-200 items-center"
+                  >Cerrar Sesión</span>
+                </DialogTrigger>
+
+                <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-semibold text-gray-800 mb-2">
-                      ¡No te vayas!
+                    <DialogTitle className="text-3xl font-semibold text-gray-800 mb-6">
+                      ¿Ya estás cansado?
                     </DialogTitle>
                     <p className="text-gray-600 text-base leading-relaxed">
-                      Siempre podrás volver a entrenar más tarde pero, ¿estás
-                      seguro de que quieres cerrar sesión?
+                      Siempre podrás volver a entrenar más tarde
                     </p>
                   </DialogHeader>
+
                   <DialogFooter className="flex justify-end gap-4 mt-6">
-                    <button
-                      onClick={() => setOpenLogout(false)}
-                      className="rounded-full bg-blue-600 text-white px-6 py-2 font-semibold hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
-                    >
-                      Seguir entrenando
-                    </button>
+                    <DialogClose asChild>
+                      <button
+                        className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer"
+                      >
+                        Cancelar
+                      </button>
+                    </DialogClose>
                     <button
                       onClick={() => {
                         setOpenLogout(false);
                         handleLogOut();
                       }}
-                      className="rounded-full bg-red-600 text-white px-6 py-2 font-semibold hover:bg-red-800 transition-colors duration-200 cursor-pointer"
+                      className="bg-red-600 text-white rounded-full px-6 py-3 font-semibold hover:bg-red-800 transition cursor-pointer"
                     >
                       Sí, cerrar sesión
                     </button>
                   </DialogFooter>
                 </DialogContent>
-                <button
-                  onClick={() => setOpenLogout(true)}
-                  className="rounded-full bg-red-600 hover:bg-red-700 text-white px-6 py-2 font-semibold cursor-pointer transition-colors duration-200"
-                >
-                  Cerrar Sesión
-                </button>
               </Dialog>
 
               <Dialog open={openEliminar} onOpenChange={setOpenEliminar}>
-                <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-6 animate-fadeIn">
+                <DialogTrigger>
+                  <button
+                    className="flex items-center gap-2 font-bold text-white rounded-full text-center cursor-pointer px-6 py-3 bg-gray-500 hover:bg-gray-600 transition-colors duration-200"
+                  >
+                    Darme de baja
+                  </button>
+                </DialogTrigger>
+
+                <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-semibold text-gray-800 mb-2">
-                      ¿Estás seguro?
+                    <DialogTitle className="text-3xl font-semibold text-gray-800 mb-6">
+                      ¡No te vayas!
                     </DialogTitle>
                     <p className="text-gray-600 text-base leading-relaxed">
-                      Esta acción eliminará tu cuenta permanentemente. ¿Deseas
-                      continuar?
+                      Esta acción eliminará tu cuenta permanentemente. ¿Deseas continuar?
                     </p>
                   </DialogHeader>
+
                   <DialogFooter className="flex justify-end gap-4 mt-6">
-                    <button
-                      onClick={() => setOpenEliminar(false)}
-                      className="rounded-full bg-blue-600 text-white px-6 py-2 font-semibold hover:bg-blue-700 transition-colors duration-200 cursor-pointer"
-                    >
-                      Cancelar
-                    </button>
+                    <DialogClose asChild>
+                      <button
+                        className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer"
+                      >
+                        Cancelar
+                      </button>
+                    </DialogClose>
                     <button
                       onClick={() => {
                         setOpenEliminar(false);
                         handleDeleteAccount();
                       }}
-                      className="rounded-full bg-red-600 text-white px-6 py-2 font-semibold hover:bg-red-800 transition-colors duration-200 cursor-pointer"
+                      className="bg-red-600 text-white rounded-full px-6 py-3 font-semibold hover:bg-red-800 transition cursor-pointer"
                     >
                       Sí, eliminar cuenta
                     </button>
                   </DialogFooter>
                 </DialogContent>
-                <button
-                  onClick={() => setOpenEliminar(true)}
-                  className="rounded-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 font-semibold cursor-pointer transition-colors duration-200"
-                >
-                  Darme de baja
-                </button>
               </Dialog>
             </div>
           </section>

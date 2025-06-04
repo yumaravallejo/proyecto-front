@@ -39,7 +39,7 @@ function FormularioPago(props: Props) {
         }),
       });
 
-      if (!res.ok) throw new Error('Error del servidor');
+      if (!res.ok) alert('Error del servidor');
       props.registro;
     } catch (err: any) {
       alert('Error: ' + err.message);

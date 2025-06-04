@@ -19,7 +19,7 @@ export default function Actividades() {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API;
         const res = await fetch(`${apiUrl}actividades`);
-        if (!res.ok) throw new Error("No se pudieron obtener las actividades");
+        if (!res.ok) alert("No se pudieron obtener las actividades");
         const data = await res.json();
         setActividades(data);
         setError("");

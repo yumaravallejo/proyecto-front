@@ -43,12 +43,40 @@ interface NuevoHorarioDialogProps {
   }) => void;
 }
 
-const formSchema = z.object({
-  fecha: z.string().min(1, "La fecha es obligatoria"),
-  hora: z.string().min(1, "La hora es obligatoria"),
-  idUsuario: z.string().min(1, "Selecciona un entrenador"),
-  idClase: z.string().min(1, "Selecciona una clase"),
-});
+const formSchema = z
+  .object({
+    fecha: z
+      .string()
+      .min(1, "La fecha es obligatoria")
+      .refine((value) => {
+        const today = new Date();
+        const selectedDate = new Date(value);
+        return selectedDate >= new Date(today.toDateString());
+      }, {
+        message: "La fecha no puede ser anterior a hoy",
+      }),
+    hora: z.string().min(1, "La hora es obligatoria"),
+    idUsuario: z.string().min(1, "Selecciona un entrenador"),
+    idClase: z.string().min(1, "Selecciona una clase"),
+  })
+  .refine(({ fecha, hora }) => {
+    const today = new Date();
+    const selectedDate = new Date(fecha);
+    const selectedDateIsToday =
+      selectedDate.toDateString() === today.toDateString();
+
+    if (!selectedDateIsToday) return true; // Si no es hoy, no validamos hora
+
+    // Si es hoy, validamos que la hora sea futura
+    const [h, m] = hora.split(":").map(Number);
+    const selectedDateTime = new Date(fecha);
+    selectedDateTime.setHours(h, m, 0, 0);
+
+    return selectedDateTime > today;
+  }, {
+    message: "La hora debe ser futura si la fecha es hoy",
+    path: ["hora"], // Aplica el error al campo 'hora'
+  });
 
 export default function NuevoHorarioDialog({
   open,
@@ -76,7 +104,7 @@ export default function NuevoHorarioDialog({
         const user = localStorage.getItem("user");
         const parsedUser = user ? JSON.parse(user) : null;
         const token = parsedUser?.token;
-        if (!token) throw new Error("No token found");
+        if (!token) alert("No token found");
 
         const URL = process.env.NEXT_PUBLIC_API;
 
@@ -96,14 +124,14 @@ export default function NuevoHorarioDialog({
         ]);
 
         if (!entrenadoresRes.ok || !clasesRes.ok) {
-          throw new Error("Error al obtener datos");
+          alert("Error al obtener datos");
         }
 
         const entrenadoresData = await entrenadoresRes.json();
         const clasesData = await clasesRes.json();
 
-        setUsuarios(entrenadoresData.body || []);
-        setClases(clasesData.body || []);
+        setUsuarios(entrenadoresData || []);
+        setClases(clasesData || []);
       } catch (err) {
         console.error("Error al cargar entrenadores o clases", err);
         toast.error("No se pudo cargar la información necesaria");
@@ -121,6 +149,41 @@ export default function NuevoHorarioDialog({
       idClase: parseInt(values.idClase),
       fechaHora,
     });
+
+    const localUser = localStorage.getItem("user");
+    const parsedUser = localUser ? JSON.parse(localUser) : null;
+    const token = parsedUser?.token;
+
+    const params = new URLSearchParams({
+      idEntrenador: values.idUsuario,
+      idClase: values.idClase,
+      fechaHora,
+    }).toString();
+
+    fetch(`${process.env.NEXT_PUBLIC_API}entrenador/crearHorario?${params}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          toast.error("Error al crear el horario");
+        }
+      })
+      .catch((error) => {
+        console.error("Error al crear el horario:", error);
+        toast.error("No se pudo crear el horario");
+      });
+
+      onCreate({
+        idUsuario: parseInt(values.idUsuario),
+        idClase: parseInt(values.idClase),
+        fechaHora,
+      });
 
     toast.success("Horario creado exitosamente");
     form.reset();
@@ -159,6 +222,7 @@ export default function NuevoHorarioDialog({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      min={new Date().toISOString().split("T")[0]}
                       type="date"
                       {...field}
                       className="w-full rounded-md border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
