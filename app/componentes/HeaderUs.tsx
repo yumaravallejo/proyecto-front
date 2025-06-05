@@ -121,21 +121,26 @@ export default function HeaderUs(props: Props) {
   }
 
   // Opciones de menú para usuario logueado o no
-  const opcionesMenu = login
-    ? [
-        { nombre: "DIETAS", ruta: "/dietas" },
-        { nombre: "RESERVAS", ruta: "/reservas" },
-        { nombre: "CALENDARIO", ruta: "/calendario" },
-        { nombre: "HORARIOS", ruta: "/horarios-actividades" },
-        { nombre: "CONTACTO", ruta: "/contacto" },
-      ]
-    : [
-        { nombre: "CUOTAS", ruta: "/cuotas" },
-        { nombre: "SERVICIOS", ruta: "/servicios" },
-        { nombre: "ACTIVIDADES", ruta: "/actividades" },
-        { nombre: "CONTACTO", ruta: "/contacto" },
-        { nombre: "ÚNETE", ruta: "/registro" },
-      ];
+  const opcionesMenu = login ? (
+    user.tipo !== "Entrenador" ? [
+      { nombre: "DIETAS", ruta: "/dietas" },
+      { nombre: "RESERVAS", ruta: "/reservas" },
+      { nombre: "CALENDARIO", ruta: "/calendario" },
+      { nombre: "ACTIVIDADES", ruta: "/horarios-actividades" },
+      { nombre: "CONTACTO", ruta: "/contacto" },
+    ] : [
+      { nombre: "DIETAS", ruta: "/dietas" },
+      { nombre: "RESERVAS", ruta: "/reservas" },
+      { nombre: "CALENDARIO", ruta: "/calendario" },
+      { nombre: "ACTIVIDADES", ruta: "/horarios-actividades" },
+      { nombre: "ADMINISTRACIÓN", ruta: "/administracion" },
+    ]) : [
+    { nombre: "CUOTAS", ruta: "/cuotas" },
+    { nombre: "SERVICIOS", ruta: "/servicios" },
+    { nombre: "ACTIVIDADES", ruta: "/actividades" },
+    { nombre: "CONTACTO", ruta: "/contacto" },
+    { nombre: "ÚNETE", ruta: "/registro" },
+  ];
 
   return (
     <>

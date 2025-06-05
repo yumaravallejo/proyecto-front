@@ -6,7 +6,7 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const publicRoutes = ["/", "/login", "/registro", "/cuotas", "/servicios", "/actividades"];
-  const privateRoutes = ["/dashboard", "/perfil", "/dietas", "/calendario", "/reservas", "horarios-actividades"];
+  const privateRoutes = ["/dashboard", "/perfil", "/dietas", "/calendario", "/reservas", "/horarios-actividades", "/administracion"];
 
   if (token && publicRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", req.url));

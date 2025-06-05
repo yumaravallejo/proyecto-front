@@ -58,14 +58,21 @@ interface Evento {
 
 interface Dieta {
   idDieta: number;
-  descripcion: string;
+  descripcion: Descripcion;
   fecha: string;
 }
-
 interface InfoHoyDTO {
   clasesHoy: ClaseHoyItem[];
   eventosHoy: Evento[];
   dietaHoy: Dieta | null;
+}
+
+interface Descripcion {
+  desayuno: string;
+  comida: string;
+  merienda?: string;
+  cena: string;
+  picoteo?: string;
 }
 
 export default function Dashboard() {
@@ -76,6 +83,7 @@ export default function Dashboard() {
   const [tipoUser, setTipoUser] = useState<"Cliente" | "Entrenador">("Cliente");
   const [userId, setUserId] = useState<number | null>(null);
   const [infoUser, setInfoUser] = useState<UsuarioDTO | null>(null);
+
 
   const API_URL = process.env.NEXT_PUBLIC_API;
 
@@ -101,7 +109,25 @@ export default function Dashboard() {
 
         setClasesHoy(Array.isArray(data.clasesHoy) ? data.clasesHoy : []);
         setEventosHoy(Array.isArray(data.eventosHoy) ? data.eventosHoy : []);
-        setDietaHoy(data.dietaHoy);
+        if (data.dietaHoy) {
+          let descripcionObj = data.dietaHoy.descripcion;
+          if (typeof descripcionObj === "string") {
+            const parsedDescripcionObj = JSON.parse(descripcionObj);
+
+            setDietaHoy({
+              ...data.dietaHoy,
+              descripcion: {
+                desayuno: parsedDescripcionObj.desayuno || " - ",
+                comida: parsedDescripcionObj.comida || " - ",
+                merienda: parsedDescripcionObj.merienda || " - ",
+                cena: parsedDescripcionObj.cena || " - ",
+                picoteo: parsedDescripcionObj.picoteo || " - ",
+              },
+            });
+          } else {
+            setDietaHoy(null);
+          }
+        }
       } catch (error) {
         console.error("Error cargando datos del dashboard:", error);
         setClasesHoy([]);
@@ -115,9 +141,9 @@ export default function Dashboard() {
     fetchInfoHoy();
   }, []);
 
-  // ------ RENDERIZADO PARA ENTRENADOR ------
+  // ------ VISTA ENTRENADOR ------
   if (tipoUser === "Entrenador") {
-    // Filtramos las clases de hoy por aquellas donde item.usuario.id === userId
+    // Filtramos las clases de hoy por la que item.usuario.id === userId (las clases del entrenador)
     const misClasesHoy = clasesHoy.filter((item) => item.usuario.id === userId);
     const nombre = infoUser && infoUser.nombre ? infoUser.nombre : "Entrenador";
     const titulo = `PLANNING DE ${nombre.toUpperCase()}`;
@@ -136,7 +162,7 @@ export default function Dashboard() {
             <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
           </div>
 
-          <div className="px-4 py-6 max-w-6xl mx-auto space-y-8 sm:space-y-12">
+          <div className="px-4 py-6 max-w-5xl mx-auto space-y-8 sm:space-y-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* ===== MIS CLASES DE HOY ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
@@ -158,9 +184,7 @@ export default function Dashboard() {
                             className="bg-gray-100 rounded-md flex overflow-hidden"
                             aria-label={`Clase ${item.clase.nombre} a las ${horaLocal}`}
                           >
-                            {/* Raya lateral */}
                             <div className={`${stripeClass} w-2`} />
-                            {/* Contenido */}
                             <div className="p-3 flex flex-col flex-grow">
                               <p className="font-bold text-lg truncate text-gray-800">
                                 {item.clase.nombre}
@@ -184,7 +208,7 @@ export default function Dashboard() {
 
               {/* ===== EVENTOS DE HOY ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
+                <div className="p-4 bg-gradient-to-r from-[var(--azul)] to-[var(--dorado)]">
                   <h3 className="text-xl font-semibold text-white">EVENTOS HOY</h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
@@ -305,14 +329,34 @@ export default function Dashboard() {
                       No tienes ninguna dieta asignada
                     </p>
                   ) : (
-                    <div className="prose prose-sm max-w-none overflow-auto text-gray-700">
-                      <p className="whitespace-pre-line">{dietaHoy.descripcion}</p>
-                    </div>
+                    <section className="prose prose-sm max-w-none overflow-auto text-gray-700 flex flex-col gap-y-5">
+                      <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-2">
+                        <h4>Desayuno</h4>
+                        <p className="text-sm">{dietaHoy.descripcion.desayuno}</p>
+                      </article>
+                      <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
+                        <h4>Almuerzo</h4>
+                        <p className="text-sm">{dietaHoy.descripcion.comida}</p>
+                      </article>
+                      <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
+                        <h4>Merienda</h4>
+                        <p className="text-sm">{dietaHoy.descripcion.merienda || " - "}</p>
+                      </article>
+                      <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
+                        <h4>Cena</h4>
+                        <p className="text-sm">{dietaHoy.descripcion.cena}</p>
+                      </article>
+                      <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
+                        <h4>Picoteo</h4>
+                        <p className="text-sm">{dietaHoy.descripcion.picoteo || " - "}</p>
+                      </article>
+                      <article></article>
+                    </section>
                   )}
                 </div>
               </section>
 
-                            {/* ===== SECCIÓN: Clases de hoy  ===== */}
+              {/* ===== SECCIÓN: Clases de hoy  ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
                 <div className="p-4 bg-[var(--azul)]">
                   <h3 className="text-xl font-semibold text-white">CLASES DE HOY</h3>

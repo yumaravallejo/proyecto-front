@@ -20,7 +20,7 @@ interface Evento {
     nombre: string
     detallesEvento: string
     fechaInicio: string
-    fechaFin?: string // ? --> indica que es opcional
+    fechaFin?: string
 }
 
 interface Dia {
@@ -49,7 +49,6 @@ export default function Calendar() {
         setEventosPorDia(placeholders)
     }, [])
 
-    // Cargar usuario y eventos al inicio
     useEffect(() => {
         const user = localStorage.getItem('user')
         if (!user) {
@@ -87,7 +86,6 @@ export default function Calendar() {
         setEventosPorDia(actualizados)
     }, [eventos])
 
-    // Seleccionar el día actual si hay eventos
     useEffect(() => {
         const hoy = new Date()
         hoy.setHours(0, 0, 0, 0)
@@ -129,25 +127,25 @@ export default function Calendar() {
     const diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 
     return (
-        <div className="p-4 mx-auto flex flex-col items-start lg:items-end lg:p-10">
+        <div className="p-4 mx-auto flex flex-col items-start sm:items-end sm:p-10">
             <Toaster position="top-center" theme="dark" />
 
             {user?.tipo === 'Entrenador' && (
-                <button onClick={() => setIsDialogOpen(true)} className="mb-10 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors active:scale-95 flex items-center gap-2">
+                <button onClick={() => setIsDialogOpen(true)} className="mb-6 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition active:scale-95 flex items-center gap-2">
                     <img src="/addHorario.svg" title="Añadir Horario" className="w-7 h-7" />
                     <span>Añadir Evento</span>
                 </button>
             )}
 
-            <div className="lg:flex lg:flex-row lg:justify-between lg:items-start lg:mb-6 gap-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-6 w-full">
                 {/* Calendario */}
-                <div className="lg:basis-3/4">
-                    <div className="hidden lg:grid grid-cols-7 text-center text-sm font-semibold mb-2">
+                <div className="sm:basis-3/4 w-full">
+                    <div className="hidden sm:grid grid-cols-7 text-center text-sm font-semibold mb-2">
                         {diasSemana.map((dia) => <div key={dia}>{dia}</div>)}
                     </div>
 
-                    <div className="grid grid-cols-7 gap-1 text-xs">
-                        {/* Espacios vacíos al inicio */}
+                    <div className="grid grid-cols-7 gap-1 text-[10px] sm:text-xs">
+
                         {Array((getDay(startOfMonth(new Date())) + 6) % 7)
                             .fill(null)
                             .map((_, idx) => <div key={`empty-${idx}`} />)}
@@ -169,31 +167,21 @@ export default function Calendar() {
                                             : esPasado
                                                 ? 'bg-gray-200 text-gray-400'
                                                 : tieneEvento
-                                                    ? 'bg-blue-100 hover:bg-blue-200 lg:bg-white lg:hover:bg-blue-200'
-                                                    : 'hover:bg-gray-100 lg:hover:bg-blue-200'
+                                                    ? 'bg-blue-100 hover:bg-blue-200 sm:bg-white sm:hover:bg-blue-200'
+                                                    : 'hover:bg-gray-100 sm:hover:bg-blue-200'
                                         }`}
                                     onClick={() => setDiaSeleccionado(dia)}
                                 >
                                     <div className="text-gray-700 text-xs">{format(dia.fecha, 'd')}</div>
 
-                                    {/* Desktop: hasta 3 eventos */}
-                                    <div className="hidden lg:flex flex-col mt-2 gap-1 overflow-hidden">
-                                        {dia.eventos.slice(0, 3).map((ev) => (
-                                            <div key={ev.id} className="flex items-center gap-2">
+                                    <div className="flex flex-col mt-2 gap-1 overflow-hidden hidden sm:block">
+                                        {dia.eventos.slice(0, 3).map((ev, index) => (
+                                            <div key={ev.id} className={`flex items-center gap-2 ${index > 0 ? 'hidden sm:flex' : ''}`}>
                                                 <span className="text-white bg-[var(--azul)] p-2 w-full rounded-lg text-xs truncate">{ev.nombre}</span>
                                             </div>
                                         ))}
                                         {dia.eventos.length > 3 && (
-                                            <div className="text-xs text-gray-500">+{dia.eventos.length - 3} más</div>
-                                        )}
-                                    </div>
-
-                                    {/* Móvil: primer evento */}
-                                    <div className="lg:hidden mt-2">
-                                        {tieneEvento && (
-                                            <div className="bg-[var(--azul)] text-white truncate rounded-md px-2 py-1 text-xs">
-                                                {dia.eventos[0].nombre}
-                                            </div>
+                                            <div className="text-xs text-gray-500 hidden sm:block">+{dia.eventos.length - 3} más</div>
                                         )}
                                     </div>
                                 </div>
@@ -202,8 +190,8 @@ export default function Calendar() {
                     </div>
                 </div>
 
-                {/* Panel derecho con eventos */}
-                <div className="lg:w-1/4 w-full mt-4 lg:mt-0">
+                {/* Panel lateral */}
+                <div className="w-full sm:w-1/4">
                     {diaSeleccionado && (
                         <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 shadow-md">
                             <div className="flex justify-between items-center mb-3">

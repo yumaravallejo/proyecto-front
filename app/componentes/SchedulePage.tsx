@@ -50,8 +50,18 @@ interface SchedulePageProps {
   cargando?: boolean;
 }
 
-const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando }) => {
-  const [currentDayIdx, setCurrentDayIdx] = useState(0);
+export default function SchedulePage({ horariosIniciales, cargando } : SchedulePageProps) {
+  const diaBaseIndex = () => {
+    const today = new Date();
+    let diaSemana = today.getDay();
+    if (diaSemana === 0 || diaSemana === 6) {
+      // Si es sábado (6) o domingo (0), cambaimos a lunes (índice 0) ya que no hay clases esos días
+      return 0;
+    }
+    return diaSemana - 1;
+  };
+
+  const [indexHoy, setIndexHoy] = useState(diaBaseIndex());
   const [userReservations, setUserReservations] = useState<number[]>([]);
   const [idUsuario, setIdUsuario] = useState<number | null>(null);
   const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales || []);
@@ -61,13 +71,23 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
   const [tipoUsuario, setTipoUsuario] = useState<string | "Cliente">("Cliente");
   const [horarioEdit, setHorarioEdit] = useState<Horario | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [confirmResetDayIdx, setConfirmResetDayIdx] = useState<number | null>(
-    null
-  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [horarioAEliminar, setHorarioAEliminar] = useState<number | null>(null);
   const [idEntrenador, setIdEntrenador] = useState(0);
+
+
+  function cambioLunes(today = new Date()) {
+    const diaSemana = today.getDay() === 0 ? 6 : today.getDay() - 1;
+    let lunes = new Date(today);
+    if (diaSemana > 4) {
+      lunes.setDate(today.getDate() + (7 - diaSemana));
+    } else {
+      lunes.setDate(today.getDate() - diaSemana);
+    }
+    lunes.setHours(0, 0, 0, 0);
+    return lunes;
+  }
 
   const handleEditar = (horario: Horario) => {
     setHorarioEdit(horario);
@@ -282,15 +302,8 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
   }
 
   return (
-    <div className="p-6 max-w-8xl mx-auto bg-[var(--gris-oscuro)]">
+    <div className="p-6 max-w-8xl mx-auto ">
       <Toaster position="bottom-right" theme="dark" />
-      <div className="sm:hidden w-full flex flex-row items-center justify-center mb-10 lg:mt-10 mt-5">
-        <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
-        <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
-          HORARIO DE <br /> ACTIVIDADES
-        </h1>
-        <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
-      </div>
 
       {tipoUsuario === "Entrenador" ? (
         <div className="text-center text-white mt-4 mb-6 w-full items-center flex flex-row justify-center gap-4">
@@ -307,14 +320,14 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
         ""
       )}
 
-      <section className="filtros-actividades w-full flex overflow-x-auto gap-2">
+      <section className="filtros-actividades w-full flex overflow-x-auto gap-2 text-black">
         <article
           className="flex flex-row items-center justify-center gap-x-2 p-5 cursor-pointer filter-act"
           onClick={() => setTipoFiltro("TODAS")}
         >
-          <span className="w-5 h-5 bg-[#d1d1d1] border-2"></span>
+          <span className="w-5 h-5 bg-pink-200 border-2"></span>
           <span
-            className={`text-md text-left text-white min-w-max ${tipoFiltro === "TODAS" ? "underline font-semibold" : ""
+            className={`text-md text-left min-w-max ${tipoFiltro === "TODAS" ? "underline font-bold" : ""
               }`}
           >
             TODAS
@@ -339,7 +352,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
             >
               <span className={`w-5 h-5 ${color} border-2`}></span>
               <span
-                className={`text-md text-left text-white min-w-max ${tipoFiltro === tipo ? "underline font-semibold" : ""
+                className={`text-md text-left min-w-max ${tipoFiltro === tipo ? "underline font-bold" : ""
                   }`}
               >
                 {label}
@@ -354,22 +367,18 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() =>
-              setCurrentDayIdx((prev) => (prev > 0 ? prev - 1 : prev))
+              setIndexHoy((prev) => (prev > 0 ? prev - 1 : prev))
             }
-            disabled={currentDayIdx === 0}
+            disabled={indexHoy === 0}
             className="text-2xl px-3 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
             aria-label="Día anterior"
           >
             ◀
           </button>
           {(() => {
-            const today = new Date();
-            const monday = new Date(today);
-            const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
-            if (dayOfWeek > 4) monday.setDate(today.getDate() - dayOfWeek + 0);
-            else monday.setDate(today.getDate() - dayOfWeek);
-            monday.setDate(monday.getDate() + currentDayIdx);
-            const formatted = monday.toLocaleDateString("es-ES", {
+            const baselunes = cambioLunes();
+            baselunes.setDate(baselunes.getDate() + indexHoy);
+            const formatted = baselunes.toLocaleDateString("es-ES", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
@@ -377,7 +386,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
             return (
               <div>
                 <div className="text-lg font-bold font-inter text-gray-700 select-none flex items-center gap-1">
-                  {daysOfWeek[currentDayIdx]} - {formatted}
+                  {daysOfWeek[indexHoy]} - {formatted}
 
                 </div>
               </div>
@@ -385,9 +394,9 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
           })()}
           <button
             onClick={() =>
-              setCurrentDayIdx((prev) => (prev < 4 ? prev + 1 : prev))
+              setIndexHoy((prev) => (prev < 4 ? prev + 1 : prev))
             }
-            disabled={currentDayIdx === 4}
+            disabled={indexHoy === 4}
             className="text-2xl px-3 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
             aria-label="Día siguiente"
           >
@@ -402,8 +411,8 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
                 {hour}:00
               </div>
               <div className="flex flex-col gap-3">
-                {getClassesFor(currentDayIdx, hour).length > 0 ? (
-                  getClassesFor(currentDayIdx, hour).map(renderClase)
+                {getClassesFor(indexHoy, hour).length > 0 ? (
+                  getClassesFor(indexHoy, hour).map(renderClase)
                 ) : (
                   <div className="text-gray-400 text-center italic py-2 select-none min-h-[56px] "></div>
                 )}
@@ -428,13 +437,9 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
             Hora
           </div>
           {daysOfWeek.map((day, index) => {
-            const today = new Date();
-            const monday = new Date(today);
-            const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
-            if (dayOfWeek > 4) monday.setDate(today.getDate() - dayOfWeek + 0);
-            else monday.setDate(today.getDate() - dayOfWeek);
-            monday.setDate(monday.getDate() + index);
-            const formatted = monday.toLocaleDateString("es-ES", {
+            const baselunes = cambioLunes();
+            baselunes.setDate(baselunes.getDate() + index);
+            const formatted = baselunes.toLocaleDateString("es-ES", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
@@ -455,7 +460,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
           })}
 
           {hours.map((hour) => (
-            <React.Fragment key={hour}> 
+            <React.Fragment key={hour}>
               <div className="text-xs text-gray-500 bg-gray-100 flex items-center justify-center rounded-md select-none">
                 {hour}:00
               </div>
@@ -471,6 +476,7 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
           ))}
         </div>
       </div>
+
       <EditarHorario
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -505,5 +511,3 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales, cargando
     </div>
   );
 };
-
-export default SchedulePage;

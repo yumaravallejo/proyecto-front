@@ -23,6 +23,18 @@ export default function Horarios() {
   // Cargar datos en segundo plano sin bloquear el render
   useEffect(() => {
     const getHorarios = async () => {
+      const hoy = new Date().toISOString().split('T')[0]; // '2025-06-05'
+
+      const cache = localStorage.getItem('horariosCache');
+      if (cache) {
+        const { fecha, datos } = JSON.parse(cache);
+        if (fecha === hoy) {
+          setHorarios(datos);
+          setDataCargada(true);
+          return;
+        }
+      }
+
       try {
         const URL = process.env.NEXT_PUBLIC_API;
         if (!URL) {
@@ -39,6 +51,12 @@ export default function Horarios() {
         const data: Horario[] = await res.json();
         setHorarios(data);
         setDataCargada(true);
+
+        // Guardar en localStorage con la fecha de hoy
+        localStorage.setItem(
+          'horariosCache',
+          JSON.stringify({ fecha: hoy, datos: data })
+        );
       } catch (error) {
         console.error('Error al obtener horarios:', error);
       }
@@ -47,11 +65,13 @@ export default function Horarios() {
     getHorarios();
   }, []);
 
+
   return (
     <div>
-      <HeaderUs promocion={null} pagina="HORARIOS" />
+      <HeaderUs promocion={null} pagina="ACTIVIDADES" />
 
-      <main id="horarioActividades" className="min-h-[calc(100vh-200px)] bg-[var(--gris-oscuro)] text-white">
+      <main id="horarioActividades" className="min-h-[calc(100vh-200px)] bg-gray-100 text-white">
+        <h1 className="sm:hidden w-full text-center pt-4 pb-4 mb-2 text-2xl text-white bg-[var(--gris-oscuro)]">ACTIVIDADES GRUPALES</h1>
         <SchedulePage horariosIniciales={horarios} cargando={!dataCargada} />
       </main>
 

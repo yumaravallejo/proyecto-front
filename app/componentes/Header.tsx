@@ -50,28 +50,32 @@ export default function Header(props: Props) {
   const login = !!user;
   const imagenUser = user?.imagen ?? "";
 
-  const opcionesMenu = login
-    ? [
-        { nombre: "DIETAS", ruta: "/dietas" },
-        { nombre: "RESERVAS", ruta: "/reservas" },
-        { nombre: "ACTIVIDADES", ruta: "/horarios" },
-        { nombre: "CALENDARIO", ruta: "/calendario" },
-        { nombre: "CONTACTO", ruta: "/contacto" },
-      ]
-    : [
-        { nombre: "CUOTAS", ruta: "/cuotas" },
-        { nombre: "SERVICIOS", ruta: "/servicios" },
-        { nombre: "ACTIVIDADES", ruta: "/actividades" },
-        { nombre: "CONTACTO", ruta: "/contacto" },
-        { nombre: "ÚNETE", ruta: "/registro" },
-      ];
+  const opcionesMenu = login ? (
+    user.tipo !== "Entrenador" ? [
+      { nombre: "DIETAS", ruta: "/dietas" },
+      { nombre: "RESERVAS", ruta: "/reservas" },
+      { nombre: "CALENDARIO", ruta: "/calendario" },
+      { nombre: "ACTIVIDADES", ruta: "/horarios-actividades" },
+      { nombre: "CONTACTO", ruta: "/contacto" },
+    ] : [
+      { nombre: "DIETAS", ruta: "/dietas" },
+      { nombre: "RESERVAS", ruta: "/reservas" },
+      { nombre: "CALENDARIO", ruta: "/calendario" },
+      { nombre: "ACTIVIDADES", ruta: "/horarios-actividades" },
+      { nombre: "ADMINISTRACIÓN", ruta: "/administracion" },
+    ]) : [
+    { nombre: "CUOTAS", ruta: "/cuotas" },
+    { nombre: "SERVICIOS", ruta: "/servicios" },
+    { nombre: "ACTIVIDADES", ruta: "/actividades" },
+    { nombre: "CONTACTO", ruta: "/contacto" },
+    { nombre: "ÚNETE", ruta: "/registro" },
+  ];
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 gap-x-15 transition-all duration-300 z-50 ${
-          isScrolled ? "shadow-lg bg-[var(--gris-oscuro)]" : "bg-[var(--gris-oscuro)]"
-        }`}
+        className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 gap-x-15 transition-all duration-300 z-50 ${isScrolled ? "shadow-lg bg-[var(--gris-oscuro)]" : "bg-[var(--gris-oscuro)]"
+          }`}
         style={{ height: HEADER_HEIGHT }}
       >
         {/* Botón menú */}
