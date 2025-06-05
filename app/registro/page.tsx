@@ -194,7 +194,7 @@ export default function Registro() {
   const handleSubmit = async () => {
     console.log("Datos del cliente:", cliente);
     const apiUrl = process.env.NEXT_PUBLIC_API;
-    const response = await fetch(apiUrl + "registro", {
+    const response = await fetch(apiUrl + "/registro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

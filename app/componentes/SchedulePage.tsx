@@ -131,7 +131,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
       const token = parsedUser?.token;
       const URL = process.env.NEXT_PUBLIC_API;
 
-      const res = await fetch(`${URL}entrenador/editarHorario/${idHorario}`, {
+      const res = await fetch(`${URL}/entrenador/editarHorario/${idHorario}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

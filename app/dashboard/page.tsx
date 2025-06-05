@@ -101,7 +101,7 @@ export default function Dashboard() {
       }
 
       try {
-        const res = await fetch(`${API_URL}usuarios/info-hoy/${parsedUser.id}`);
+        const res = await fetch(`${API_URL}/usuarios/info-hoy/${parsedUser.id}`);
         if (!res.ok) alert("Error al obtener InfoHoyDTO");
         const data: InfoHoyDTO = await res.json();
 

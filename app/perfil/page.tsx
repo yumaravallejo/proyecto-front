@@ -103,7 +103,7 @@ export default function UserProfile() {
       fetchData = async () => {
         try {
           const URL = process.env.NEXT_PUBLIC_API;
-          const res = await fetch(`${URL}usuarios/detalles/${parsedUser.id}`);
+          const res = await fetch(`${URL}/usuarios/detalles/${parsedUser.id}`);
           if (!res.ok) {
             const msg = await res.text();
             alert(`Detalles usuario: ${msg}`);
@@ -112,7 +112,7 @@ export default function UserProfile() {
           setBackendData(data);
 
           const reservas = await fetch(
-            `${URL}usuarios/mis-reservas/${parsedUser.id}`
+            `${URL}/usuarios/mis-reservas/${parsedUser.id}`
           );
           if (!reservas.ok) {
             const msg = await reservas.text();
@@ -129,7 +129,7 @@ export default function UserProfile() {
         try {
           const URL = process.env.NEXT_PUBLIC_API;
           const res = await fetch(
-            `${URL}entrenador/detalles/${parsedUser.id}`,
+            `${URL}/entrenador/detalles/${parsedUser.id}`,
             {
               method: "GET",
               credentials: "include",
@@ -166,7 +166,7 @@ export default function UserProfile() {
   async function handleLogOut() {
     try {
       const URL = process.env.NEXT_PUBLIC_API;
-      const res = await fetch(`${URL}usuarios/logout`, {
+      const res = await fetch(`${URL}/usuarios/logout`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -196,7 +196,7 @@ export default function UserProfile() {
   async function handleDeleteAccount() {
     try {
       const URL = process.env.NEXT_PUBLIC_API;
-      const res = await fetch(`${URL}usuarios/eliminar/${localUser?.id}`, {
+      const res = await fetch(`${URL}/usuarios/eliminar/${localUser?.id}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -230,7 +230,7 @@ export default function UserProfile() {
       formData.append("imagen", file);
 
       const response = await fetch(
-        `${apiUrl}usuarios/${localUser?.id}/editarAvatar`,
+        `${apiUrl}/usuarios/${localUser?.id}/editarAvatar`,
         {
           method: "POST",
           body: formData,

@@ -78,7 +78,7 @@ export default function EditarHorario({
 
         const URL = process.env.NEXT_PUBLIC_API;
 
-        const res = await fetch(`${URL}entrenador/getEntrenadores`, {
+        const res = await fetch(`${URL}/entrenador/getEntrenadores`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

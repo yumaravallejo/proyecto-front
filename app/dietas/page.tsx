@@ -65,7 +65,7 @@ export default function Dietas() {
 
     const URL = process.env.NEXT_PUBLIC_API;
     if (parsedUser?.tipo === "Entrenador") {
-      fetch(URL + "usuarios/getClientes")
+      fetch(URL + "/usuarios/getClientes")
         .then((res) => res.json())
         .then((data) => setUsuarios(data))
         .catch(() => setUsuarios([]));
@@ -104,7 +104,7 @@ export default function Dietas() {
     try {
       console.log(addDieta);
       const URL = process.env.NEXT_PUBLIC_API;
-      const res = await fetch(URL + `usuarios/detalles/${addDieta}`);
+      const res = await fetch(URL + `/usuarios/detalles/${addDieta}`);
       const data = await res.json();
       if (!data) {
         toast.error("No se encontraron detalles para este usuario");
@@ -146,7 +146,7 @@ export default function Dietas() {
 
     const URL = process.env.NEXT_PUBLIC_API;
 
-    fetch(URL + "entrenador/crearDieta", {
+    fetch(URL + "/entrenador/crearDieta", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -172,7 +172,7 @@ export default function Dietas() {
     const URL = process.env.NEXT_PUBLIC_API;
 
     try {
-      const res = await fetch(URL + `usuarios/getDietaSemanal/${id}`);
+      const res = await fetch(URL + `/usuarios/getDietaSemanal/${id}`);
       const data = await res.json();
       setDietas((prev) => ({ ...prev, [id]: data }));
     } catch {

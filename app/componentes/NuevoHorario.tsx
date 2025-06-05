@@ -109,13 +109,13 @@ export default function NuevoHorarioDialog({
         const URL = process.env.NEXT_PUBLIC_API;
 
         const [entrenadoresRes, clasesRes] = await Promise.all([
-          fetch(`${URL}entrenador/getEntrenadores`, {
+          fetch(`${URL}/entrenador/getEntrenadores`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch(`${URL}entrenador/getClases`, {
+          fetch(`${URL}/entrenador/getClases`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -160,7 +160,7 @@ export default function NuevoHorarioDialog({
       fechaHora,
     }).toString();
 
-    fetch(`${process.env.NEXT_PUBLIC_API}entrenador/crearHorario?${params}`,
+    fetch(`${process.env.NEXT_PUBLIC_API}/entrenador/crearHorario?${params}`,
       {
         method: "POST",
         headers: {

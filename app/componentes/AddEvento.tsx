@@ -82,7 +82,7 @@ export default function NuevoEventoDialog({
     const token = parsedUser?.token;
     // ogemos el token para el authorization
 
-    fetch(`${process.env.NEXT_PUBLIC_API}entrenador/crearEvento`, {
+    fetch(`${process.env.NEXT_PUBLIC_API}/entrenador/crearEvento`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

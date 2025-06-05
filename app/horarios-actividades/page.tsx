@@ -42,7 +42,7 @@ export default function Horarios() {
           return;
         }
 
-        const res = await fetch(`${URL}usuarios/horarios`);
+        const res = await fetch(`${URL}/usuarios/horarios`);
         if (!res.ok) {
           alert('No se han podido cargar los horarios');
           return;

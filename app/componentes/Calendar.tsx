@@ -70,7 +70,7 @@ export default function Calendar() {
 
     const fetchEventos = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API}usuarios/getEventos`)
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/usuarios/getEventos`)
             if (!response.ok) throw new Error('Error al cargar los eventos')
 
             const data = await response.json()
@@ -112,7 +112,7 @@ export default function Calendar() {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API}entrenador/eliminarEvento/${id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/entrenador/eliminarEvento/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

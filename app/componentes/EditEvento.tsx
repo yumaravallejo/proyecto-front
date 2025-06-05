@@ -116,7 +116,7 @@ export default function EditarEvento({
     const parsedUser = localUser ? JSON.parse(localUser) : null;
     const token = parsedUser?.token;
 
-    fetch(`${process.env.NEXT_PUBLIC_API}entrenador/editarEvento/${evento.id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API}/entrenador/editarEvento/${evento.id}`, {
       method: "PUT", // o PATCH si usas PATCH
       headers: {
         "Content-Type": "application/json",

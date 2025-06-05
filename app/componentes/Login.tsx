@@ -47,7 +47,7 @@ export default function Login() {
   async function handleLogin(values: z.infer<typeof formSchema>) {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API;
-      const response = await fetch(apiUrl + "login", {
+      const response = await fetch(apiUrl + "/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
