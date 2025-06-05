@@ -76,7 +76,25 @@ export default function Registro() {
     intolerancias: z.string().optional(),
     genero: z.string().min(1, "El género es obligatorio"),
     objetivo: z.string().min(1, "El objetivo es obligatorio"),
-    fechaNacimiento: z.string().min(1, "La fecha de nacimiento es obligatoria"),
+    fechaNacimiento: z
+      .string()
+      .min(1, "La fecha de nacimiento es obligatoria")
+      .refine(
+        (fecha) => {
+          if (!fecha) return false;
+          const hoy = new Date();
+          const nacimiento = new Date(fecha);
+          let edad = hoy.getFullYear() - nacimiento.getFullYear();
+          const m = hoy.getMonth() - nacimiento.getMonth();
+          if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+            edad--;
+          }
+          return edad >= 18;
+        },
+        {
+          message: "Debes ser mayor de edad para registrarte",
+        }
+      ),
     imagen: z.any().optional(),
     password: z
       .string()
@@ -266,7 +284,6 @@ export default function Registro() {
                 </FormLabel>
                 <FormControl>
                   <Input
-                    min={new Date().toISOString().split("T")[0]}
                     type="date"
                     {...field}
                     className={
@@ -526,8 +543,10 @@ export default function Registro() {
     {
       numero: 4,
       titulo: "Datos de Pago",
-      contenido: <PaginaDePago tarifa={cliente.tarifa} registro={handleSubmit} />
-    }
+      contenido: (
+        <PaginaDePago tarifa={cliente.tarifa} registro={handleSubmit} />
+      ),
+    },
   ];
 
   return (
@@ -538,11 +557,11 @@ export default function Registro() {
         <span className="text-lg text-gray-500 mt-5">
           Paso {pagina}: {paginas[pagina - 1].titulo}
         </span>
-        <Progress value={pagina * 25}  className="w-[80%]" />
+        <Progress value={pagina * 25} className="w-[80%]" />
         <Toaster position="top-center" theme="dark" />
         <Form {...form}>
           <div
-          id="formRegistro"
+            id="formRegistro"
             onSubmit={form.handleSubmit(handleSubmit)}
             className="flex flex-col gap-4 w-full items-center"
           >

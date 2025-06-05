@@ -129,6 +129,7 @@ export default function Dietas() {
       return;
     }
 
+    //deitas
     const dieta: Dieta = {
       fecha: data.fecha,
       descripcion: JSON.stringify({
@@ -141,6 +142,8 @@ export default function Dietas() {
       idEntrenador: parsedUser?.id || 0,
       idUsuario: addDieta || 0,
     };
+
+    console.log(dieta);
 
     const URL = process.env.NEXT_PUBLIC_API;
 

@@ -80,6 +80,7 @@ export default function NuevoEventoDialog({
     const localUser = localStorage.getItem("user");
     const parsedUser = localUser ? JSON.parse(localUser) : null;
     const token = parsedUser?.token;
+    // ogemos el token para el authorization
 
     fetch(`${process.env.NEXT_PUBLIC_API}entrenador/crearEvento`, {
       method: "POST",

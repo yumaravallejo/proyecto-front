@@ -2,6 +2,7 @@ import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
 
 export default function Cookies() {
+    //pagina de cookies easy pisi
     return (
         <div className="flex flex-col">
             <HeaderUs promocion={null} />

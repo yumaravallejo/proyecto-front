@@ -43,9 +43,9 @@ interface ClaseDTO {
 
 interface ClaseHoyItem {
   id: number;
-  usuario: UsuarioDTO;   // el instructor de esta clase
+  usuario: UsuarioDTO; // el instructor de esta clase
   clase: ClaseDTO;
-  fechaHora: string;     // ISO string, ej. "2025-06-03T07:00:00"
+  fechaHora: string; // ISO string, ej. "2025-06-03T07:00:00"
 }
 
 interface Evento {
@@ -83,7 +83,6 @@ export default function Dashboard() {
   const [tipoUser, setTipoUser] = useState<"Cliente" | "Entrenador">("Cliente");
   const [userId, setUserId] = useState<number | null>(null);
   const [infoUser, setInfoUser] = useState<UsuarioDTO | null>(null);
-
 
   const API_URL = process.env.NEXT_PUBLIC_API;
 
@@ -141,10 +140,15 @@ export default function Dashboard() {
     fetchInfoHoy();
   }, []);
 
+  // Ordeno pir fecha para q salga primero la que va primero
+  const clasesHoyOrdenadas = [...clasesHoy].sort(
+    (a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime()
+  );
+
   // ------ VISTA ENTRENADOR ------
   if (tipoUser === "Entrenador") {
     // Filtramos las clases de hoy por la que item.usuario.id === userId (las clases del entrenador)
-    const misClasesHoy = clasesHoy.filter((item) => item.usuario.id === userId);
+    const misClasesHoy = clasesHoyOrdenadas.filter((item) => item.usuario.id === userId);
     const nombre = infoUser && infoUser.nombre ? infoUser.nombre : "Entrenador";
     const titulo = `PLANNING DE ${nombre.toUpperCase()}`;
 
@@ -167,17 +171,22 @@ export default function Dashboard() {
               {/* ===== MIS CLASES DE HOY ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
                 <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
-                  <h3 className="text-xl font-semibold text-white">MIS CLASES HOY</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    MIS CLASES HOY
+                  </h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
                   {Array.isArray(misClasesHoy) && misClasesHoy.length > 0 ? (
                     <ul className="space-y-4 overflow-y-auto">
                       {misClasesHoy.map((item) => {
-                        const horaLocal = new Date(item.fechaHora).toLocaleTimeString(
-                          [],
-                          { hour: "2-digit", minute: "2-digit" }
-                        );
-                        const stripeClass = tipoClaseColors[item.clase.tipoClase];
+                        const horaLocal = new Date(
+                          item.fechaHora
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                        const stripeClass =
+                          tipoClaseColors[item.clase.tipoClase];
                         return (
                           <li
                             key={item.id}
@@ -189,7 +198,9 @@ export default function Dashboard() {
                               <p className="font-bold text-lg truncate text-gray-800">
                                 {item.clase.nombre}
                               </p>
-                              <p className="text-gray-600 text-sm">Hora: {horaLocal}</p>
+                              <p className="text-gray-600 text-sm">
+                                Hora: {horaLocal}
+                              </p>
                               <p className="text-gray-600 text-sm truncate">
                                 Tipo: {item.clase.tipoClase}
                               </p>
@@ -209,19 +220,27 @@ export default function Dashboard() {
               {/* ===== EVENTOS DE HOY ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
                 <div className="p-4 bg-gradient-to-r from-[var(--azul)] to-[var(--dorado)]">
-                  <h3 className="text-xl font-semibold text-white">EVENTOS HOY</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    EVENTOS HOY
+                  </h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
                   {loading ? (
-                    <p className="text-gray-600 text-center">Cargando eventos...</p>
+                    <p className="text-gray-600 text-center">
+                      Cargando eventos...
+                    </p>
                   ) : Array.isArray(eventosHoy) && eventosHoy.length > 0 ? (
                     <ul className="space-y-4 overflow-y-auto">
                       {eventosHoy.map((evento) => {
-                        const inicio = new Date(evento.fechaInicio).toLocaleTimeString(
-                          [],
-                          { hour: "2-digit", minute: "2-digit" }
-                        );
-                        const fin = new Date(evento.fechaFin).toLocaleTimeString([], {
+                        const inicio = new Date(
+                          evento.fechaInicio
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                        const fin = new Date(
+                          evento.fechaFin
+                        ).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         });
@@ -231,12 +250,15 @@ export default function Dashboard() {
                             className="bg-gray-100 rounded-md p-3 flex flex-col"
                             aria-label={`Evento ${evento.nombre} desde las ${inicio} hasta las ${fin}`}
                           >
-                            <p className="font-bold text-lg truncate">{evento.nombre}</p>
+                            <p className="font-bold text-lg truncate">
+                              {evento.nombre}
+                            </p>
                             <p className="text-gray-600 text-sm line-clamp-2">
                               {evento.detallesEvento}
                             </p>
                             <p className="text-gray-600 text-sm mt-1">
-                              <span className="font-semibold">Horario:</span> {inicio} – {fin}
+                              <span className="font-semibold">Horario:</span>{" "}
+                              {inicio} – {fin}
                             </p>
                           </li>
                         );
@@ -277,17 +299,23 @@ export default function Dashboard() {
               {/* ===== SECCIÓN: Eventos de hoy ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
                 <div className="p-4 bg-[var(--dorado)] ">
-                  <h3 className="text-xl font-semibold text-white">EVENTOS DE HOY</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    EVENTOS DE HOY
+                  </h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
                   {Array.isArray(eventosHoy) && eventosHoy.length > 0 ? (
                     <ul className="space-y-4 overflow-y-auto">
                       {eventosHoy.map((evento) => {
-                        const inicio = new Date(evento.fechaInicio).toLocaleTimeString(
-                          [],
-                          { hour: "2-digit", minute: "2-digit" }
-                        );
-                        const fin = new Date(evento.fechaFin).toLocaleTimeString([], {
+                        const inicio = new Date(
+                          evento.fechaInicio
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                        const fin = new Date(
+                          evento.fechaFin
+                        ).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         });
@@ -304,7 +332,8 @@ export default function Dashboard() {
                               {evento.detallesEvento}
                             </p>
                             <p className="text-gray-600 text-sm mt-1">
-                              <span className="font-semibold">Horario:</span> {inicio} – {fin}
+                              <span className="font-semibold">Horario:</span>{" "}
+                              {inicio} – {fin}
                             </p>
                           </li>
                         );
@@ -321,7 +350,9 @@ export default function Dashboard() {
               {/* ===== SECCIÓN: Dieta de hoy ===== */}
               <section className="col-span-1 bg-white rounded-lg shadoaw-lg overflow-hidden flex flex-col">
                 <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
-                  <h3 className="text-xl font-semibold text-white">COMIDAS DE HOY</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    COMIDAS DE HOY
+                  </h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
                   {!dietaHoy ? (
@@ -332,7 +363,9 @@ export default function Dashboard() {
                     <section className="prose prose-sm max-w-none overflow-auto text-gray-700 flex flex-col gap-y-5">
                       <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-2">
                         <h4>Desayuno</h4>
-                        <p className="text-sm">{dietaHoy.descripcion.desayuno}</p>
+                        <p className="text-sm">
+                          {dietaHoy.descripcion.desayuno}
+                        </p>
                       </article>
                       <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
                         <h4>Almuerzo</h4>
@@ -340,7 +373,9 @@ export default function Dashboard() {
                       </article>
                       <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
                         <h4>Merienda</h4>
-                        <p className="text-sm">{dietaHoy.descripcion.merienda || " - "}</p>
+                        <p className="text-sm">
+                          {dietaHoy.descripcion.merienda || " - "}
+                        </p>
                       </article>
                       <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
                         <h4>Cena</h4>
@@ -348,7 +383,9 @@ export default function Dashboard() {
                       </article>
                       <article className="rounded-lg shadow-lg w-full bg-gray-100  p-4 flex flex-col gap-y-5">
                         <h4>Picoteo</h4>
-                        <p className="text-sm">{dietaHoy.descripcion.picoteo || " - "}</p>
+                        <p className="text-sm">
+                          {dietaHoy.descripcion.picoteo || " - "}
+                        </p>
                       </article>
                       <article></article>
                     </section>
@@ -359,18 +396,23 @@ export default function Dashboard() {
               {/* ===== SECCIÓN: Clases de hoy  ===== */}
               <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
                 <div className="p-4 bg-[var(--azul)]">
-                  <h3 className="text-xl font-semibold text-white">CLASES DE HOY</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    CLASES DE HOY
+                  </h3>
                 </div>
                 <div className="p-4 flex-grow flex flex-col text-gray-900">
                   {Array.isArray(clasesHoy) && clasesHoy.length > 0 ? (
                     <ul className="space-y-4 overflow-y-auto">
-                      {clasesHoy.map((item) => {
-                        const horaLocal = new Date(item.fechaHora).toLocaleTimeString(
-                          [],
-                          { hour: "2-digit", minute: "2-digit" }
-                        );
+                      {clasesHoyOrdenadas.map((item) => {
+                        const horaLocal = new Date(
+                          item.fechaHora
+                        ).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
                         // Sacamos la clase de color según item.clase.tipoClase
-                        const stripeClass = tipoClaseColors[item.clase.tipoClase];
+                        const stripeClass =
+                          tipoClaseColors[item.clase.tipoClase];
                         return (
                           <li
                             key={item.id}
@@ -384,7 +426,9 @@ export default function Dashboard() {
                               <p className="font-bold text-lg truncate text-gray-800">
                                 {item.clase.nombre}
                               </p>
-                              <p className="text-gray-600 text-sm">Hora: {horaLocal}</p>
+                              <p className="text-gray-600 text-sm">
+                                Hora: {horaLocal}
+                              </p>
                               <p className="text-gray-600 text-sm truncate">
                                 Entrenador: {item.usuario.nombre}
                               </p>
@@ -408,6 +452,4 @@ export default function Dashboard() {
       </div>
     );
   }
-
-
 }

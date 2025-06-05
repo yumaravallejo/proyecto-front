@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast, Toaster } from "sonner";
 
 export default function ContactForm() {
+    // formulario de contacto reutilizable, fasilito
     const objetivos = [
         { value: 'subir', label: 'Subir de peso' },
         { value: 'bajar', label: 'Bajar de peso' },

@@ -85,7 +85,7 @@ export default function EditarEvento({
     },
   });
 
-  // Cuando cambia el evento o se abre el modal, setea valores en el formulario
+  // Cuando cambia el evento o se abre el modal, setea valores en el formulario 
   useEffect(() => {
     if (evento && open) {
       form.reset({

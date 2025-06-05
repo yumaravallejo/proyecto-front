@@ -4,6 +4,7 @@ import Footer from "../componentes/Footer";
 import Cuota from "../componentes/Cuota";
 
 export default function Cuotas() {
+    //cuotas, muy basiquito :)
     const cuotas = [
         {
             titulo: "Mensual Básica",

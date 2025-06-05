@@ -53,6 +53,7 @@ export default function Footer() {
             Servicios del Club
           </Link>
         </div>
+        {/* meotdillos de pago */}
         <h3 className="text-[var(--azul-medio)] font-bold">Métodos de pago</h3>
         <div className="flex flex-row pt-2 pb-2 h-12 justify-between">
           <img alt="Logo de visa" src={"/Visa.png"} width={50} height={20} />
