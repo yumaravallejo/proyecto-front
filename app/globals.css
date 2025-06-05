@@ -54,7 +54,6 @@ div#formRegistro > div > div > input {
   transform: rotateY(180deg);
 }
 
-
 .oswald {
   font-family: var(--font-oswald);
   font-weight: 600;
