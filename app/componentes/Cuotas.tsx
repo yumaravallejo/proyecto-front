@@ -5,7 +5,7 @@ import Cuota from "./Cuota";
 
 type CuotaType = {
   registro: boolean;
-  onSelect?: (titulo: String) => void;
+  onSelect?: (titulo: string) => void;
 }
 
 export default function CuotasSelec(props: CuotaType) {
@@ -87,7 +87,7 @@ export default function CuotasSelec(props: CuotaType) {
           duracion={cuota.duracion}
           incluye={cuota.incluye}
           color={index}
-          onSelect={props.onSelect ? (titulo: String) => props.onSelect!(titulo) : undefined}
+          onSelect={props.onSelect ? (titulo: string) => props.onSelect!(titulo) : undefined}
 
         />
       ))}

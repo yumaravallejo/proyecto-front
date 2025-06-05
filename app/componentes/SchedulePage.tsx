@@ -53,7 +53,7 @@ interface SchedulePageProps {
 export default function SchedulePage({ horariosIniciales, cargando } : SchedulePageProps) {
   const diaBaseIndex = () => {
     const today = new Date();
-    let diaSemana = today.getDay();
+    const diaSemana = today.getDay();
     if (diaSemana === 0 || diaSemana === 6) {
       // Si es sábado (6) o domingo (0), cambaimos a lunes (índice 0) ya que no hay clases esos días
       return 0;
@@ -79,7 +79,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
 
   function cambioLunes(today = new Date()) {
     const diaSemana = today.getDay() === 0 ? 6 : today.getDay() - 1;
-    let lunes = new Date(today);
+    const lunes = new Date(today);
     if (diaSemana > 4) {
       lunes.setDate(today.getDate() + (7 - diaSemana));
     } else {
@@ -170,7 +170,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
       const claseDayIdx = getDayIndex(clase.fechaHora);
       if (claseDayIdx !== dayIdx) return false;
 
-      let claseHour = date.getHours();
+      const claseHour = date.getHours();
 
       if (tipoFiltro !== "TODAS" && clase.tipoClase !== tipoFiltro)
         return false;

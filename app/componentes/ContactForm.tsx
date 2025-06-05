@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,7 +18,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import PersAlert from "../componentes/PersAlert";
 import { Textarea } from "@/components/ui/textarea";
 import { toast, Toaster } from "sonner";
 
@@ -48,7 +46,7 @@ export default function ContactForm() {
         detalles: z.string().optional(),
     });
 
-    function handleForm(values: z.infer<typeof formSchema>) {
+    function handleForm() {
         toast.success("Solicitud enviada correctamente", {
             duration: 3000,
             position: "top-center",

@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import Video from "./componentes/Video";
 import Carousel from "./componentes/Carousel";
 import ContactForm from "./componentes/ContactForm";
@@ -8,8 +7,20 @@ import React, { useEffect, useState } from "react";
 import Header from "./componentes/Header";
 import Footer from "./componentes/Footer";
 
+interface Usuario {
+  id: number,
+  token: string,
+  tipo: string,
+  imagen: string,
+  email: string,
+  nombre: string
+}
+
 export default function Home() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Usuario | null>(null);
+  const [login, setLogin] = useState(false);
+
+
 
   useEffect(() => {
     const userString = localStorage.getItem("user");
@@ -17,6 +28,14 @@ export default function Home() {
       setUser(JSON.parse(userString));
     }
   }, []);
+
+  useEffect(()=>{
+    if (user) {
+      setLogin(true);
+    } else {
+      setLogin(false)
+    }
+  }, [user])
 
   const texto = (
     <div className="text-white flex flex-col text-center gap-5 items-center">
@@ -28,11 +47,6 @@ export default function Home() {
     </div>
   );
 
-  const [login, setLogin] = useState(false);
-
-  useEffect(() => {
-    localStorage.getItem("user") ? setLogin(true) : setLogin(false);
-  }, []);
 
   const contenido = login ? (
     <div className="pt-30 h-[calc(100vh-70px)] flex flex-col w-90">

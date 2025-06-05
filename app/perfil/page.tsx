@@ -1,12 +1,10 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import HeaderUs from "../componentes/HeaderUs";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Dialog,
@@ -14,23 +12,19 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
-import { parse } from "path";
 
 interface DetallesUsuarioDto {
   peso: string;
@@ -38,6 +32,13 @@ interface DetallesUsuarioDto {
   genero: string;
   intolerancias: string;
   objetivo: string;
+}
+
+interface Reservas {
+  nombreClase: string;
+  id: number;
+  fechaHora: string;
+  tipoClase: string;
 }
 
 interface BackendData {
@@ -62,9 +63,7 @@ export default function UserProfile() {
   const [openLogout, setOpenLogout] = useState(false);
   const [localUser, setLocalUser] = useState<LocalUser | null>(null);
   const [backendData, setBackendData] = useState<BackendData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [reservas, setReservas] = useState([]);
+  const [reservas, setReservas] = useState<Reservas[] | []>([]);
   const router = useRouter();
 
   const formSchema = z.object({
@@ -92,20 +91,11 @@ export default function UserProfile() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
-      setError("No se encontró usuario en localStorage");
-      setLoading(false);
       return;
     }
 
-    let parsedUser: LocalUser;
-    try {
-      parsedUser = JSON.parse(storedUser);
-      setLocalUser(parsedUser);
-    } catch {
-      setError("Error al parsear datos de usuario en localStorage");
-      setLoading(false);
-      return;
-    }
+    const parsedUser: LocalUser = JSON.parse(storedUser);
+    setLocalUser(parsedUser);
 
     let fetchData;
 
@@ -130,11 +120,8 @@ export default function UserProfile() {
           }
           const data2 = await reservas.json();
           setReservas(data2);
-        } catch (err: any) {
-          console.error("Error al cargar datos:", err.message);
-          setError(err.message);
-        } finally {
-          setLoading(false);
+        } catch (err) {
+          console.error("Error al cargar datos:", err);
         }
       };
     } else {
@@ -158,11 +145,8 @@ export default function UserProfile() {
           }
           const data: BackendData = await res.json();
           setBackendData(data);
-        } catch (err: any) {
-          console.error("Error al cargar datos:", err.message);
-          setError(err.message);
-        } finally {
-          setLoading(false);
+        } catch (err) {
+          console.error("Error al cargar datos:", err);
         }
       };
     }
@@ -170,7 +154,6 @@ export default function UserProfile() {
     fetchData();
   }, []);
 
-  if (error) return <p className="text-red-600">Error: {error}</p>;
   if (!localUser || !backendData) return;
 
   const detalles = backendData.detallesUsuario;
@@ -295,7 +278,7 @@ export default function UserProfile() {
                 <FormField
                   control={form.control}
                   name="imagen"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel
                         htmlFor="file"
@@ -435,7 +418,6 @@ export default function UserProfile() {
           Seguimiento Personal
         </h1>
         <main className="max-w-3xl mx-auto p-6 bg-white rounded-md sm:shadow-md mb-10 mt-4 sm:mt-10">
-
           <section className="flex flex-col sm:flex-row items-center gap-12 mb-8">
             <div className="flex flex-col items-center gap-5 w-1/3">
               <img
@@ -447,7 +429,7 @@ export default function UserProfile() {
                 <FormField
                   control={form.control}
                   name="imagen"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel
                         htmlFor="file"
@@ -525,39 +507,38 @@ export default function UserProfile() {
               <h3 className="font-semibold text-xl mb-2">Mis Reservas</h3>
               <div className="text-md flex flex-row flex-wrap space-y-2 gap-[1rem]">
                 {reservas.length > 0
-                  ? reservas.map((reserva: any) => (
-                    <div
-                      key={reserva.id}
-                      className="p-2 border border-gray-200 rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
-                    >
-                      <p>
-                        <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Horario:</strong>{" "}
-                        {new Date(reserva.fechaHora)
-                          .toLocaleString("es-ES", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          })
-                          .replace(",", " a las")}
-                      </p>
-                      <p>
-                        <strong>Tipo Clase:</strong>{" "}
-                        {reserva.tipoClase || "N/A"}
-                      </p>
-                    </div>
-                  ))
+                  ? reservas.map((reserva) => (
+                      <div
+                        key={reserva.id}
+                        className="p-2 border border-gray-200 rounded bg-white shadow-sm m-1 sm:basis-[calc(50%-1rem)] basis-full"
+                      >
+                        <p>
+                          <strong>Clase:</strong> {reserva.nombreClase || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Horario:</strong>{" "}
+                          {new Date(reserva.fechaHora)
+                            .toLocaleString("es-ES", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                            })
+                            .replace(",", " a las")}
+                        </p>
+                        <p>
+                          <strong>Tipo Clase:</strong>{" "}
+                          {reserva.tipoClase || "N/A"}
+                        </p>
+                      </div>
+                    ))
                   : "Aún no tienes reservas"}
               </div>
             </div>
           </section>
           <div className="rounded-md mt-10 mb-10 justify-between sm:justify-start gap-4 flex flex-row">
-
             <Dialog open={openLogout} onOpenChange={setOpenLogout}>
               <DialogTrigger asChild>
                 <span className="basis-1/2 text-center rounded-full h-12 font-bold bg-red-500 hover:bg-red-600 text-white px-6 flex justify-center font-semibold cursor-pointer transition-colors duration-200 items-center">

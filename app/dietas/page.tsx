@@ -40,7 +40,7 @@ export default function Dietas() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [dietas, setDietas] = useState<Record<number, Dieta[]>>({});
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
-  const [tipoUser, setTipoUser] = useState<String>("Cliente");
+  const [tipoUser, setTipoUser] = useState<string>("Cliente");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [addDieta, setAddDieta] = useState<number | null>(null);
   const [detalles, setDetalles] = useState<Detalles | null>(null);
@@ -60,7 +60,6 @@ export default function Dietas() {
   useEffect(() => {
     const localUser = localStorage.getItem("user");
     const parsedUser = localUser ? JSON.parse(localUser) : null;
-    const token = parsedUser?.token;
 
     setTipoUser(parsedUser?.tipo);
 

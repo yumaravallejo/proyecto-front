@@ -3,13 +3,13 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 type Props = {
-  titulo: String;
-  precio: String;
-  duracion: String;
+  titulo: string;
+  precio: string;
+  duracion: string;
   incluye: string[];
   color: number;
   registro: boolean;
-  onSelect?: (titulo: String) => void;
+  onSelect?: (titulo: string) => void;
 };
 
 export default function Cuota(props: Props) {
@@ -40,7 +40,7 @@ export default function Cuota(props: Props) {
       break;
   }
 
-  const selectCuota = (titulo: String) => {
+  const selectCuota = (titulo: string) => {
     if (props.registro) {
       if (props.onSelect) {
         props.onSelect(titulo);

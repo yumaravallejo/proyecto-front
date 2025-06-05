@@ -1,13 +1,23 @@
 "use client";
-import React, { act, useState } from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
 import Actividad from "../componentes/Actividad";
 
+interface Actividades {
+  nombre: string,
+  capacidadMaxima: number,
+  tipoClase: string,
+  descripcion: string,
+  duracion: number,
+  exigencia: string,
+  imagen: string
+}
+
 export default function Actividades() {
   const [user, setUser] = useState(null);
-  const [actividades, setActividades] = useState<any[]>([]);
+  const [actividades, setActividades] = useState<Actividades[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState("TODAS"); // Nuevo estado para el filtro
@@ -24,7 +34,7 @@ export default function Actividades() {
         setActividades(data);
         setError("");
       } catch (err) {
-        setError("No hay actividades en este momento.");
+        setError("No hay actividades en este momento." + err);
         setActividades([]);
       } finally {
         setLoading(false);

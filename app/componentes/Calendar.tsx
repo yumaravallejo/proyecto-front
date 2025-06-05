@@ -28,11 +28,19 @@ interface Dia {
     eventos: Evento[]
 }
 
+interface Usuario {
+    id: number;
+    tipo: string;
+    nombre: string;
+    email: string;
+    token: string;
+}
+
 export default function Calendar() {
     const [eventos, setEventos] = useState<Evento[]>([])
     const [eventosPorDia, setEventosPorDia] = useState<Dia[]>([])
     const [diaSeleccionado, setDiaSeleccionado] = useState<Dia | null>(null)
-    const [user, setUser] = useState<any>(null)
+    const [user, setUser] = useState<Usuario | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [quieresEliminar, setQuieresEliminar] = useState(false)
     const [idSeleccionada, setIdSeleccionada] = useState(0)

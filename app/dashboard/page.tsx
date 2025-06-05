@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
-import { set } from "react-hook-form";
 
 // === DEFINICIÓN DE TIPOS Y MAPEOS DE COLOR ===
 
@@ -109,7 +108,7 @@ export default function Dashboard() {
         setClasesHoy(Array.isArray(data.clasesHoy) ? data.clasesHoy : []);
         setEventosHoy(Array.isArray(data.eventosHoy) ? data.eventosHoy : []);
         if (data.dietaHoy) {
-          let descripcionObj = data.dietaHoy.descripcion;
+          const descripcionObj = data.dietaHoy.descripcion;
           if (typeof descripcionObj === "string") {
             const parsedDescripcionObj = JSON.parse(descripcionObj);
 

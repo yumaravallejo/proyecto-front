@@ -1,14 +1,9 @@
 "use client";
 import React from "react";
-import { useEffect } from "react";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
 
 export default function Reservas() {
-
-    useEffect(() => {
-        const user = localStorage.getItem("user");
-    }, []);
 
 
     return (

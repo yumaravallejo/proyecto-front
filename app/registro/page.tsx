@@ -41,7 +41,7 @@ export default function Registro() {
     tarifa: number | null;
     detallesUsuario: string;
     fechaNacimiento: string | null;
-    imagen: any | "";
+    imagen: null | "";
     password: string | null;
   }>({
     nombre: null,
@@ -120,7 +120,7 @@ export default function Registro() {
     },
   });
 
-  const numberTarifa = (titulo: String) => {
+  const numberTarifa = (titulo: string) => {
     switch (titulo) {
       case "Básica":
         return 0;
@@ -183,7 +183,7 @@ export default function Registro() {
 
   const handlePrev = () => setPagina((p) => Math.max(1, p - 1));
 
-  const handleCuotaSelect = (titulo: String) => {
+  const handleCuotaSelect = (titulo: string) => {
     setCliente((prev) => ({
       ...prev,
       tarifa: numberTarifa(titulo),

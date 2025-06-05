@@ -2,7 +2,6 @@
 import React from "react";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +14,7 @@ import { useRouter, usePathname } from "next/navigation";
 
 import { DialogClose } from "@radix-ui/react-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
@@ -26,11 +25,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import PersAlert from "./PersAlert";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 export default function Login() {
-  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -84,7 +81,7 @@ export default function Login() {
       }, 2000);
     } catch (error) {
       toast.error("Error al iniciar sesión", {
-        description: "Inténtelo de nuevo más tarde",
+        description: "Inténtelo de nuevo más tarde" + error,
       });
     }
   }
@@ -101,7 +98,7 @@ export default function Login() {
     <Dialog
       onOpenChange={(open) => {
         if (!open) {
-          alert && setAlert(null);
+          if (alert) setAlert(null);
           form.reset();
         }
       }}
@@ -124,15 +121,6 @@ export default function Login() {
             Iniciar Sesión
           </DialogTitle>
         </DialogHeader>
-
-        {alert && (
-          <PersAlert
-            title={alert.title}
-            message={alert.message}
-            variant={alert.variant}
-            spinner={alert.variant === "success"}
-          />
-        )}
 
         <Form {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(handleLogin)}>
@@ -198,9 +186,7 @@ export default function Login() {
               >
                 Iniciar Sesión
               </button>
-              <DialogClose
-                className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer"
-              >
+              <DialogClose className="bg-gray-400 text-white rounded-full px-6 py-3 font-semibold hover:bg-gray-500 transition cursor-pointer">
                 Cerrar
               </DialogClose>
             </DialogFooter>

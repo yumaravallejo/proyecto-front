@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Login from "./Login";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
@@ -9,6 +8,15 @@ type Props = {
   promocion: string | null;
   pagina?: string;
 };
+
+interface Usuario {
+  id: number,
+  token: string,
+  tipo: string,
+  imagen: string,
+  email: string,
+  nombre: string
+}
 
 export default function Header(props: Props) {
   const HEADER_HEIGHT = 70;
@@ -18,7 +26,7 @@ export default function Header(props: Props) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const [isClient, setIsClient] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Usuario | null>(null);
 
   useEffect(() => {
     setIsClient(true);

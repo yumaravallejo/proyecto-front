@@ -1,3 +1,4 @@
+"use client";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
 

@@ -40,9 +40,9 @@ function FormularioPago(props: Props) {
       });
 
       if (!res.ok) alert('Error del servidor');
-      props.registro;
-    } catch (err: any) {
-      alert('Error: ' + err.message);
+      props.registro();
+    } catch (err) {
+      alert('Error: ' + err);
     } finally {
       setIsLoading(false);
     }

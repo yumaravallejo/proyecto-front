@@ -21,7 +21,7 @@ interface ClaseItemProps {
   onEliminar: () => void;
 }
 
-const ClaseItem: React.FC<ClaseItemProps> = ({
+export default function ClaseItem({
   clase,
   tipoUsuario,
   isReservado,
@@ -30,7 +30,7 @@ const ClaseItem: React.FC<ClaseItemProps> = ({
   onCancelar,
   onEditar,
   onEliminar,
-}) => {
+}: ClaseItemProps) {
   const date = new Date(clase.fechaHora);
   const endDate = new Date(date.getTime() + clase.duracion * 60000);
   const startTime = `${date.getHours().toString().padStart(2, "0")}:${date
@@ -61,7 +61,9 @@ const ClaseItem: React.FC<ClaseItemProps> = ({
       <div className="text-sm">
         {startTime} – {endTime}
       </div>
-      <div className="text-sm truncate">Entrenador: {clase.nombreEntrenador}</div>
+      <div className="text-sm truncate">
+        Entrenador: {clase.nombreEntrenador}
+      </div>
       <div className="text-sm mb-3">
         {clase.numReservas} / {clase.capacidadMaxima}
       </div>
@@ -101,6 +103,4 @@ const ClaseItem: React.FC<ClaseItemProps> = ({
       )}
     </div>
   );
-};
-
-export default ClaseItem;
+}

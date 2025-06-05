@@ -6,17 +6,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+type Props = {
+  open: boolean;
+  id: number | null;
+  onCancel: () => void;
+  onConfirm: (id: number) => void;
+}
+
 export default function DeleteDialog({
   open,
   id,
   onCancel,
   onConfirm,
-}: {
-  open: boolean;
-  id: number | null;
-  onCancel: () => void;
-  onConfirm: (id: number) => void;
-}) {
+}: Props) {
   if (id === null) return null;
 
   const handleConfirm = async () => {
