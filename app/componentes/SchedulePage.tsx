@@ -100,7 +100,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
       const parsedUser = user ? JSON.parse(user) : null;
       const token = parsedUser?.token;
 
-      const res = await fetch(`${URL}entrenador/borrarHorario/${idHorario}`, {
+      const res = await fetch(`${URL}/entrenador/borrarHorario/${idHorario}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +187,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
       if (parsedUser?.id) {
         setIdUsuario(parsedUser.id);
         try {
-          const res = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
+          const res = await fetch(`${URL}/usuarios/mis-reservas/${parsedUser.id}`);
           const data = await res.json();
           const horariosIds = data.map(
             (reserva: { idHorario: number }) => reserva.idHorario
@@ -206,7 +206,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
 
   const fetchHorarios = async () => {
     try {
-      const res = await fetch(`${URL}usuarios/horarios`);
+      const res = await fetch(`${URL}/usuarios/horarios`);
       const data = await res.json();
       setHorarios(data);
     } catch (error) {
@@ -243,7 +243,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
       );
 
       const res = await fetch(
-        `${URL}usuarios/reservar?idHorario=${idHorario}&idCliente=${idUsuario}`,
+        `${URL}/usuarios/reservar?idHorario=${idHorario}&idCliente=${idUsuario}`,
         { method: "POST", headers: { "Content-Type": "application/json" } }
       );
       if (!res.ok) alert("Error al reservar");
@@ -268,7 +268,7 @@ export default function SchedulePage({ horariosIniciales, cargando } : ScheduleP
       );
 
       const res = await fetch(
-        `${URL}usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
+        `${URL}/usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
         { method: "DELETE", headers: { "Content-Type": "application/json" } }
       );
       if (!res.ok) alert("Error al cancelar");
