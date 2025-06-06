@@ -56,9 +56,9 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(response));
+      const data = await response.json();
 
-      // localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("user", JSON.stringify(data));
 
       toast.success("Tu sesión ha sido iniciada", {
         description: "Estás siendo redirigido",

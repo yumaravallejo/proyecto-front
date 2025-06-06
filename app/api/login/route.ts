@@ -4,7 +4,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   // Llama al backend (Spring Boot)
-  const res = await fetch("https://sb-changes.onrender.com/login", {
+  const URL = process.env.NEXT_PUBLIC_API;
+  const res = await fetch(URL + "/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
