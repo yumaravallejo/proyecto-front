@@ -161,7 +161,7 @@ export default function UserProfile() {
   const imagen =
     localUser.imagen == ""
       ? "/usuario.svg"
-      : `${process.env.NEXT_PUBLIC_API}usuarios/obtenerArchivo?imagen=${localUser.imagen}`;
+      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo?imagen=${localUser.imagen}`;
 
   async function handleLogOut() {
     try {
