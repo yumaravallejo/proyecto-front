@@ -3,39 +3,11 @@ import Link from "next/link";
 import Video from "./componentes/Video";
 import Carousel from "./componentes/Carousel";
 import ContactForm from "./componentes/ContactForm";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Header from "./componentes/Header";
 import Footer from "./componentes/Footer";
 
-interface Usuario {
-  id: number,
-  token: string,
-  tipo: string,
-  imagen: string,
-  email: string,
-  nombre: string
-}
-
 export default function Home() {
-  const [user, setUser] = useState<Usuario | null>(null);
-  const [login, setLogin] = useState(false);
-
-
-
-  useEffect(() => {
-    const userString = localStorage.getItem("user");
-    if (userString) {
-      setUser(JSON.parse(userString));
-    }
-  }, []);
-
-  useEffect(()=>{
-    if (user) {
-      setLogin(true);
-    } else {
-      setLogin(false)
-    }
-  }, [user])
 
   const texto = (
     <div className="text-white flex flex-col text-center gap-5 items-center">
@@ -47,41 +19,10 @@ export default function Home() {
     </div>
   );
 
-
-  const contenido = login ? (
-    <div className="pt-30 h-[calc(100vh-70px)] flex flex-col w-90">
-      <h1 className="text-2xl font-bold mt-5">
-        !Bienvenido de nuevo, {user?.nombre}!
-      </h1>
-      <main className="flex flex-col gap-10 mt-10">
-        {/* Tarjetas resumen */}
-        <div className="bg-[var(--azul)] p-5 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold">Rutinas completadas</h2>
-          <p className="text-3xl font-bold mt-2">ejemplo</p>
-        </div>
-        <div className="bg-[var(--dorado)] p-5 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold">Reservas activas</h2>
-          <p className="text-3xl font-bold mt-2">ejemplo</p>
-        </div>
-        <div className="bg-[var(--gris)] p-5 rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold">Peso actual</h2>
-          <p className="text-3xl font-bold mt-2">ejemplo kg</p>
-        </div>
-      </main>
-
-      {/* Progreso visual */}
-      <section className="bg-[var(--gris-oscuro)] p-6 rounded-lg shadow-md mt-10">
-        <h2 className="text-xl font-semibold mb-2">
-          Progreso hacia tu objetivo
-        </h2>
-        <div className="w-full bg-gray-700 h-4 rounded-full">
-          <div className="h-4 rounded-full bg-[var(--dorado)] transition-all"></div>
-        </div>
-        <p className="text-sm mt-1">ejemplo% completado</p>
-      </section>
-    </div>
-  ) : (
-    <div className="dashboard pb-10 pt-17 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
+  return (
+    <>
+      <Header pagina="INICIO" promocion={""} />
+      <div className="dashboard pb-10 pt-17 w-full bg-[var(--gris-oscuro)] flex flex-col items-center justify-center">
       <Video videoUrl="/videos/chica-fitness.mp4" texto={texto} />
       <div
         id="encuentranos"
@@ -211,12 +152,6 @@ export default function Home() {
         <ContactForm />
       </div>
     </div>
-  );
-
-  return (
-    <>
-      <Header pagina="INICIO" promocion={""} />
-      {contenido}
       <Footer />
     </>
   );
