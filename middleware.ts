@@ -5,6 +5,9 @@ export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   const token = req.cookies.get("token")?.value;
 
+  console.log("TOKEN DESDE MIDDLEWARE:", req.cookies.get("token")?.value);
+
+
   const publicRoutes = ["/", "/login", "/registro", "/cuotas", "/servicios", "/actividades"];
   const privateRoutes = ["/dashboard", "/perfil", "/dietas", "/calendario", "/reservas", "/horarios-actividades", "/administracion"];
 
