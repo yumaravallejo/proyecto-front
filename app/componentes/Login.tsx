@@ -31,12 +31,6 @@ export default function Login() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [alert, setAlert] = useState<{
-    message: string;
-    title: string;
-    variant: "default" | "destructive" | "success";
-  } | null>(null);
-
   const formSchema = z.object({
     email: z.string().email("Email no válido"),
     password: z
@@ -73,11 +67,7 @@ export default function Login() {
       });
 
       setTimeout(() => {
-        if (pathname === "/") {
-          window.location.reload();
-        } else {
-          router.push("/");
-        }
+          router.push("/dashboard");
       }, 2000);
     } catch (error) {
       toast.error("Error al iniciar sesión", {
@@ -98,7 +88,6 @@ export default function Login() {
     <Dialog
       onOpenChange={(open) => {
         if (!open) {
-          if (alert) setAlert(null);
           form.reset();
         }
       }}
