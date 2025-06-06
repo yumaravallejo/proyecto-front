@@ -38,18 +38,15 @@ export default function Login() {
 
   async function handleLogin(values: z.infer<typeof formSchema>) {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API;
-      const response = await fetch(apiUrl + "/login", {
+      // const apiUrl = process.env.NEXT_PUBLIC_API;
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           email: values.email,
           password: values.password,
         }),
       });
-
-      const data = await response.json();
 
       if (!response.ok) {
         toast.error("Error al iniciar sesión", {
@@ -58,7 +55,7 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(data));
+      // localStorage.setItem("user", JSON.stringify(data));
 
       toast.success("Tu sesión ha sido iniciada", {
         description: "Estás siendo redirigido",
@@ -67,7 +64,6 @@ export default function Login() {
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
-      
     } catch (error) {
       toast.error("Error al iniciar sesión", {
         description: "Inténtelo de nuevo más tarde" + error,
