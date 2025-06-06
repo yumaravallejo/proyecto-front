@@ -27,5 +27,5 @@ export async function POST(req: NextRequest) {
     maxAge: 60 * 60 * 24,
   });
 
-  return response;
+  return data;
 }
