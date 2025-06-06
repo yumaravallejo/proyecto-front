@@ -60,24 +60,6 @@ export default function Login() {
 
       localStorage.setItem("user", JSON.stringify(data));
 
-      const response2 = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
-        credentials: "include",
-      });
-
-
-      if (!response2.ok) {
-        toast.error("Error al iniciar sesión", {
-          description: "Las credenciales son incorrectas",
-        });
-        return;
-      }
-
       toast.success("Tu sesión ha sido iniciada", {
         description: "Estás siendo redirigido",
       });
@@ -85,6 +67,7 @@ export default function Login() {
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
+      
     } catch (error) {
       toast.error("Error al iniciar sesión", {
         description: "Inténtelo de nuevo más tarde" + error,
