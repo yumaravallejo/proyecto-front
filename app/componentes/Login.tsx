@@ -65,7 +65,7 @@ export default function Login() {
       });
 
       setTimeout(() => {
-          router.push("/dashboard");
+        router.push("/dashboard")
       }, 2000);
     } catch (error) {
       toast.error("Error al iniciar sesión", {
