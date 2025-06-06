@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { useState } from "react";
 import Link from "next/link";
 import {
   Dialog,
@@ -10,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { DialogClose } from "@radix-ui/react-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,7 +28,6 @@ import { toast } from "sonner";
 
 export default function Login() {
   const router = useRouter();
-  const pathname = usePathname();
 
   const formSchema = z.object({
     email: z.string().email("Email no válido"),
