@@ -42,6 +42,7 @@ export default function Login() {
       const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // necesario si luego quieres enviar cookies
         body: JSON.stringify({
           email: values.email,
           password: values.password,
@@ -54,6 +55,8 @@ export default function Login() {
         });
         return;
       }
+
+      localStorage.setItem("user", JSON.stringify(response));
 
       // localStorage.setItem("user", JSON.stringify(data));
 
