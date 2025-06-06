@@ -17,8 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false }, { status: 401 });
   }
 
-  // Setea la cookie desde el dominio del frontend
-  const response = NextResponse.json({ success: true });
+  const response = NextResponse.json(data); // incluye los datos del backend
   response.cookies.set("token", data.token, {
     httpOnly: true,
     secure: true,
@@ -26,6 +25,5 @@ export async function POST(req: NextRequest) {
     path: "/",
     maxAge: 60 * 60 * 24,
   });
-
-  return res;
+  return response;
 }
