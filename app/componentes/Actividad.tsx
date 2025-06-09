@@ -55,17 +55,24 @@ export default function Actividad(props: Props) {
         <img
           src={"/img/" + props.imagen}
           alt={props.nombre}
-          className="w-full h-50 object-cover"
+          width={600} 
+          height={300}
+          className="w-full object-cover"
           fetchPriority={props.imagen === "zumba.webp" ? "high" : undefined}
           loading={props.imagen === "zumba.webp" ? undefined : "lazy"}
         />
+
         <p id="descripcionAct" className="text-justify">
           {props.descripcion}
         </p>
 
         <section className="flex flex-row w-full justify-between  mt-auto">
-          <p className="text-md"><strong>Duración:</strong> {props.duracion} minutos</p>
-          <p className="text-md"><strong>Exigencia:</strong> {props.exigencia}</p>
+          <p className="text-md">
+            <strong>Duración:</strong> {props.duracion} minutos
+          </p>
+          <p className="text-md">
+            <strong>Exigencia:</strong> {props.exigencia}
+          </p>
         </section>
       </div>
     </div>
