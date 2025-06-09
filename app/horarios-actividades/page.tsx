@@ -22,7 +22,6 @@ export default function Horarios() {
   useEffect(() => {
     const hoy = new Date().toISOString().split("T")[0];
 
-    // ✅ Solo accedemos a localStorage en el navegador
     const cache = typeof window !== "undefined" && localStorage.getItem("horariosCache");
     if (cache) {
       try {
