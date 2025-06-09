@@ -1,4 +1,3 @@
-import Head from "next/head";
 import "./globals.css";
 import { Inter, Oswald } from "next/font/google";
 
@@ -27,11 +26,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${inter.className} ${oswald.className}`}>
-      <Head>
+      <head>
         <link rel="dns-prefetch" href="https://sb-changes.onrender.com" />
         <link rel="preconnect" href="https://sb-changes.onrender.com" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/img/zumba.webp" type="image/webp" />
-      </Head>
+      </head>
       <body>{children}</body>
     </html>
   );
