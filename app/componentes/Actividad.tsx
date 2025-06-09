@@ -60,7 +60,7 @@ export default function Actividad(props: Props) {
           height={300} // mantener proporción correcta
           className="w-full h-50 object-cover"
           fetchPriority={props.imagen === "zumba.webp" ? "high" : undefined}
-          loading={props.imagen === "zumba.webp" ? undefined : "lazy"}
+          loading={props.imagen === "zumba.webp" ? "eager" : "lazy"}
         />
 
         <p id="descripcionAct" className="text-justify">
