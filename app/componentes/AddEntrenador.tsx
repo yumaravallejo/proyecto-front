@@ -39,9 +39,6 @@ const formSchema = z.object({
     .email("El email no es válido")
     .min(1, "El email no puede estar vacío"),
   sueldo: z.number().min(0, "El sueldo debe ser un número positivo"),
-  estado: z.enum(["COBRO_PENDIENTE", "ACTIVO", "INACTIVO"], {
-    message: "Estado no válido",
-  }),
   tipo: z.string().min(1, "El tipo no puede estar vacío"),
 });
 
@@ -60,7 +57,6 @@ export default function AddEntrenador() {
       imagen: "",
       email: "",
       sueldo: 0,
-      estado: "COBRO_PENDIENTE",
       tipo: "",
     },
   });
@@ -70,9 +66,16 @@ export default function AddEntrenador() {
     setCargando(true);
 
     try {
-      const response = await fetch("/api/entrenador", {
+      const user = localStorage.getItem("user");
+      const parsedUser = user ? JSON.parse(user) : null;
+      const token = parsedUser?.token;
+      const URL = process.env.NEXT_PUBLIC_API;
+      const response = await fetch(URL + "/entrenador/registrarEntrenador", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify(values),
       });
 
@@ -233,27 +236,6 @@ export default function AddEntrenador() {
                     />
                   </FormControl>
                   <FormMessage className="text-red-500 text-sm mt-1" />
-                </FormItem>
-              )}
-            />
-
-            {/* Estado */}
-            <FormField
-              control={form.control}
-              name="estado"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estado</FormLabel>
-                  <FormControl>
-                    <select
-                      {...field}
-                      className="w-full rounded-md px-4 py-3 text-gray-700 border border-gray-300 focus:ring-yellow-300"
-                    >
-                      <option value="COBRO_PENDIENTE">Cobro Pendiente</option>
-                      <option value="ACTIVO">Activo</option>
-                      <option value="INACTIVO">Inactivo</option>
-                    </select>
-                  </FormControl>
                 </FormItem>
               )}
             />
