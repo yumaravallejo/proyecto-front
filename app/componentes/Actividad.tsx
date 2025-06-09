@@ -53,7 +53,7 @@ export default function Actividad(props: Props) {
         {props.nombre}
       </h2>
       <div className="p-5 flex flex-col gap-y-5 w-full h-full">
-        <Image
+        {/* <Image
           src={"/img/" + props.imagen}
           alt={props.nombre}
           width={600} // tamaño real o deseado en px
@@ -61,7 +61,7 @@ export default function Actividad(props: Props) {
           className="w-full h-50 object-cover"
           fetchPriority={props.imagen === "zumba.webp" ? "high" : undefined}
           loading={props.imagen === "zumba.webp" ? "eager" : "lazy"}
-        />
+        /> */}
 
         <p id="descripcionAct" className="text-justify">
           {props.descripcion}
