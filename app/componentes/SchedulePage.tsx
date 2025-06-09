@@ -30,15 +30,20 @@ const tipoClaseColors: Record<TipoClase, string> = {
   TONO_CARDIO: "bg-orange-500",
 };
 
+interface SchedulePageProps {
+  horariosIniciales: Horario[];
+}
+
+
 const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 const hours = Array.from({ length: 16 }, (_, i) => 6 + i);
 
 
-export default function SchedulePage (horariosIniciales: Horario[]) {
+export default function SchedulePage (horariosIniciales: SchedulePageProps) {
   const [currentDayIdx, setCurrentDayIdx] = useState(0);
   const [userReservations, setUserReservations] = useState<number[]>([]);
   const [idUsuario, setIdUsuario] = useState<number | null>(null);
-  const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales || []);
+  const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales.horariosIniciales || []);
   const [isLoadingReservas, setIsLoadingReservas] = useState(true);
   const URL = process.env.NEXT_PUBLIC_API;
 
