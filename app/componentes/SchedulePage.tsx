@@ -1,5 +1,5 @@
 "use client";
-import React, { JSX, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
 
 export type TipoClase =
