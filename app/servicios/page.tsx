@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import HeaderUs from "../componentes/HeaderUs";
 import Footer from "../componentes/Footer";
 import Servicio from "../componentes/Servicio";
