@@ -56,6 +56,8 @@ export default function Actividad(props: Props) {
           src={"/img/" + props.imagen}
           alt={props.nombre}
           className="w-full h-50 object-cover"
+          fetchPriority={props.imagen === "zumba.webp" ? "high" : undefined}
+          loading={props.imagen === "zumba.webp" ? undefined : "lazy"}
         />
         <p id="descripcionAct" className="text-justify">
           {props.descripcion}

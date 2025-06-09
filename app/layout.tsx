@@ -30,6 +30,7 @@ export default function RootLayout({
       <Head>
         <link rel="dns-prefetch" href="https://sb-changes.onrender.com" />
         <link rel="preconnect" href="https://sb-changes.onrender.com" crossOrigin="anonymous" />
+        <link rel="preload" as="image" href="/img/zumba.webp" type="image/webp" />
       </Head>
       <body>{children}</body>
     </html>

@@ -31,7 +31,7 @@ export default function Actividades() {
       console.log(err);
       setActividades([]);
     } finally {
-      setCargando(false); // Cambiar el estado de carga a false al finalizar
+      setCargando(false);
     }
   };
 
