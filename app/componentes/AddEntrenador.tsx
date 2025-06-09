@@ -64,6 +64,18 @@ export default function AddEntrenador() {
     setCargando(true);
 
     try {
+      // Asegúrate de convertir el sueldo a un número
+      const sueldoNumber = parseFloat(values.sueldo.toString());
+
+      // Verificamos si el sueldo es un número válido
+      if (isNaN(sueldoNumber)) {
+        toast.error("El sueldo debe ser un número válido");
+        return;
+      }
+
+      // Creamos el objeto con los datos a enviar, convirtiendo sueldo a número
+      const formData = { ...values, sueldo: sueldoNumber };
+
       const user = localStorage.getItem("user");
       const parsedUser = user ? JSON.parse(user) : null;
       const token = parsedUser?.token;
@@ -72,9 +84,9 @@ export default function AddEntrenador() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
