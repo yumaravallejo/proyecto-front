@@ -145,7 +145,6 @@ export default function UserProfile() {
 
   async function handleLogOut() {
     try {
-      const URL = process.env.NEXT_PUBLIC_API;
       const res = await fetch("/api/login", {
         method: "GET",
         credentials: "include",
