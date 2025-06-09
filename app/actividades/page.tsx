@@ -18,7 +18,6 @@ interface Actividades {
 export default function Actividades() {
   const [user, setUser] = useState(null);
   const [actividades, setActividades] = useState<Actividades[]>([]);
-  const [loading, setLoading] = useState(true);
   const [tipoFiltro, setTipoFiltro] = useState("TODAS"); // Nuevo estado para el filtro
 
   const fetchActividades = async () => {
@@ -31,8 +30,6 @@ export default function Actividades() {
       } catch (err) {
         console.log(err);
         setActividades([]);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -55,10 +52,7 @@ export default function Actividades() {
   return (
     <div>
       <HeaderUs promocion={null} pagina="ACTIVIDADES" />
-      <main id="actividadesUnlogged" className="bg-[var(--gris-oscuro)]">
-        {loading ? (
-          <div className="h-[100vh] bg-[var(--gris-oscuro)]"></div>
-        ) : (
+      <main id="actividadesUnlogged" className="bg-[var(--gris-oscuro)] min-h-screen">
           <div className="pb-20">
             <section className="filtros-actividades w-full flex overflow-x-auto gap-2 ">
               <article
@@ -175,7 +169,6 @@ export default function Actividades() {
               ))}
             </div>
           </div>
-        )}
       </main>
       <Footer />
     </div>
