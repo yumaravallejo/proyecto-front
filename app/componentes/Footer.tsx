@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Footer() {
@@ -8,25 +8,25 @@ export default function Footer() {
       <div className="bg-[var(--dorado)] w-full text-white flex flex-col gap-2 p-3">
        
         <div className="flex flex-row gap-4 justify-center">
-          <img
+          <Image
             alt="Logo de instagram"
             src={"/Rounded-instagram.svg"}
             width={40}
             height={50}
           />
-          <img
+          <Image
             alt="Logo de tiktok"
             src={"/Tiktok-rounded.svg"}
             width={40}
             height={50}
           />
-          <img
+          <Image
             alt="Logo de whatsapp"
             src={"/Whatsapp-rounded.svg"}
             width={40}
             height={50}
           />
-          <img
+          <Image
             alt="Logo de facebook"
             src={"/Facebook-rounded.svg"}
             width={40}
@@ -55,26 +55,26 @@ export default function Footer() {
         {/* meotdillos de pago */}
         <h3 className="text-[var(--azul-medio)] font-bold">Métodos de pago</h3>
         <div className="flex flex-row pt-2 pb-2 h-12 justify-between">
-          <img alt="Logo de visa" src={"/Visa.png"} width={50} height={20} />
-          <img
+          <Image alt="Logo de visa" src={"/Visa.png"} width={50} height={20} />
+          <Image
             alt="Logo de Mastercard"
             src={"/Mastercard.png"}
             width={50}
             height={50}
           />
-          <img
+          <Image
             alt="Logo de paypal"
             src={"/logos_paypal.png"}
             width={30}
             height={50}
           />
-          <img
+          <Image
             alt="Logo de American Express"
             src={"/American-Express.png"}
             width={40}
             height={50}
           />
-          <img
+          <Image
             alt="Bandera de España"
             src={"/Spain.png"}
             width={60}

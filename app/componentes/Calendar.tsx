@@ -1,5 +1,5 @@
 'use client'
-
+import Image from "next/image";
 import { useEffect, useState } from 'react'
 import {
     startOfMonth,
@@ -140,7 +140,7 @@ export default function Calendar() {
 
             {user?.tipo === 'Entrenador' && (
                 <button onClick={() => setIsDialogOpen(true)} className="mb-6 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition active:scale-95 flex items-center gap-2">
-                    <img src="/addHorario.svg" title="Añadir Horario" className="w-7 h-7" />
+                    <Image alt="Imagen de añadir horario" src="/addHorario.svg" title="Añadir Horario" className="w-7 h-7" />
                     <span>Añadir Evento</span>
                 </button>
             )}
@@ -227,12 +227,12 @@ export default function Calendar() {
                                             <div className="flex justify-between w-full gap-2">
                                                 <button onClick={() => { setQuieresEliminar(true); setIdSeleccionada(ev.id) }}
                                                     className="flex justify-center h-9 items-center gap-2 text-white rounded-full w-full bg-red-600 hover:bg-red-700 mt-3">
-                                                    <img src="/white-bin.svg" alt="Eliminar Evento" className="w-6 h-6" />
+                                                    <Image src="/white-bin.svg" alt="Eliminar Evento" className="w-6 h-6" />
                                                     Eliminar
                                                 </button>
                                                 <button onClick={() => { setQuieresEditar(true); setEventoEditar(ev) }}
                                                     className="flex justify-center h-9 items-center gap-2 text-white rounded-full w-full bg-blue-600 hover:bg-blue-700 mt-3">
-                                                    <img src="/edit.svg" alt="Editar Evento" className="w-6 h-6" />
+                                                    <Image src="/edit.svg" alt="Editar Evento" className="w-6 h-6" />
                                                     Editar
                                                 </button>
                                             </div>

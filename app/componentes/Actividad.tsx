@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React from "react";
 
 type Props = {
@@ -52,12 +53,12 @@ export default function Actividad(props: Props) {
         {props.nombre}
       </h2>
       <div className="p-5 flex flex-col gap-y-5 w-full h-full">
-        <img
-          src={"/img/" + props.imagen}
+        <Image
+          src={"/Image/" + props.imagen}
           alt={props.nombre}
-          width={600} 
-          height={300}
-          className="w-full object-cover"
+          width={600} // tamaño real o deseado en px
+          height={300} // mantener proporción correcta
+          className="w-full h-50 object-cover"
           fetchPriority={props.imagen === "zumba.webp" ? "high" : undefined}
           loading={props.imagen === "zumba.webp" ? undefined : "lazy"}
         />

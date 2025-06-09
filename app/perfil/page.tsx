@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -269,7 +270,7 @@ export default function UserProfile() {
           </h1>
           <section className="flex flex-col sm:flex-row items-center gap-6 mb-8">
             <article className="flex flex-col items-center gap-5 w-1/3">
-              <img
+              <Image
                 src={imagen}
                 alt={`Imagen de perfil de ${localUser.nombre}`}
                 className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
@@ -420,7 +421,7 @@ export default function UserProfile() {
         <main className="max-w-3xl mx-auto p-6 bg-white rounded-md sm:shadow-md mb-10 mt-4 sm:mt-10">
           <section className="flex flex-col sm:flex-row items-center gap-12 mb-8">
             <div className="flex flex-col items-center gap-5 w-1/3">
-              <img
+              <Image
                 src={imagen}
                 alt={`Imagen de perfil de ${localUser.nombre}`}
                 className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"

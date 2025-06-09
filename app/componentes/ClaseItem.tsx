@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { Horario, TipoClase } from "./SchedulePage";
 
 const tipoClaseColors: Record<TipoClase, string> = {
@@ -54,7 +55,7 @@ export default function ClaseItem({
           onClick={onEliminar}
           className="absolute top-4 right-3 bg-white rounded-full p-1 cursor-pointer shadow-lg"
         >
-          <img src="/bin.svg" alt="Eliminar" className="w-7 h-7" />
+          <Image src="/bin.svg" alt="Eliminar" className="w-7 h-7" />
         </button>
       )}
       <div className="font-bold truncate text-lg">{clase.nombreClase}</div>

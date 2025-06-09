@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-
+import Image from "next/image";
 type Props = {
     nombre: string;
     descripcion: string;
@@ -64,7 +64,7 @@ export default function Servicio(props: Props) {
                     {/* Cara frontal: imagen */}
                     <div className="absolute inset-0 [backface-visibility:hidden] flex items-center justify-center w-full">
                         {imagen && (
-                            <img
+                            <Image
                                 src={imagen}
                                 alt={nombre}
                                 className={`w-full h-full object-cover ${shadowClass} rounded-lg`}

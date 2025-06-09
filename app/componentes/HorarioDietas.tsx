@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 interface Dieta {
@@ -108,11 +109,11 @@ export default function DietaPage({ dietas }: Props) {
                             className="flex flex-col gap-4 justify-between items-center pt-5 pb-10 bg-gray-100 rounded-md shadow w-full"
                         >
                             <span className="capitalize font-semibold text-yellow-500 text-xl flex items-center gap-2 select-none ">
-                                {momento === "desayuno" && <img src="/desayuno.svg" alt="Desayuno" className="w-6 h-6" />}
-                                {momento === "comida" &&  <img src="/almuerzo.svg" alt="Comida" className="w-6 h-6" />}
-                                {momento === "merienda" && <img src="/merienda.svg" alt="Merienda" className="w-6 h-6" />}
-                                {momento === "cena" && <img src="/cena.svg" alt="Cena" className="w-6 h-6" />}
-                                {momento === "picoteo" && <img src="/picoteo.svg" alt="Picoteo" className="w-6 h-6" />}
+                                {momento === "desayuno" && <Image src="/desayuno.svg" alt="Desayuno" className="w-6 h-6" />}
+                                {momento === "comida" &&  <Image src="/almuerzo.svg" alt="Comida" className="w-6 h-6" />}
+                                {momento === "merienda" && <Image src="/merienda.svg" alt="Merienda" className="w-6 h-6" />}
+                                {momento === "cena" && <Image src="/cena.svg" alt="Cena" className="w-6 h-6" />}
+                                {momento === "picoteo" && <Image src="/picoteo.svg" alt="Picoteo" className="w-6 h-6" />}
 
                                 <span className="text-[var(--azul)]">{nombreCol[index]}</span>
                                 
