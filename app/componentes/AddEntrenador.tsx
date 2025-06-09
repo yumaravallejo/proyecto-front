@@ -85,9 +85,9 @@ export default function AddEntrenador() {
       });
 
       form.reset();
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Error al registrar el entrenador", {
-        description: error.message || "Intenta de nuevo más tarde",
+        description: "Intenta de nuevo más tarde " + error,
       });
     } finally {
       setCargando(false);
