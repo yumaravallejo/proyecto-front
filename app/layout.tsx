@@ -1,3 +1,4 @@
+import { preconnect } from "react-dom";
 import "./globals.css";
 import { Inter, Oswald } from 'next/font/google'
 
@@ -10,6 +11,7 @@ export const metadata = {
   icons: {
     icon: "/logo.svg",
   },
+  preconnect: "https://sb-changes.onrender.com",
 };
 
 export default function RootLayout({
