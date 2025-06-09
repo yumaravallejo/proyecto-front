@@ -57,7 +57,7 @@ export default function Actividades() {
       <HeaderUs promocion={null} pagina="ACTIVIDADES" />
       <main id="actividadesUnlogged" className="bg-[var(--gris-oscuro)]">
         {loading ? (
-          <div className="h-[100vh] bg-[var(--gris-oscuro)]">Cargando actividades...</div>
+          <div className="h-[100vh] bg-[var(--gris-oscuro)]"></div>
         ) : (
           <div className="pb-20">
             <section className="filtros-actividades w-full flex overflow-x-auto gap-2 ">
