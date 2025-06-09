@@ -227,11 +227,12 @@ export default function AddEntrenador() {
                       type="number"
                       placeholder="Introduce el sueldo"
                       {...field}
-                      onChange={(e) =>
-                      field.onChange(
-                        e.target.value === "" ? 0 : Number(e.target.value)
-                      )
-                    }
+                      // Manejamos el cambio, permitiendo un valor vacío
+                      onChange={(e) => {
+                        const value =
+                          e.target.value === "" ? "" : Number(e.target.value);
+                        field.onChange(value);
+                      }}
                       className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${
                         form.formState.errors.sueldo
                           ? "border-2 border-red-500"
