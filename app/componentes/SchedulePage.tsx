@@ -1,11 +1,6 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
-import EditarHorario from "./EditarHorario";
-import NuevoHorarioDialog from "./NuevoHorario";
-import DeleteHorarioDialog from "./DeleteHorario";
-import ClaseItem from "./ClaseItem";
 
 export type TipoClase =
   | "CARDIO"
@@ -26,51 +21,28 @@ export interface Horario {
   numReservas: number;
 }
 
-export interface NuevoHorario {
-  fechaHora: string;
-  idUsuario: number;
-  idClase: number;
-}
-
 const tipoClaseColors: Record<TipoClase, string> = {
   CARDIO: "bg-red-500",
-  FUERZA: "bg-blue-400",
+  FUERZA: "bg-blue-600",
   RELAJACION: "bg-green-600",
   TONIFICACION: "bg-yellow-500",
   INFANTIL: "bg-purple-600",
   TONO_CARDIO: "bg-orange-500",
 };
 
-const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-const horas = Array.from({ length: 15 }, (_, i) => 7 + i);
+const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+const hours = Array.from({ length: 16 }, (_, i) => 6 + i);
 
 interface SchedulePageProps {
   horariosIniciales: Horario[];
-  cargando?: boolean;
 }
 
-export default function SchedulePage({ horariosIniciales, cargando }: SchedulePageProps) {
-
-  const getValueDia = () => {
-    const dia = new Date().getDay();
-    return dia === 0 || dia === 6 ? 0 : dia - 1;
-  }
-
-  const indexHoy = getValueDia();
-
+const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
+  const [currentDayIdx, setCurrentDayIdx] = useState(0);
   const [userReservations, setUserReservations] = useState<number[]>([]);
   const [idUsuario, setIdUsuario] = useState<number | null>(null);
-  const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales);
+  const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales || []);
   const [isLoadingReservas, setIsLoadingReservas] = useState(true);
-  const [tipoFiltro, setTipoFiltro] = useState<TipoClase | "TODAS">("TODAS");
-  const [tipoUsuario, setTipoUsuario] = useState<string>("Cliente");
-  const [horarioEdit, setHorarioEdit] = useState<Horario | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [horarioAEliminar, setHorarioAEliminar] = useState<number | null>(null);
-  const [idEntrenador, setIdEntrenador] = useState<number>(0);
-
   const URL = process.env.NEXT_PUBLIC_API;
 
   const getDayIndex = (fechaHora: string): number => {
@@ -78,266 +50,289 @@ export default function SchedulePage({ horariosIniciales, cargando }: SchedulePa
     return day === 0 ? 6 : day - 1;
   };
 
-  const getClasesPara = (dia: number, hora: number) => {
+  const getClassesFor = (dayIdx: number, hour: number) => {
+    if (dayIdx < 0 || dayIdx > 4) return [];
+
     return horarios.filter((clase) => {
-      const claseDate = new Date(clase.fechaHora);
-      return (
-        getDayIndex(clase.fechaHora) === dia &&
-        claseDate.getHours() === hora &&
-        (tipoFiltro === "TODAS" || clase.tipoClase === tipoFiltro)
-      );
+      const date = new Date(clase.fechaHora);
+      const claseDayIdx = getDayIndex(clase.fechaHora);
+      if (claseDayIdx !== dayIdx) return false;
+
+      let claseHour = date.getHours();
+      const claseMinutes = date.getMinutes();
+      if (claseMinutes >= 30) claseHour += 1;
+
+      return claseHour === hour;
     });
   };
 
   const fetchUsuarioYReservas = async () => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) return;
-
     const parsedUser = JSON.parse(storedUser);
-    setTipoUsuario(parsedUser?.tipo || "Cliente");
-    if (parsedUser?.tipo === "Entrenador") {
-      setIdEntrenador(parsedUser.id);
-    }
-
-    if (parsedUser?.tipo === "Cliente" && parsedUser?.id) {
+    if (parsedUser?.id) {
       setIdUsuario(parsedUser.id);
       try {
-        const res = await fetch(`${URL}/usuarios/mis-reservas/${parsedUser.id}`);
+        const res = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
         const data = await res.json();
-        setUserReservations(data.map((r: { idHorario: number }) => r.idHorario));
-      } catch (err) {
-        toast.error("Error llamando a reservas reservas " + err);
+        const horariosIds = data.map((reserva: { id: number }) => reserva.id);
+        setUserReservations(horariosIds);
+      } catch (error) {
+        console.error("Error fetching reservas:", error);
       } finally {
         setIsLoadingReservas(false);
       }
+    } else {
+      setIsLoadingReservas(false);
     }
   };
 
   const fetchHorarios = async () => {
     try {
-      const res = await fetch(`${URL}/usuarios/horarios`);
+      const res = await fetch(`${URL}usuarios/horarios`);
       const data = await res.json();
       setHorarios(data);
     } catch (error) {
-      toast.error("Error al cargar horarios " + error);
+      console.error("Error fetching horarios:", error);
     }
   };
 
   useEffect(() => {
-    fetchHorarios();
-    fetchUsuarioYReservas();
+    (async () => {
+      await Promise.all([fetchHorarios(), fetchUsuarioYReservas()]);
+    })();
   }, []);
-
-  const handleEditar = (horario: Horario) => {
-    setHorarioEdit(horario);
-    setDialogOpen(true);
-  };
-
-  const handleEliminarHorario = async (idHorario: number) => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      const token = user?.token;
-
-      const res = await fetch(`${URL}/entrenador/borrarHorario/${idHorario}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error();
-
-      setHorarios((prev) => prev.filter((h) => h.idHorario !== idHorario));
-      toast.success("Horario eliminado correctamente");
-    } catch {
-      toast.error("No se pudo eliminar el horario");
-    }
-  };
-
-  const handleGuardarEdicion = async (
-    idHorario: number,
-    cambios: { fechaHora?: string; idEntrenador?: number }
-  ) => {
-    try {
-      const token = JSON.parse(localStorage.getItem("user") || "{}").token;
-
-      const res = await fetch(`${URL}/entrenador/editarHorario/${idHorario}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(cambios),
-      });
-
-      if (!res.ok) throw new Error();
-
-      const horarioActualizado = await res.json();
-      setHorarios((prev) =>
-        prev.map((h) => (h.idHorario === idHorario ? horarioActualizado : h))
-      );
-      fetchUsuarioYReservas();
-    } catch {
-      toast.error("Error al editar horario");
-    }
-  };
 
   const handleReservar = async (idHorario: number) => {
     if (!idUsuario) return toast.error("Usuario no identificado");
-
     try {
-      await fetch(
-        `${URL}/usuarios/reservar?idHorario=${idHorario}&idCliente=${idUsuario}`,
-        { method: "POST", headers: { "Content-Type": "application/json" } }
-      );
       setUserReservations((prev) => [...prev, idHorario]);
       setHorarios((prev) =>
-        prev.map((c) =>
-          c.idHorario === idHorario
-            ? { ...c, numReservas: c.numReservas + 1 }
-            : c
+        prev.map((clase) =>
+          clase.idHorario === idHorario
+            ? { ...clase, numReservas: clase.numReservas + 1 }
+            : clase
         )
       );
-      toast.success("Reserva realizada");
-    } catch {
-      toast.error("Error al reservar");
+
+      const res = await fetch(
+        `${URL}usuarios/reservar?idHorario=${idHorario}&idCliente=${idUsuario}`,
+        { method: "POST", headers: { "Content-Type": "application/json" } }
+      );
+      if (!res.ok) throw new Error("Error al reservar");
+
+      toast.success("Reserva realizada con éxito");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo realizar la reserva");
     }
   };
 
   const handleCancelar = async (idHorario: number) => {
     if (!idUsuario) return toast.error("Usuario no identificado");
-
     try {
-      await fetch(
-        `${URL}/usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
-        { method: "DELETE", headers: { "Content-Type": "application/json" } }
-      );
       setUserReservations((prev) => prev.filter((id) => id !== idHorario));
       setHorarios((prev) =>
-        prev.map((c) =>
-          c.idHorario === idHorario
-            ? { ...c, numReservas: c.numReservas - 1 }
-            : c
+        prev.map((clase) =>
+          clase.idHorario === idHorario
+            ? { ...clase, numReservas: clase.numReservas - 1 }
+            : clase
         )
       );
-      toast.success("Reserva cancelada");
-    } catch {
-      toast.error("Error al cancelar");
+
+      const res = await fetch(
+        `${URL}usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
+        { method: "DELETE", headers: { "Content-Type": "application/json" } }
+      );
+      if (!res.ok) throw new Error("Error al cancelar");
+
+      toast.success("Reserva cancelada con éxito");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo cancelar la reserva");
     }
   };
 
-  const renderClase = (clase: Horario) => (
-    <ClaseItem
-      key={clase.idHorario}
-      clase={clase}
-      tipoUsuario={tipoUsuario}
-      isReservado={userReservations.includes(clase.idHorario)}
-      isLoadingReservas={isLoadingReservas}
-      onReservar={() => handleReservar(clase.idHorario)}
-      onCancelar={() => handleCancelar(clase.idHorario)}
-      onEditar={() => handleEditar(clase)}
-      onEliminar={() => {
-        setHorarioAEliminar(clase.idHorario);
-        setIsDeleteDialogOpen(true);
-      }}
-    />
-  );
+  const renderClase = (clase: Horario) => {
+    const date = new Date(clase.fechaHora);
+    const endDate = new Date(date.getTime() + clase.duracion * 60000);
+    const startTime = `${date.getHours().toString().padStart(2, "0")}:${date
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+    const endTime = `${endDate.getHours().toString().padStart(2, "0")}:${endDate
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+    const color = tipoClaseColors[clase.tipoClase];
 
-  if (cargando) {
-    return <div className="text-center p-10 bg-[var(--gris-oscuro)]">Cargando horarios...</div>;
-  }
+    const isReservado = userReservations.includes(clase.idHorario);
 
-  return (
-    <div className="p-6 max-w-8xl mx-auto">
-      <Toaster position="bottom-right" theme="dark" />
-
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">Horarios</h1>
-        {tipoUsuario === "Entrenador" && (
-          <button onClick={() => setIsDialogOpen(true)} className="btn btn-primary">
-            Nuevo Horario
+    return (
+      <div
+        key={`${clase.idHorario}-${clase.numReservas}`}
+        className={`rounded-lg p-3 text-white shadow-lg ${color} flex flex-col gap-1`}
+      >
+        <div className="font-bold truncate text-lg">{clase.nombreClase}</div>
+        <div className="text-sm">
+          {startTime} – {endTime}
+        </div>
+        <div className="text-sm truncate">
+          Entrenador: {clase.nombreEntrenador}
+        </div>
+        <div className="text-sm mb-3">
+          {clase.numReservas} / {clase.capacidadMaxima}
+        </div>
+        {!isLoadingReservas && (
+          <button
+            className={`cursor-pointer transform transition-transform duration-200 hover:scale-[1.03] py-2 rounded-md font-semibold text-sm transition-all duration-300
+              ${
+                isReservado
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-blue-600 hover:bg-blue-700 "
+              }
+              active:scale-95`}
+            onClick={() =>
+              isReservado
+                ? handleCancelar(clase.idHorario)
+                : handleReservar(clase.idHorario)
+            }
+          >
+            {isReservado ? "Cancelar Reserva" : "Reservar"}
           </button>
         )}
       </div>
+    );
+  };
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        {(["TODAS", ...Object.keys(tipoClaseColors)] as (TipoClase | "TODAS")[]).map((tipo) => (
+  return (
+    <div className="p-6 max-w-8xl mx-auto bg-[var(--gris-oscuro)]">
+      <Toaster position="bottom-right" theme="dark" />
+      <div className="w-full flex flex-row items-center justify-center mb-10 lg:mt-10 mt-5">
+        <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
+        <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
+          RESERVA DE CLASES
+        </h1>
+        <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
+      </div>
+      {/* Vista móvil */}
+      <div className="lg:hidden p-4 rounded-lg shadow-lg border border-gray-300 bg-white max-w-2xl mx-auto border-3">
+        <div className="flex items-center justify-between mb-6">
           <button
-            key={tipo}
-            onClick={() => setTipoFiltro(tipo)}
-            className={`px-3 py-1 rounded-full text-sm ${
-              tipoFiltro === tipo ? "bg-white text-black" : "bg-gray-700 text-white"
-            }`}
+            onClick={() =>
+              setCurrentDayIdx((prev) => (prev > 0 ? prev - 1 : prev))
+            }
+            disabled={currentDayIdx === 0}
+            className="text-2xl px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
+            aria-label="Día anterior"
           >
-            {tipo}
+            ◀
           </button>
-        ))}
+          {(() => {
+            const today = new Date();
+            const monday = new Date(today);
+            const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
+            if (dayOfWeek > 4) monday.setDate(today.getDate() - dayOfWeek + 0);
+            else monday.setDate(today.getDate() - dayOfWeek);
+            monday.setDate(monday.getDate() + currentDayIdx);
+            const formatted = monday.toLocaleDateString("es-ES", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            });
+            return (
+              <h2 className="text-xl font-semibold text-gray-800 select-none">
+                {daysOfWeek[currentDayIdx]} - {formatted}
+              </h2>
+            );
+          })()}
+          <button
+            onClick={() =>
+              setCurrentDayIdx((prev) => (prev < 4 ? prev + 1 : prev))
+            }
+            disabled={currentDayIdx === 4}
+            className="text-2xl px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
+            aria-label="Día siguiente"
+          >
+            ▶
+          </button>
+        </div>
+
+        <div className="grid grid-cols-[70px_1fr] gap-4">
+          {hours.map((hour) => (
+            <React.Fragment key={hour}>
+              <div className="text-sm font-bold text-gray-800 w-[70px] text-center select-none flex items-center justify-center bg-gray-100 rounded-md shadow-inner">
+                {hour}:00
+              </div>
+              <div className="flex flex-col gap-3">
+                {getClassesFor(currentDayIdx, hour).length > 0 ? (
+                  getClassesFor(currentDayIdx, hour).map(renderClase)
+                ) : (
+                  <div className="text-gray-400 text-center italic py-2 select-none min-h-[56px]"></div>
+                )}
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr>
-              <th className="p-2 border">Hora</th>
-              {diasSemana.map((dia, i) => (
-                <th
-                  key={i}
-                  className={`p-2 border ${
-                    i === indexHoy ? "bg-[var(--morado)] text-white" : ""
-                  }`}
+      {/* Vista escritorio */}
+      <div className="hidden lg:block overflow-auto rounded-lg shadow-lg border border-gray-300">
+        <div
+          className="grid"
+          style={{
+            gridTemplateColumns: "70px repeat(5, minmax(0, 1fr))",
+            gap: "12px",
+            padding: "12px",
+            backgroundColor: "#fafafa",
+          }}
+        >
+          <div className="font-semibold text-gray-700 flex items-center justify-center select-none">
+            Hora
+          </div>
+          {daysOfWeek.map((day, index) => {
+            const today = new Date();
+            const monday = new Date(today);
+            const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
+            if (dayOfWeek > 4) monday.setDate(today.getDate() - dayOfWeek + 0);
+            else monday.setDate(today.getDate() - dayOfWeek);
+            monday.setDate(monday.getDate() + index);
+            const formatted = monday.toLocaleDateString("es-ES", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            });
+            return (
+              <div
+                key={day}
+                className="flex flex-col items-center justify-center font-semibold text-gray-700 text-sm select-none p-2 bg-white rounded-lg shadow-sm"
+                style={{ minHeight: "52px" }}
+              >
+                <div>{day}</div>
+                <div className="text-xs text-gray-500">{formatted}</div>
+              </div>
+            );
+          })}
+
+          {hours.map((hour) => (
+            <React.Fragment key={hour}>
+              <div className="text-xs text-gray-500 bg-gray-100 flex items-center justify-center rounded-md select-none">
+                {hour}:00
+              </div>
+              {daysOfWeek.map((_, dayIdx) => (
+                <div
+                  key={`${hour}-${dayIdx}`}
+                  className="p-2 bg-white rounded-lg shadow-inner min-h-[56px] flex flex-col gap-2"
                 >
-                  {dia}
-                </th>
+                  {getClassesFor(dayIdx, hour).map(renderClase)}
+                </div>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {horas.map((hora) => (
-              <tr key={hora}>
-                <td className="p-2 border font-bold">{hora}:00</td>
-                {diasSemana.map((_, diaIdx) => (
-                  <td key={diaIdx} className="p-2 border min-w-[150px]">
-                    {getClasesPara(diaIdx, hora).map(renderClase)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
-
-      <EditarHorario
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        horario={
-          horarioEdit
-            ? {
-                idHorario: horarioEdit.idHorario,
-                fechaHora: horarioEdit.fechaHora,
-                idEntrenador,
-                nombreEntrenador: horarioEdit.nombreEntrenador,
-              }
-            : null
-        }
-        onSave={handleGuardarEdicion}
-      />
-
-      <NuevoHorarioDialog
-        open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        onCreate={fetchHorarios}
-      />
-
-      <DeleteHorarioDialog
-        open={isDeleteDialogOpen}
-        id={horarioAEliminar}
-        onCancel={() => {
-          setIsDeleteDialogOpen(false);
-          setHorarioAEliminar(null);
-        }}
-        onConfirm={handleEliminarHorario}
-      />
     </div>
   );
-}
+};
+
+export default SchedulePage;
