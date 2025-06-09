@@ -16,31 +16,28 @@ const SchedulePage = dynamic(() => import("../componentes/SchedulePage"), {
 });
 
 export default function Horarios() {
-  const [horarios, setHorarios] = useState<Horario[]>(() => {
-    const hoy = new Date().toISOString().split("T")[0];
-    const cache = localStorage.getItem("horariosCache");
+  const [horarios, setHorarios] = useState<Horario[]>([]);
+  const [dataCargada, setDataCargada] = useState(false);
 
+  useEffect(() => {
+    const hoy = new Date().toISOString().split("T")[0];
+
+    // ✅ Solo accedemos a localStorage en el navegador
+    const cache = typeof window !== "undefined" && localStorage.getItem("horariosCache");
     if (cache) {
       try {
         const { fecha, datos } = JSON.parse(cache);
         if (fecha === hoy) {
-          return datos;
+          setHorarios(datos);
+          setDataCargada(true);
+          return;
         }
       } catch (error) {
         console.error("Error al parsear el cache de horarios", error);
       }
     }
 
-    return [];
-  });
-
-  const [dataCargada, setDataCargada] = useState(horarios.length > 0);
-
-  useEffect(() => {
-    if (dataCargada) return;
-
     const getHorarios = async () => {
-      const hoy = new Date().toISOString().split("T")[0];
       const URL = process.env.NEXT_PUBLIC_API;
       if (!URL) {
         console.error("NEXT_PUBLIC_API no está definida en .env");
@@ -57,17 +54,14 @@ export default function Horarios() {
         const data: Horario[] = await res.json();
         setHorarios(data);
         setDataCargada(true);
-        localStorage.setItem(
-          "horariosCache",
-          JSON.stringify({ fecha: hoy, datos: data })
-        );
+        localStorage.setItem("horariosCache", JSON.stringify({ fecha: hoy, datos: data }));
       } catch (error) {
         console.error("Error al obtener horarios:", error);
       }
     };
 
     getHorarios();
-  }, [dataCargada]);
+  }, []);
 
   return (
     <div>
