@@ -35,7 +35,7 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href="/Image/zumba.webp"
+          href="/img/zumba.webp"
           type="image/webp"
         />
         <script

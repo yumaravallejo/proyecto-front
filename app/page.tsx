@@ -31,7 +31,7 @@ export default function Home() {
       >
         <h2 className="font-bold text-white text-2xl mb-4">ENCUÉNTRANOS</h2>
         <Image
-          src="/Image/localizacion.webp"
+          src="/img/localizacion.webp"
           alt="Imagen de usuario"
           width={300}
           height={50}

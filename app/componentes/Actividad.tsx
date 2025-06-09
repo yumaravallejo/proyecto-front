@@ -54,7 +54,7 @@ export default function Actividad(props: Props) {
       </h2>
       <div className="p-5 flex flex-col gap-y-5 w-full h-full">
         <Image
-          src={"/Image/" + props.imagen}
+          src={"/img/" + props.imagen}
           alt={props.nombre}
           width={600} // tamaño real o deseado en px
           height={300} // mantener proporción correcta
