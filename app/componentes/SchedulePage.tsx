@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
 
 export type TipoClase =
@@ -33,11 +33,8 @@ const tipoClaseColors: Record<TipoClase, string> = {
 const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 const hours = Array.from({ length: 16 }, (_, i) => 6 + i);
 
-interface SchedulePageProps {
-  horariosIniciales: Horario[];
-}
 
-const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
+export default function SchedulePage (horariosIniciales: Horario[]) {
   const [currentDayIdx, setCurrentDayIdx] = useState(0);
   const [userReservations, setUserReservations] = useState<number[]>([]);
   const [idUsuario, setIdUsuario] = useState<number | null>(null);
@@ -335,4 +332,3 @@ const SchedulePage: React.FC<SchedulePageProps> = ({ horariosIniciales }) => {
   );
 };
 
-export default SchedulePage;
