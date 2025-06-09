@@ -228,9 +228,11 @@ export default function Dietas() {
         <HeaderUs promocion={null} pagina="DIETAS" />
         <Toaster />
         <main className="max-w-6xl mx-auto p-6 min-h-screen flex flex-col gap-10">
-          <h1 className="text-3xl font-bold text-center text-gray-800">
+          <h1 className="text-3xl font-bold text-center text-gray-800 hidden sm:block">
             Gestión de Dietas
           </h1>
+          <h1 className="sm:hidden w-full text-center pt-4 pb-4 mb-10 text-2xl text-white bg-[var(--gris-oscuro)]">GESTIÓN DE DIETAS</h1>
+
 
           <div className="flex justify-start">
             <input

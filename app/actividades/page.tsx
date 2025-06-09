@@ -2,7 +2,6 @@ import FiltrosActividades from "../componentes/FiltroActividad";
 import Footer from "../componentes/Footer";
 import HeaderUs from "../componentes/HeaderUs";
 
-
 interface Actividades {
   nombre: string;
   capacidadMaxima: number;

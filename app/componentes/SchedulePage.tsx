@@ -268,7 +268,7 @@ export default function SchedulePage({ horariosIniciales }: SchedulePageProps) {
       console.error(error);
       toast.error("Error al hacer la reserva");
     } finally {
-      setIsLoading(false); // Finaliza la carga
+      setIsLoading(false);
     }
   };
 
@@ -357,7 +357,7 @@ export default function SchedulePage({ horariosIniciales }: SchedulePageProps) {
               title="Añadir Horario"
               className="w-7 h-7"
             />{" "}
-            <span className="sm:block hidden">Añadir Horario</span>
+            <span>Añadir Horario</span>
           </button>
         </div>
       ) : (
