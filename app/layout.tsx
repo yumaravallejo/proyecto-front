@@ -1,4 +1,4 @@
-import { preconnect } from "react-dom";
+import Head from "next/head";
 import "./globals.css";
 import { Inter, Oswald } from "next/font/google";
 
@@ -27,9 +27,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${inter.className} ${oswald.className}`}>
-      <head>
+      <Head>
         <link rel="preconnect" href="https://sb-changes.onrender.com" />
-      </head>
+      </Head>
       <body>{children}</body>
     </html>
   );

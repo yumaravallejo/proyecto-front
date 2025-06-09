@@ -132,13 +132,11 @@ export default function HeaderUs(props: Props) {
   const opcionesMenu = login ? (
     user.tipo !== "Entrenador" ? [
       { nombre: "DIETAS", ruta: "/dietas" },
-      { nombre: "RESERVAS", ruta: "/reservas" },
       { nombre: "CALENDARIO", ruta: "/calendario" },
       { nombre: "ACTIVIDADES", ruta: "/horarios-actividades" },
       { nombre: "CONTACTO", ruta: "/contacto" },
     ] : [
       { nombre: "DIETAS", ruta: "/dietas" },
-      { nombre: "RESERVAS", ruta: "/reservas" },
       { nombre: "CALENDARIO", ruta: "/calendario" },
       { nombre: "ACTIVIDADES", ruta: "/horarios-actividades" },
       { nombre: "ADMINISTRACIÓN", ruta: "/administracion" },
