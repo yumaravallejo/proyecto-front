@@ -59,23 +59,12 @@ export default function AddEntrenador() {
     },
   });
 
-  // Función que se ejecuta al enviar el formulario
   async function handleSubmitForm(values: FormValues) {
     setCargando(true);
 
+    values.sueldo = parseFloat(values.sueldo.toString());
+
     try {
-      // Asegúrate de convertir el sueldo a un número
-      const sueldoNumber = parseFloat(values.sueldo.toString());
-
-      // Verificamos si el sueldo es un número válido
-      if (isNaN(sueldoNumber)) {
-        toast.error("El sueldo debe ser un número válido");
-        return;
-      }
-
-      // Creamos el objeto con los datos a enviar, convirtiendo sueldo a número
-      const formData = { ...values, sueldo: sueldoNumber };
-
       const user = localStorage.getItem("user");
       const parsedUser = user ? JSON.parse(user) : null;
       const token = parsedUser?.token;
@@ -86,7 +75,7 @@ export default function AddEntrenador() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(values),
       });
 
       if (!response.ok) {
@@ -238,6 +227,11 @@ export default function AddEntrenador() {
                       type="number"
                       placeholder="Introduce el sueldo"
                       {...field}
+                      onChange={(e) =>
+                      field.onChange(
+                        e.target.value === "" ? 0 : Number(e.target.value)
+                      )
+                    }
                       className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${
                         form.formState.errors.sueldo
                           ? "border-2 border-red-500"
