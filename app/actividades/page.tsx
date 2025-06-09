@@ -19,27 +19,24 @@ export default function Actividades() {
   const [user, setUser] = useState(null);
   const [actividades, setActividades] = useState<Actividades[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState("TODAS"); // Nuevo estado para el filtro
 
-  useEffect(() => {
-    setUser(user);
-
-    const fetchActividades = async () => {
+  const fetchActividades = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API;
         const res = await fetch(`${apiUrl}/actividades`);
         if (!res.ok) alert("No se pudieron obtener las actividades");
         const data = await res.json();
         setActividades(data);
-        setError("");
       } catch (err) {
-        setError("No hay actividades en este momento." + err);
         setActividades([]);
       } finally {
         setLoading(false);
       }
     };
+
+  useEffect(() => {
+    setUser(user);
     fetchActividades();
   }, []);
 
@@ -59,10 +56,7 @@ export default function Actividades() {
       <HeaderUs promocion={null} pagina="ACTIVIDADES" />
       <main id="actividadesUnlogged" className="bg-[var(--gris-oscuro)]">
         {loading ? (
-          <div className="h-[100vh] bg-[var(--gris-oscuro)]"></div>
-        ) : error ? (
-          <div className="h-[100vh] bg-[var(--gris-oscuro)] text-white flex items-center text-center justify-center"><p>{error}</p></div>
-
+          <div className="h-[100vh] bg-[var(--gris-oscuro)]">Cargando actividades...</div>
         ) : (
           <div className="pb-20">
             <section className="filtros-actividades w-full flex overflow-x-auto gap-2 ">
