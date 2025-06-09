@@ -56,7 +56,7 @@ export default function SchedulePage({ horariosIniciales, cargando }: SchedulePa
     return dia === 0 || dia === 6 ? 0 : dia - 1;
   }
 
-  let indexHoy = getValueDia();
+  const indexHoy = getValueDia();
 
   const [userReservations, setUserReservations] = useState<number[]>([]);
   const [idUsuario, setIdUsuario] = useState<number | null>(null);
