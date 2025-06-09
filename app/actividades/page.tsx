@@ -29,6 +29,7 @@ export default function Actividades() {
         const data = await res.json();
         setActividades(data);
       } catch (err) {
+        console.log(err);
         setActividades([]);
       } finally {
         setLoading(false);
