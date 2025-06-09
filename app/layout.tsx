@@ -39,16 +39,19 @@ export default function RootLayout({
           href="/img/zumba.webp"
           type="image/webp"
         />
-        <link
-          rel="preload"
-          href="/css/f63175d15d0525ee.css"
-          as="style"
-          onLoad={(e) => {
-            const link = e.currentTarget as HTMLLinkElement;
-            link.onload = null;
-            link.rel = "stylesheet";
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            const l = document.createElement('link');
+            l.rel = 'stylesheet';
+            l.href = '/css/f63175d15d0525ee.css';
+            l.media = 'print';
+            l.onload = () => { l.media = 'all'; };
+            document.head.appendChild(l);
+          `,
           }}
         />
+
         <noscript>
           <link rel="stylesheet" href="/css/f63175d15d0525ee.css" />
         </noscript>
