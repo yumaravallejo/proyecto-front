@@ -18,7 +18,6 @@ import { toast } from "sonner";
 
 export default function BaneoUser() {
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const formSchema = z.object({
     userId: z.string().min(1, "La ID del usuario es requerida"),
@@ -44,7 +43,7 @@ export default function BaneoUser() {
       });
     } catch (error) {
       toast.error("Error al banear al usuario", {
-        description: "Inténtalo de nuevo más tarde",
+        description: "Inténtalo de nuevo más tarde " + error,
       });
     } finally {
       setCargando(false);

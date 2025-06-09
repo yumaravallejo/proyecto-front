@@ -18,7 +18,6 @@ export default function Administracion() {
     null
   );
   const [cargando, setCargando] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   async function fetchDatos() {
     const user = localStorage.getItem("user");
@@ -44,21 +43,13 @@ export default function Administracion() {
       setCargando(false);
     } catch (error) {
       setCargando(false);
-      
+      console.error(error)
     }
   }
 
   useEffect(() => {
     fetchDatos();
   }, []);
-
-  if (error) {
-    return (
-      <div className="text-center mt-10 text-red-600">
-        <p>{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-gray-100 min-h-screen relative">
