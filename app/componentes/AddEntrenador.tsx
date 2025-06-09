@@ -39,7 +39,6 @@ const formSchema = z.object({
     .email("El email no es válido")
     .min(1, "El email no puede estar vacío"),
   sueldo: z.number().min(0, "El sueldo debe ser un número positivo"),
-  tipo: z.string().min(1, "El tipo no puede estar vacío"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -57,7 +56,6 @@ export default function AddEntrenador() {
       imagen: "",
       email: "",
       sueldo: 0,
-      tipo: "",
     },
   });
 
@@ -230,29 +228,6 @@ export default function AddEntrenador() {
                       {...field}
                       className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${
                         form.formState.errors.sueldo
-                          ? "border-2 border-red-500"
-                          : "border border-gray-300"
-                      }`}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-500 text-sm mt-1" />
-                </FormItem>
-              )}
-            />
-
-            {/* Tipo */}
-            <FormField
-              control={form.control}
-              name="tipo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Introduce el tipo de entrenador"
-                      {...field}
-                      className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${
-                        form.formState.errors.tipo
                           ? "border-2 border-red-500"
                           : "border border-gray-300"
                       }`}
