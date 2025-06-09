@@ -28,7 +28,8 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.className} ${oswald.className}`}>
       <Head>
-        <link rel="preconnect" href="https://sb-changes.onrender.com" />
+        <link rel="dns-prefetch" href="https://sb-changes.onrender.com" />
+        <link rel="preconnect" href="https://sb-changes.onrender.com" crossOrigin="anonymous" />
       </Head>
       <body>{children}</body>
     </html>

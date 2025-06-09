@@ -16,30 +16,38 @@ const SchedulePage = dynamic(() => import("../componentes/SchedulePage"), {
 });
 
 export default function Horarios() {
-  const [horarios, setHorarios] = useState<Horario[]>([]);
-  const [dataCargada, setDataCargada] = useState(false);
+  const [horarios, setHorarios] = useState<Horario[]>(() => {
+    const hoy = new Date().toISOString().split("T")[0];
+    const cache = localStorage.getItem("horariosCache");
+
+    if (cache) {
+      try {
+        const { fecha, datos } = JSON.parse(cache);
+        if (fecha === hoy) {
+          return datos;
+        }
+      } catch (error) {
+        console.error("Error al parsear el cache de horarios", error);
+      }
+    }
+
+    return [];
+  });
+
+  const [dataCargada, setDataCargada] = useState(horarios.length > 0);
 
   useEffect(() => {
+    if (dataCargada) return;
+
     const getHorarios = async () => {
       const hoy = new Date().toISOString().split("T")[0];
+      const URL = process.env.NEXT_PUBLIC_API;
+      if (!URL) {
+        console.error("NEXT_PUBLIC_API no está definida en .env");
+        return;
+      }
 
       try {
-        const cache = localStorage.getItem("horariosCache");
-        if (cache) {
-          const { fecha, datos } = JSON.parse(cache);
-          if (fecha === hoy) {
-            setHorarios(datos);
-            setDataCargada(true);
-            return; // ⛔️ No recargues la página
-          }
-        }
-
-        const URL = process.env.NEXT_PUBLIC_API;
-        if (!URL) {
-          console.error("NEXT_PUBLIC_API no está definida en .env");
-          return;
-        }
-
         const res = await fetch(`${URL}/usuarios/horarios`);
         if (!res.ok) {
           alert("No se han podido cargar los horarios");
@@ -49,7 +57,6 @@ export default function Horarios() {
         const data: Horario[] = await res.json();
         setHorarios(data);
         setDataCargada(true);
-
         localStorage.setItem(
           "horariosCache",
           JSON.stringify({ fecha: hoy, datos: data })
@@ -60,7 +67,7 @@ export default function Horarios() {
     };
 
     getHorarios();
-  }, []);
+  }, [dataCargada]);
 
   return (
     <div>
