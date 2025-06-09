@@ -28,8 +28,30 @@ export default function RootLayout({
     <html lang="es" className={`${inter.className} ${oswald.className}`}>
       <head>
         <link rel="dns-prefetch" href="https://sb-changes.onrender.com" />
-        <link rel="preconnect" href="https://sb-changes.onrender.com" crossOrigin="anonymous" />
-        <link rel="preload" as="image" href="/img/zumba.webp" type="image/webp" />
+        <link
+          rel="preconnect"
+          href="https://sb-changes.onrender.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/img/zumba.webp"
+          type="image/webp"
+        />
+        <link
+          rel="preload"
+          href="/css/f63175d15d0525ee.css"
+          as="style"
+          onLoad={(e) => {
+            const link = e.currentTarget as HTMLLinkElement;
+            link.onload = null;
+            link.rel = "stylesheet";
+          }}
+        />
+        <noscript>
+          <link rel="stylesheet" href="/css/f63175d15d0525ee.css" />
+        </noscript>
       </head>
       <body>{children}</body>
     </html>
