@@ -70,9 +70,18 @@ export default function Dietas() {
         .then((data) => setUsuarios(data))
         .catch(() => setUsuarios([]));
     } else {
-      verDietas(parsedUser?.id || 0);
+      const cache = localStorage.getItem("dietaSemanal");
+      if (cache) {
+        try {
+          const parsedCache = JSON.parse(cache);
+          setDietas(parsedCache);
+        } catch {
+          verDietas(parsedUser?.id || 0);
+        }
+      } else {
+        verDietas(parsedUser?.id || 0);
+      }
     }
-
   }, []);
 
   const formSchema = z.object({
@@ -112,12 +121,11 @@ export default function Dietas() {
       }
       console.log(data);
       setDetalles(data.detallesUsuario);
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error fetching detalles del usuario:", error);
       return [];
     }
-  }
+  };
 
   function handleSubmit(data: z.infer<typeof formSchema>) {
     const localUser = localStorage.getItem("user");
@@ -169,12 +177,30 @@ export default function Dietas() {
   const verDietas = async (id: number) => {
     setSelectedUser(id);
     setAddDieta(null);
-    const URL = process.env.NEXT_PUBLIC_API;
+
+    const cache = localStorage.getItem("dietaSemanal");
+    let cacheObj: Record<number, Dieta[]> = {};
+
+    if (cache) {
+      try {
+        cacheObj = JSON.parse(cache);
+        if (cacheObj[id]) {
+          setDietas((prev) => ({ ...prev, [id]: cacheObj[id] }));
+          return; // Ya está en caché
+        }
+      } catch {
+        cacheObj = {};
+      }
+    }
 
     try {
-      const res = await fetch(URL + `/usuarios/getDietaSemanal/${id}`);
+      const URL = process.env.NEXT_PUBLIC_API;
+      const res = await fetch(`${URL}/usuarios/getDietaSemanal/${id}`);
       const data = await res.json();
       setDietas((prev) => ({ ...prev, [id]: data }));
+
+      const updatedCache = { ...cacheObj, [id]: data };
+      localStorage.setItem("dietaSemanal", JSON.stringify(updatedCache));
     } catch {
       setDietas((prev) => ({ ...prev, [id]: [] }));
     }
@@ -185,14 +211,13 @@ export default function Dietas() {
     return (
       <div className="bg-gray-50 min-h-screen">
         <HeaderUs promocion={null} pagina="DIETAS" />
-        <h1 className="sm:hidden w-full text-center pt-4 pb-4 mb-2 text-2xl text-white bg-[var(--gris-oscuro)]">DIETA SEMANAL</h1>
+        <h1 className="sm:hidden w-full text-center pt-4 pb-4 mb-2 text-2xl text-white bg-[var(--gris-oscuro)]">
+          DIETA SEMANAL
+        </h1>
 
         <main className="min-h-screen">
           <Toaster />
-          <HorarioDietas
-            dietas={dietas}
-          />
-
+          <HorarioDietas dietas={dietas} />
         </main>
         <Footer />
       </div>
@@ -256,24 +281,40 @@ export default function Dietas() {
                         </h3>
                         <ul className="text-gray-700 space-y-1 ">
                           <li className="flex items-center text-left flex-row">
-                            <span className="font-bold basis-1/2">Desayuno:</span>
-                            <span className="basis-1/2">{json.desayuno || "-"} </span>
+                            <span className="font-bold basis-1/2">
+                              Desayuno:
+                            </span>
+                            <span className="basis-1/2">
+                              {json.desayuno || "-"}{" "}
+                            </span>
                           </li>
                           <li className="flex items-center justify-between">
                             <span className="font-bold basis-1/2">Comida:</span>
-                            <span className="basis-1/2">{json.comida || "-"}</span>
+                            <span className="basis-1/2">
+                              {json.comida || "-"}
+                            </span>
                           </li>
                           <li className="flex items-center justify-between">
-                            <span className="font-bold basis-1/2">Merienda:</span>
-                            <span className="basis-1/2">{json.merienda || "-"}</span>
+                            <span className="font-bold basis-1/2">
+                              Merienda:
+                            </span>
+                            <span className="basis-1/2">
+                              {json.merienda || "-"}
+                            </span>
                           </li>
                           <li className="flex items-center justify-between">
                             <span className="font-bold basis-1/2">Cena:</span>
-                            <span className="basis-1/2">{json.cena || "-"}</span>
+                            <span className="basis-1/2">
+                              {json.cena || "-"}
+                            </span>
                           </li>
                           <li className="flex items-center justify-between">
-                            <span className="font-bold basis-1/2">Picoteo:</span>
-                            <span className="basis-1/2">{json.picoteo || "-"}</span>
+                            <span className="font-bold basis-1/2">
+                              Picoteo:
+                            </span>
+                            <span className="basis-1/2">
+                              {json.picoteo || "-"}
+                            </span>
                           </li>
                         </ul>
                       </div>
@@ -474,7 +515,11 @@ export default function Dietas() {
                       Ver Dietas
                     </button>
                     <button
-                      onClick={() => { setAddDieta(usuario.id); fetchDetalles(); setSelectedUser(null); }}
+                      onClick={() => {
+                        setAddDieta(usuario.id);
+                        fetchDetalles();
+                        setSelectedUser(null);
+                      }}
                       className="cursor-pointer w-full bg-[var(--dorado)] hover:bg-[var(--dorado-oscuro)] text-white px-4 py-2 rounded-md transition"
                     >
                       Añadir
@@ -512,7 +557,10 @@ export default function Dietas() {
                           Ver Dietas
                         </button>
                         <button
-                          onClick={() => { setAddDieta(usuario.id); setSelectedUser(null) }}
+                          onClick={() => {
+                            setAddDieta(usuario.id);
+                            setSelectedUser(null);
+                          }}
                           className="cursor-pointer bg-[var(--dorado)] hover:bg-[var(--dorado-oscuro)] text-white px-4 py-2 rounded-md transition"
                         >
                           Añadir

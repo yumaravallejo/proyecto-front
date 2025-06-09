@@ -80,42 +80,46 @@ export default function ClienteView({ infoHoy }: Props) {
         </section>
 
         {/* Dieta del día */}
-        <section className=" bg-white rounded-lg shadow-lg overflow-hidden flex flex-col sm:min-h-[700px] ">
+        <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
           <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
-            <h3 className="text-xl font-semibold text-white">DIETA DE HOY</h3>
+            <h3 className="text-xl font-semibold text-white">COMIDAS DE HOY</h3>
           </div>
-          <div className="p-6 text-gray-900 space-y-4 h-full">
-            {infoHoy.dietaHoy ? (
-              <>
-                <p>
-                  <span className="font-semibold">Desayuno:</span>{" "}
-                  {infoHoy.dietaHoy.descripcion.desayuno}
-                </p>
-                <p>
-                  <span className="font-semibold">Comida:</span>{" "}
-                  {infoHoy.dietaHoy.descripcion.comida}
-                </p>
-                {infoHoy.dietaHoy.descripcion.merienda && (
-                  <p>
-                    <span className="font-semibold">Merienda:</span>{" "}
-                    {infoHoy.dietaHoy.descripcion.merienda}
-                  </p>
-                )}
-                <p>
-                  <span className="font-semibold">Cena:</span>{" "}
-                  {infoHoy.dietaHoy.descripcion.cena}
-                </p>
-                {infoHoy.dietaHoy.descripcion.picoteo && (
-                  <p>
-                    <span className="font-semibold">Picoteo:</span>{" "}
-                    {infoHoy.dietaHoy.descripcion.picoteo}
-                  </p>
-                )}
-              </>
-            ) : (
-              <p className="text-gray-600 text-center flex-grow flex items-center justify-center h-full">
-                No tienes dietas asignadas hoy
+          <div className="p-4 flex-grow flex flex-col text-gray-900">
+            {!infoHoy.dietaHoy ? (
+              <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+                No tienes ninguna dieta asignada
               </p>
+            ) : (
+              <section className="prose prose-sm max-w-none overflow-auto text-gray-700 flex flex-col gap-y-5">
+                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-2">
+                  <h4>Desayuno</h4>
+                  <p className="text-sm">
+                    {infoHoy.dietaHoy.descripcion.desayuno || " - "}
+                  </p>
+                </article>
+                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                  <h4>Almuerzo</h4>
+                  <p className="text-sm">
+                    {infoHoy.dietaHoy.descripcion.comida || " - "}
+                  </p>
+                </article>
+                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                  <h4>Merienda</h4>
+                  <p className="text-sm">
+                    {infoHoy.dietaHoy.descripcion.merienda || " - "}
+                  </p>
+                </article>
+                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                  <h4>Cena</h4>
+                  <p className="text-sm">{infoHoy.dietaHoy.descripcion.cena || " - "}</p>
+                </article>
+                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                  <h4>Picoteo</h4>
+                  <p className="text-sm">
+                    {infoHoy.dietaHoy.descripcion.picoteo || " - "}
+                  </p>
+                </article>
+              </section>
             )}
           </div>
         </section>

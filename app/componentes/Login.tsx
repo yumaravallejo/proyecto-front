@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   Dialog,
@@ -29,6 +29,7 @@ import { toast } from "sonner";
 
 export default function Login() {
   const router = useRouter();
+  const [cargando, setCargando] = useState(false);
 
   const formSchema = z.object({
     email: z.string().email("Email no válido"),
@@ -75,6 +76,8 @@ export default function Login() {
     }
   }
 
+  const handleCargando = () => {};
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,6 +107,11 @@ export default function Login() {
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-md rounded-xl bg-white shadow-lg p-8 animate-fadeIn">
+        {cargando && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+          </div>
+        )}
         <DialogHeader>
           <DialogTitle className="text-3xl font-semibold text-gray-800 mb-6">
             Iniciar Sesión
@@ -160,17 +168,11 @@ export default function Login() {
               )}
             />
 
-            <Link
-              href="/recuperar"
-              className="text-[var(--azul)] text-sm underline hover:text-[var(--azul-oscuro)] transition-colors duration-200"
-            >
-              ¿Olvidaste tu contraseña?
-            </Link>
-
             <DialogFooter className="flex justify-end gap-4 mt-6">
               <button
                 type="submit"
                 className="bg-[var(--azul)] text-white rounded-full px-6 py-3 font-semibold hover:bg-[var(--azul-oscuro)] transition cursor-pointer"
+                onClick={() => setCargando(true)}
               >
                 Iniciar Sesión
               </button>

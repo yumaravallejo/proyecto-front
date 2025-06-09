@@ -1,6 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
+import EditarHorario from "./EditarHorario";
+import NuevoHorarioDialog from "./NuevoHorario";
+import DeleteHorarioDialog from "./DeleteHorario";
+import ClaseItem from "./ClaseItem";
+
+// React.Fragment --> Componente especial de React que te permite agrupar varios elementos hijos sin añadir un nodo extra al DOM.
 
 export type TipoClase =
   | "CARDIO"
@@ -21,31 +27,138 @@ export interface Horario {
   numReservas: number;
 }
 
+export interface NuevoHorario {
+  fechaHora: string;
+  idUsuario: number;
+  idClase: number;
+}
+
 const tipoClaseColors: Record<TipoClase, string> = {
   CARDIO: "bg-red-500",
-  FUERZA: "bg-blue-600",
+  FUERZA: "bg-blue-400",
   RELAJACION: "bg-green-600",
   TONIFICACION: "bg-yellow-500",
   INFANTIL: "bg-purple-600",
   TONO_CARDIO: "bg-orange-500",
 };
 
+const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
+
 interface SchedulePageProps {
   horariosIniciales: Horario[];
 }
 
+export default function SchedulePage({ horariosIniciales }: SchedulePageProps) {
+  const diaBaseIndex = () => {
+    const today = new Date();
+    let diaSemana = today.getDay();
+    if (diaSemana === 0 || diaSemana === 6) {
+      // Si es sábado (6) o domingo (0), cambaimos a lunes (índice 0) ya que no hay clases esos días
+      return 0;
+    }
+    return diaSemana - 1;
+  };
 
-const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-const hours = Array.from({ length: 16 }, (_, i) => 6 + i);
-
-
-export default function SchedulePage (horariosIniciales: SchedulePageProps) {
-  const [currentDayIdx, setCurrentDayIdx] = useState(0);
+  const [indexHoy, setIndexHoy] = useState(diaBaseIndex());
   const [userReservations, setUserReservations] = useState<number[]>([]);
   const [idUsuario, setIdUsuario] = useState<number | null>(null);
-  const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales.horariosIniciales || []);
+  const [horarios, setHorarios] = useState<Horario[]>(horariosIniciales || []);
   const [isLoadingReservas, setIsLoadingReservas] = useState(true);
   const URL = process.env.NEXT_PUBLIC_API;
+  const [tipoFiltro, setTipoFiltro] = useState<TipoClase | "TODAS">("TODAS");
+  const [tipoUsuario, setTipoUsuario] = useState<string | "Cliente">("Cliente");
+  const [horarioEdit, setHorarioEdit] = useState<Horario | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [horarioAEliminar, setHorarioAEliminar] = useState<number | null>(null);
+  const [idEntrenador, setIdEntrenador] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  function cambioLunes(today = new Date()) {
+    const diaSemana = today.getDay() === 0 ? 6 : today.getDay() - 1;
+    let lunes = new Date(today);
+    if (diaSemana > 4) {
+      lunes.setDate(today.getDate() + (7 - diaSemana));
+    } else {
+      lunes.setDate(today.getDate() - diaSemana);
+    }
+    lunes.setHours(0, 0, 0, 0);
+    return lunes;
+  }
+
+  const handleEditar = (horario: Horario) => {
+    setHorarioEdit(horario);
+    setDialogOpen(true);
+  };
+
+  const handleEliminarHorario = async (idHorario: number) => {
+    try {
+      const user = localStorage.getItem("user");
+      const parsedUser = user ? JSON.parse(user) : null;
+      const token = parsedUser?.token;
+
+      const res = await fetch(`${URL}/entrenador/borrarHorario/${idHorario}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al eliminar el horario");
+      }
+
+      setHorarios((prev) => prev.filter((h) => h.idHorario !== idHorario));
+      toast.success("Horario eliminado correctamente");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo eliminar el horario");
+    }
+  };
+
+  const handleGuardarEdicion = async (
+    idHorario: number,
+    cambios: { fechaHora?: string; idEntrenador?: number }
+  ) => {
+    try {
+      const user = localStorage.getItem("user");
+      const parsedUser = user ? JSON.parse(user) : null;
+      const token = parsedUser?.token;
+      const URL = process.env.NEXT_PUBLIC_API;
+
+      const res = await fetch(`${URL}/entrenador/editarHorario/${idHorario}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(cambios),
+      });
+
+      if (!res.ok) alert("Error al editar horario");
+
+      const horarioActualizado = await res.json();
+
+      // Actualiza el estado local
+      setHorarios((prev) =>
+        prev.map((h) => (h.idHorario === idHorario ? horarioActualizado : h))
+      );
+
+      const horariosActualizados = horarios.map((h) =>
+        h.idHorario === idHorario ? horarioActualizado : h
+      );
+      localStorage.setItem("horarios", JSON.stringify(horariosActualizados));
+
+      fetchHorarios();
+      fetchUsuarioYReservas();
+    } catch (error) {
+      console.error(error);
+      alert("Error al actualizar el horario");
+    }
+  };
 
   const getDayIndex = (fechaHora: string): number => {
     const day = new Date(fechaHora).getDay();
@@ -61,8 +174,9 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
       if (claseDayIdx !== dayIdx) return false;
 
       let claseHour = date.getHours();
-      const claseMinutes = date.getMinutes();
-      if (claseMinutes >= 30) claseHour += 1;
+
+      if (tipoFiltro !== "TODAS" && clase.tipoClase !== tipoFiltro)
+        return false;
 
       return claseHour === hour;
     });
@@ -72,26 +186,32 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) return;
     const parsedUser = JSON.parse(storedUser);
-    if (parsedUser?.id) {
-      setIdUsuario(parsedUser.id);
-      try {
-        const res = await fetch(`${URL}usuarios/mis-reservas/${parsedUser.id}`);
-        const data = await res.json();
-        const horariosIds = data.map((reserva: { id: number }) => reserva.id);
-        setUserReservations(horariosIds);
-      } catch (error) {
-        console.error("Error fetching reservas:", error);
-      } finally {
+    if (parsedUser?.tipo === "Cliente") {
+      if (parsedUser?.id) {
+        setIdUsuario(parsedUser.id);
+        try {
+          const res = await fetch(
+            `${URL}/usuarios/mis-reservas/${parsedUser.id}`
+          );
+          const data = await res.json();
+          const horariosIds = data.map(
+            (reserva: { idHorario: number }) => reserva.idHorario
+          );
+          setUserReservations(horariosIds);
+        } catch (error) {
+          console.error("Error fetching reservas:", error);
+        } finally {
+          setIsLoadingReservas(false);
+        }
+      } else {
         setIsLoadingReservas(false);
       }
-    } else {
-      setIsLoadingReservas(false);
     }
   };
 
   const fetchHorarios = async () => {
     try {
-      const res = await fetch(`${URL}usuarios/horarios`);
+      const res = await fetch(`${URL}/usuarios/horarios`);
       const data = await res.json();
       setHorarios(data);
     } catch (error) {
@@ -103,11 +223,39 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
     (async () => {
       await Promise.all([fetchHorarios(), fetchUsuarioYReservas()]);
     })();
+
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const user = JSON.parse(userString);
+      setTipoUsuario(user.tipo || "Cliente");
+
+      if (user.tipo === "Entrenador" && user.id) {
+        setIdEntrenador(user.id);
+      }
+    }
   }, []);
 
   const handleReservar = async (idHorario: number) => {
-    if (!idUsuario) return toast.error("Usuario no identificado");
+    setIsLoading(true); // Comienza la carga
+
     try {
+      // Si ya está reservado, no hacer nada
+      if (userReservations.includes(idHorario)) {
+        toast.info("Ya tienes una reserva para esta clase.");
+        return;
+      }
+
+      // Realizar la reserva en el backend
+      const res = await fetch(
+        `${URL}/usuarios/reservar?idHorario=${idHorario}&idCliente=${idUsuario}`,
+        { method: "POST", headers: { "Content-Type": "application/json" } }
+      );
+
+      if (!res.ok) throw new Error("Error al reservar");
+
+      toast.success("Reserva realizada correctamente");
+
+      // Actualiza las reservas del usuario y el estado
       setUserReservations((prev) => [...prev, idHorario]);
       setHorarios((prev) =>
         prev.map((clase) =>
@@ -116,144 +264,181 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
             : clase
         )
       );
-
-      const res = await fetch(
-        `${URL}usuarios/reservar?idHorario=${idHorario}&idCliente=${idUsuario}`,
-        { method: "POST", headers: { "Content-Type": "application/json" } }
-      );
-      if (!res.ok) throw new Error("Error al reservar");
-
-      toast.success("Reserva realizada con éxito");
     } catch (error) {
       console.error(error);
-      toast.error("No se pudo realizar la reserva");
+      toast.error("Error al hacer la reserva");
+    } finally {
+      setIsLoading(false); // Finaliza la carga
     }
   };
 
   const handleCancelar = async (idHorario: number) => {
-    if (!idUsuario) return toast.error("Usuario no identificado");
+    setIsLoading(true);
+
     try {
-      setUserReservations((prev) => prev.filter((id) => id !== idHorario));
-      setHorarios((prev) =>
-        prev.map((clase) =>
-          clase.idHorario === idHorario
-            ? { ...clase, numReservas: clase.numReservas - 1 }
-            : clase
-        )
+      // Si no está reservado, no hacer nada
+      if (!userReservations.includes(idHorario)) {
+        toast.info("No tienes una reserva para esta clase.");
+        return;
+      }
+
+      // Actualizar las reservas del usuario
+      const updatedUserReservations = userReservations.filter(
+        (id) => id !== idHorario
+      );
+      setUserReservations(updatedUserReservations);
+
+      // Actualizar el horario con la nueva cantidad de reservas
+      const updatedHorarios = horarios.map((clase) =>
+        clase.idHorario === idHorario
+          ? { ...clase, numReservas: clase.numReservas - 1 }
+          : clase
       );
 
+      // Actualizar el estado con la lista de horarios actualizada
+      setHorarios(updatedHorarios);
+
+      // Guardar los horarios actualizados en el localStorage
+      localStorage.setItem("horarios", JSON.stringify(updatedHorarios));
+
+      // Cancelar la reserva en el backend
       const res = await fetch(
-        `${URL}usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
+        `${URL}/usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
         { method: "DELETE", headers: { "Content-Type": "application/json" } }
       );
-      if (!res.ok) throw new Error("Error al cancelar");
+      if (!res.ok) throw new Error("Error al cancelar la reserva");
 
-      toast.success("Reserva cancelada con éxito");
+      toast.success("Reserva cancelada correctamente");
     } catch (error) {
       console.error(error);
-      toast.error("No se pudo cancelar la reserva");
+      toast.error("Error al cancelar la reserva");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const renderClase = (clase: Horario) => {
-    const date = new Date(clase.fechaHora);
-    const endDate = new Date(date.getTime() + clase.duracion * 60000);
-    const startTime = `${date.getHours().toString().padStart(2, "0")}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-    const endTime = `${endDate.getHours().toString().padStart(2, "0")}:${endDate
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-    const color = tipoClaseColors[clase.tipoClase];
+  const renderClase = (clase: Horario) => (
+    <ClaseItem
+      key={clase.idHorario + clase.fechaHora}
+      clase={clase}
+      tipoUsuario={tipoUsuario}
+      isReservado={userReservations.includes(clase.idHorario)}
+      isLoadingReservas={isLoadingReservas}
+      onReservar={() => handleReservar(clase.idHorario)}
+      onCancelar={() => handleCancelar(clase.idHorario)}
+      onEditar={() => handleEditar(clase)}
+      onEliminar={() => {
+        setHorarioAEliminar(clase.idHorario);
+        setIsDeleteDialogOpen(true);
+      }}
+    />
+  );
 
-    const isReservado = userReservations.includes(clase.idHorario);
-
-    return (
-      <div
-        key={`${clase.idHorario}-${clase.numReservas}`}
-        className={`rounded-lg p-3 text-white shadow-lg ${color} flex flex-col gap-1`}
-      >
-        <div className="font-bold truncate text-lg">{clase.nombreClase}</div>
-        <div className="text-sm">
-          {startTime} – {endTime}
-        </div>
-        <div className="text-sm truncate">
-          Entrenador: {clase.nombreEntrenador}
-        </div>
-        <div className="text-sm mb-3">
-          {clase.numReservas} / {clase.capacidadMaxima}
-        </div>
-        {!isLoadingReservas && (
-          <button
-            className={`cursor-pointer transform transition-transform duration-200 hover:scale-[1.03] py-2 rounded-md font-semibold text-sm transition-all duration-300
-              ${
-                isReservado
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-blue-600 hover:bg-blue-700 "
-              }
-              active:scale-95`}
-            onClick={() =>
-              isReservado
-                ? handleCancelar(clase.idHorario)
-                : handleReservar(clase.idHorario)
-            }
-          >
-            {isReservado ? "Cancelar Reserva" : "Reservar"}
-          </button>
-        )}
-      </div>
-    );
-  };
+  const isLoadingAll = isLoadingReservas || horarios.length === 0 || isLoading;
 
   return (
-    <div className="p-6 max-w-8xl mx-auto bg-[var(--gris-oscuro)]">
+    <div className="p-6 max-w-8xl mx-auto ">
       <Toaster position="bottom-right" theme="dark" />
-      <div className="w-full flex flex-row items-center justify-center mb-10 lg:mt-10 mt-5">
-        <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
-        <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
-          RESERVA DE CLASES
-        </h1>
-        <span className="bg-[var(--dorado)] h-3 rounded-full flex-grow"></span>
-      </div>
+      {isLoadingAll && tipoUsuario !== "Entrenador" && (
+        <div className="absolute inset-0 bg-black/70 flex flex-col items-center pt-90 z-50">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white mb-4 top-0 "></div>
+        </div>
+      )}
+      {tipoUsuario === "Entrenador" ? (
+        <div className="text-center text-white mt-4 mb-6 w-full items-center flex flex-row justify-center gap-4">
+          <button
+            onClick={() => {
+              setIsDialogOpen(!isDialogOpen);
+            }}
+            className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors active:scale-95 flex items-center gap-2"
+          >
+            <img
+              src={"/addHorario.svg"}
+              title="Añadir Horario"
+              className="w-7 h-7"
+            />{" "}
+            <span className="sm:block hidden">Añadir Horario</span>
+          </button>
+        </div>
+      ) : (
+        ""
+      )}
+
+      <section className="filtros-actividades w-full flex overflow-x-auto gap-2 text-black">
+        <article
+          className="flex flex-row items-center justify-center gap-x-2 p-5 cursor-pointer filter-act"
+          onClick={() => setTipoFiltro("TODAS")}
+        >
+          <span className="w-5 h-5 bg-gray-400 border-2"></span>
+          <span
+            className={`text-md text-left min-w-max ${
+              tipoFiltro === "TODAS" ? "underline font-bold" : ""
+            }`}
+          >
+            TODAS
+          </span>
+        </article>
+
+        {Object.entries(tipoClaseColors).map(([tipo, color]) => {
+          const label =
+            tipo === "RELAJACION"
+              ? "CUERPO Y MENTE"
+              : tipo === "TONIFICACION"
+              ? "TONIFICACIÓN"
+              : tipo === "TONO_CARDIO"
+              ? "TONO Y CARDIO"
+              : tipo;
+
+          return (
+            <article
+              key={tipo}
+              className="flex flex-row items-center justify-center gap-x-2 p-5 cursor-pointer filter-act"
+              onClick={() => setTipoFiltro(tipo as TipoClase)}
+            >
+              <span className={`w-5 h-5 ${color} border-2`}></span>
+              <span
+                className={`text-md text-left min-w-max ${
+                  tipoFiltro === tipo ? "underline font-bold" : ""
+                }`}
+              >
+                {label}
+              </span>
+            </article>
+          );
+        })}
+      </section>
+
       {/* Vista móvil */}
       <div className="lg:hidden p-4 rounded-lg shadow-lg border border-gray-300 bg-white max-w-2xl mx-auto border-3">
         <div className="flex items-center justify-between mb-6">
           <button
-            onClick={() =>
-              setCurrentDayIdx((prev) => (prev > 0 ? prev - 1 : prev))
-            }
-            disabled={currentDayIdx === 0}
-            className="text-2xl px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
+            onClick={() => setIndexHoy((prev) => (prev > 0 ? prev - 1 : prev))}
+            disabled={indexHoy === 0}
+            className="text-2xl px-3 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
             aria-label="Día anterior"
           >
             ◀
           </button>
           {(() => {
-            const today = new Date();
-            const monday = new Date(today);
-            const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
-            if (dayOfWeek > 4) monday.setDate(today.getDate() - dayOfWeek + 0);
-            else monday.setDate(today.getDate() - dayOfWeek);
-            monday.setDate(monday.getDate() + currentDayIdx);
-            const formatted = monday.toLocaleDateString("es-ES", {
+            const baselunes = cambioLunes();
+            baselunes.setDate(baselunes.getDate() + indexHoy);
+            const formatted = baselunes.toLocaleDateString("es-ES", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
             });
             return (
-              <h2 className="text-xl font-semibold text-gray-800 select-none">
-                {daysOfWeek[currentDayIdx]} - {formatted}
-              </h2>
+              <div>
+                <div className="text-lg font-bold font-inter text-gray-700 select-none flex items-center gap-1">
+                  {daysOfWeek[indexHoy]} - {formatted}
+                </div>
+              </div>
             );
           })()}
           <button
-            onClick={() =>
-              setCurrentDayIdx((prev) => (prev < 4 ? prev + 1 : prev))
-            }
-            disabled={currentDayIdx === 4}
-            className="text-2xl px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
+            onClick={() => setIndexHoy((prev) => (prev < 4 ? prev + 1 : prev))}
+            disabled={indexHoy === 4}
+            className="text-2xl px-3 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-40 transition-colors active:scale-95"
             aria-label="Día siguiente"
           >
             ▶
@@ -267,10 +452,10 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
                 {hour}:00
               </div>
               <div className="flex flex-col gap-3">
-                {getClassesFor(currentDayIdx, hour).length > 0 ? (
-                  getClassesFor(currentDayIdx, hour).map(renderClase)
+                {getClassesFor(indexHoy, hour).length > 0 ? (
+                  getClassesFor(indexHoy, hour).map(renderClase)
                 ) : (
-                  <div className="text-gray-400 text-center italic py-2 select-none min-h-[56px]"></div>
+                  <div className="text-gray-400 text-center italic py-2 select-none min-h-[56px] "></div>
                 )}
               </div>
             </React.Fragment>
@@ -293,13 +478,9 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
             Hora
           </div>
           {daysOfWeek.map((day, index) => {
-            const today = new Date();
-            const monday = new Date(today);
-            const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
-            if (dayOfWeek > 4) monday.setDate(today.getDate() - dayOfWeek + 0);
-            else monday.setDate(today.getDate() - dayOfWeek);
-            monday.setDate(monday.getDate() + index);
-            const formatted = monday.toLocaleDateString("es-ES", {
+            const baselunes = cambioLunes();
+            baselunes.setDate(baselunes.getDate() + index);
+            const formatted = baselunes.toLocaleDateString("es-ES", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
@@ -307,11 +488,13 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
             return (
               <div
                 key={day}
-                className="flex flex-col items-center justify-center font-semibold text-gray-700 text-sm select-none p-2 bg-white rounded-lg shadow-sm"
+                className="flex flex-row items-center justify-between font-semibold text-gray-700 text-sm select-none p-2 bg-white rounded-lg shadow-sm"
                 style={{ minHeight: "52px" }}
               >
-                <div>{day}</div>
-                <div className="text-xs text-gray-500">{formatted}</div>
+                <div className="flex flex-col items-center basis-2/2">
+                  <div>{day}</div>
+                  <div className="text-xs text-gray-500">{formatted}</div>
+                </div>
               </div>
             );
           })}
@@ -333,7 +516,37 @@ export default function SchedulePage (horariosIniciales: SchedulePageProps) {
           ))}
         </div>
       </div>
+
+      <EditarHorario
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        horario={
+          horarioEdit
+            ? {
+                idHorario: horarioEdit.idHorario,
+                fechaHora: horarioEdit.fechaHora,
+                idEntrenador: idEntrenador,
+                nombreEntrenador: horarioEdit.nombreEntrenador,
+              }
+            : null
+        }
+        onSave={handleGuardarEdicion}
+      />
+
+      <NuevoHorarioDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onCreate={fetchHorarios}
+      />
+      <DeleteHorarioDialog
+        open={isDeleteDialogOpen}
+        id={horarioAEliminar}
+        onCancel={() => {
+          setIsDeleteDialogOpen(false);
+          setHorarioAEliminar(null);
+        }}
+        onConfirm={handleEliminarHorario}
+      />
     </div>
   );
-};
-
+}

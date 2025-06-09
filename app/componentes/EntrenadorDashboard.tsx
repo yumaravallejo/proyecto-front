@@ -33,7 +33,7 @@ export default function EntrenadorView({ infoHoy, user }: Props) {
   );
 
   return (
-    <div className="px-4 py-6 max-w-5xl mx-auto space-y-8 sm:space-y-12">
+    <div className="px-4 py-6 space-y-8 sm:space-y-12 min-h-screen">
       <div className="w-full flex flex-row items-center justify-center mb-10 mt-5">
         <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
         <h1 className="text-3xl font-extrabold text-center text-white bg-[var(--gris-oscuro)] px-5 sm:px-20 whitespace-nowrap">
@@ -42,13 +42,13 @@ export default function EntrenadorView({ infoHoy, user }: Props) {
         <span className="bg-[var(--azul)] h-3 rounded-full flex-grow"></span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto h-full">
         {/* Clases del entrenador */}
-        <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+        <section className="col-span-1 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col ">
           <div className="p-4 bg-gradient-to-r from-[var(--dorado)] to-[var(--azul)]">
             <h3 className="text-xl font-semibold text-white">MIS CLASES HOY</h3>
           </div>
-          <div className="p-4 flex-grow flex flex-col text-gray-900">
+          <div className="p-4 flex-grow flex flex-col text-gray-900 min-h-[700px]">
             {clasesOrdenadas.length > 0 ? (
               <ul className="space-y-4 overflow-y-auto max-h-96">
                 {clasesOrdenadas.map((item) => {
@@ -79,7 +79,7 @@ export default function EntrenadorView({ infoHoy, user }: Props) {
                 })}
               </ul>
             ) : (
-              <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+              <p className="text-gray-600 text-center flex-grow flex items-center justify-center h-full">
                 No tienes clases asignadas hoy
               </p>
             )}
@@ -91,7 +91,7 @@ export default function EntrenadorView({ infoHoy, user }: Props) {
           <div className="p-4 bg-gradient-to-r from-[var(--azul)] to-[var(--dorado)]">
             <h3 className="text-xl font-semibold text-white">EVENTOS HOY</h3>
           </div>
-          <div className="p-4 flex-grow flex flex-col text-gray-900 max-h-96 overflow-y-auto">
+          <div className="p-4 flex-grow flex flex-col text-gray-900 max-h-96 overflow-y-auto min-h-[700px]">
             {infoHoy.eventosHoy.length > 0 ? (
               <ul className="space-y-4">
                 {infoHoy.eventosHoy.map((evento) => {
@@ -121,7 +121,7 @@ export default function EntrenadorView({ infoHoy, user }: Props) {
                 })}
               </ul>
             ) : (
-              <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
+              <p className="text-gray-600 text-center flex-grow flex items-center justify-center h-full">
                 No hay eventos hoy
               </p>
             )}

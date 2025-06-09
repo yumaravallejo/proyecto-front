@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Horario, TipoClase } from "./SchedulePage";
 
@@ -32,6 +32,8 @@ export default function ClaseItem({
   onEditar,
   onEliminar,
 }: ClaseItemProps) {
+  const [isButtonLoading, setIsButtonLoading] = useState(false); // Estado para gestionar el "loading" del botón
+
   const date = new Date(clase.fechaHora);
   const endDate = new Date(date.getTime() + clase.duracion * 60000);
   const startTime = `${date.getHours().toString().padStart(2, "0")}:${date
@@ -46,6 +48,20 @@ export default function ClaseItem({
   const now = new Date();
   const isPast = date < now;
 
+  // Función para manejar la acción de reservar
+  const handleReservar = async () => {
+    setIsButtonLoading(true); // Activar loading cuando se presiona el botón
+    await onReservar();
+    setIsButtonLoading(false); // Desactivar loading después de la acción
+  };
+
+  // Función para manejar la acción de cancelar
+  const handleCancelar = async () => {
+    setIsButtonLoading(true); // Activar loading cuando se presiona el botón
+    await onCancelar();
+    setIsButtonLoading(false); // Desactivar loading después de la acción
+  };
+
   return (
     <div
       className={`rounded-lg p-3 text-white shadow-lg ${color} flex flex-col gap-1 w-[90%] sm:w-full relative`}
@@ -55,7 +71,7 @@ export default function ClaseItem({
           onClick={onEliminar}
           className="absolute top-4 right-3 bg-white rounded-full p-1 cursor-pointer shadow-lg"
         >
-          <Image src="/bin.svg" alt="Eliminar" className="w-7 h-7" />
+          <Image src="/bin.svg" width={600} height={400} alt="Eliminar" className="w-7 h-7" />
         </button>
       )}
       <div className="font-bold truncate text-lg">{clase.nombreClase}</div>
@@ -71,21 +87,26 @@ export default function ClaseItem({
 
       {tipoUsuario === "Cliente" && !isLoadingReservas && (
         <button
-          onClick={isReservado ? onCancelar : onReservar}
-          disabled={isPast}
+          onClick={isReservado ? handleCancelar : handleReservar}
+          disabled={isPast || isButtonLoading} // Deshabilitar si ya pasó la clase o si está en loading
           className={`transform transition-transform duration-200 py-2 rounded-md font-semibold text-sm transition-all duration-300 active:scale-95 ${
-            isPast
+            isPast || isButtonLoading
               ? "cursor-not-allowed bg-gray-500"
               : isReservado
               ? "bg-red-600 hover:bg-red-700 hover:scale-[1.03]"
               : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.03]"
+            
           }`}
         >
-          {isPast
-            ? "No disponible"
-            : isReservado
-            ? "Cancelar Reserva"
-            : "Reservar"}
+          {isButtonLoading ? (
+            <span>Cargando...</span> // Mostrar "Cargando..." cuando el botón está en loading
+          ) : isPast ? (
+            "No disponible"
+          ) : isReservado ? (
+            "Cancelar Reserva"
+          ) : (
+            "Reservar"
+          )}
         </button>
       )}
 

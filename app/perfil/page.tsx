@@ -66,6 +66,7 @@ export default function UserProfile() {
   const [backendData, setBackendData] = useState<BackendData | null>(null);
   const [reservas, setReservas] = useState<Reservas[] | []>([]);
   const router = useRouter();
+  const [cargando, setCargando] = useState(true);
 
   const formSchema = z.object({
     imagen: z.any(),
@@ -92,91 +93,66 @@ export default function UserProfile() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
+      setCargando(false);
       return;
     }
 
     const parsedUser: LocalUser = JSON.parse(storedUser);
     setLocalUser(parsedUser);
 
-    let fetchData;
-
-    if (parsedUser.tipo !== "Entrenador") {
-      fetchData = async () => {
-        try {
-          const URL = process.env.NEXT_PUBLIC_API;
-          const res = await fetch(`${URL}/usuarios/detalles/${parsedUser.id}`);
-          if (!res.ok) {
-            const msg = await res.text();
-            alert(`Detalles usuario: ${msg}`);
-          }
+    const fetchData = async () => {
+      try {
+        const URL = process.env.NEXT_PUBLIC_API;
+        let res;
+        if (parsedUser.tipo !== "Entrenador") {
+          res = await fetch(`${URL}/usuarios/detalles/${parsedUser.id}`);
           const data: BackendData = await res.json();
           setBackendData(data);
 
-          const reservas = await fetch(
+          const reservasRes = await fetch(
             `${URL}/usuarios/mis-reservas/${parsedUser.id}`
           );
-          if (!reservas.ok) {
-            const msg = await reservas.text();
-            alert(`Mis reservas: ${msg}`);
-          }
-          const data2 = await reservas.json();
+          const data2 = await reservasRes.json();
           setReservas(data2);
-        } catch (err) {
-          console.error("Error al cargar datos:", err);
-        }
-      };
-    } else {
-      fetchData = async () => {
-        try {
-          const URL = process.env.NEXT_PUBLIC_API;
-          const res = await fetch(
-            `${URL}/entrenador/detalles/${parsedUser.id}`,
-            {
-              method: "GET",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${parsedUser.token}`,
-              },
-            }
-          );
-          if (!res.ok) {
-            const msg = await res.text();
-            alert(`Detalles entrenador: ${msg}`);
-          }
+        } else {
+          res = await fetch(`${URL}/entrenador/detalles/${parsedUser.id}`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${parsedUser.token}`,
+            },
+          });
           const data: BackendData = await res.json();
           setBackendData(data);
-        } catch (err) {
-          console.error("Error al cargar datos:", err);
         }
-      };
-    }
+      } catch (err) {
+        console.error("Error al cargar datos:", err);
+      } finally {
+        setCargando(false); // asegúrate que esto siempre se llama
+      }
+    };
 
     fetchData();
   }, []);
 
-  if (!localUser || !backendData) return;
-
-  const detalles = backendData.detallesUsuario;
+  const detalles = backendData?.detallesUsuario;
 
   const imagen =
-    localUser.imagen == ""
+    localUser?.imagen == ""
       ? "/usuario.svg"
-      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo?imagen=${localUser.imagen}`;
+      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo?imagen=${localUser?.imagen}`;
 
   async function handleLogOut() {
     try {
       const URL = process.env.NEXT_PUBLIC_API;
-      const res = await fetch(`${URL}/usuarios/logout`, {
+      const res = await fetch("/api/login", {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       if (!res.ok) {
-        console.error("Fallo al cerrar sesión:", res.statusText);
+        console.error("Fallo al cerrar sesión: " + res.statusText);
         toast.error("No se pudo cerrar sesión");
       } else {
         toast.success("Tu sesión ha sido cerrada", {
@@ -185,6 +161,7 @@ export default function UserProfile() {
 
         setTimeout(() => {
           localStorage.removeItem("user");
+          localStorage.removeItem("horariosCache");
           router.push("/");
         }, 1500);
       }
@@ -259,11 +236,16 @@ export default function UserProfile() {
     }
   }
 
-  if (localUser.tipo === "Entrenador") {
+  if (localUser?.tipo === "Entrenador") {
     return (
       <div>
         <Toaster />
         <HeaderUs promocion={null} />
+        {cargando && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+          </div>
+        )}
         <main className="max-w-3xl mx-auto p-10 bg-white rounded-md sm:shadow-md mt-5 mb-10 sm:mt-10">
           <h1 className="text-3xl font-bold mb-6 text-center sm:text-left">
             Perfil Entrenador
@@ -322,13 +304,13 @@ export default function UserProfile() {
                 <p className="text-gray-600">
                   Fecha de Entrada:{" "}
                   <span className="font-medium">
-                    {backendData.fechaEntrada}
+                    {backendData?.fechaEntrada}
                   </span>
                 </p>
                 <p className="text-gray-600">
                   Tiempo en el gimnasio:{" "}
                   <span className="font-medium">
-                    {backendData.tiempoContrato}
+                    {backendData?.tiempoContrato}
                   </span>
                 </p>
               </div>
@@ -417,6 +399,11 @@ export default function UserProfile() {
         <Toaster />
 
         <HeaderUs promocion={null} />
+        {cargando && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+          </div>
+        )}
         <h1 className="sm:hidden w-full text-center pt-4 pb-4 text-2xl text-white bg-[var(--gris-oscuro)]">
           Seguimiento Personal
         </h1>
@@ -425,7 +412,7 @@ export default function UserProfile() {
             <div className="flex flex-col items-center gap-5 w-1/3">
               <Image
                 src={imagen}
-                alt={`Imagen de perfil de ${localUser.nombre}`}
+                alt={`Imagen de perfil de ${localUser?.nombre}`}
                 width={600}
                 height={400}
                 className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
@@ -463,19 +450,19 @@ export default function UserProfile() {
               </Form>
             </div>
             <div className="bg-blue-50 p-4 rounded-md shadow w-full sm:bg-white sm:rounded-none">
-              <h2 className="text-xl font-semibold">{localUser.nombre}</h2>
+              <h2 className="text-xl font-semibold">{localUser?.nombre}</h2>
               <p className="text-gray-600 mt-2">
                 Edad:{" "}
                 <span className="font-medium">
-                  {backendData.fechaNacimiento
-                    ? `${calcularEdad(backendData.fechaNacimiento)} años`
+                  {backendData?.fechaNacimiento
+                    ? `${calcularEdad(backendData?.fechaNacimiento)} años`
                     : "-"}
                 </span>
               </p>
               <p className="text-gray-600">
                 Fecha de nacimiento:{" "}
                 <span className="font-medium">
-                  {backendData.fechaNacimiento}
+                  {backendData?.fechaNacimiento}
                 </span>
               </p>
               <p className="text-gray-600">

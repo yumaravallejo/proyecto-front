@@ -27,3 +27,17 @@ export async function POST(req: NextRequest) {
   });
   return response;
 }
+
+export async function GET() {
+  const response = NextResponse.json({ success: true });
+  response.cookies.set("token", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0, // Elimina la cookie
+  });
+  return response;
+}
+
+
