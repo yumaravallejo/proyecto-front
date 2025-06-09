@@ -59,12 +59,18 @@ div#formRegistro > div > div > input {
   font-weight: 600;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-weight: 600;
   font-family: var(--font-oswald);
 }
 
-p, u, span {
+p,
+u,
+span {
   font-family: var(--font-inter);
   font-weight: 400;
 }
@@ -74,8 +80,6 @@ div#radix-«Rh7l7» h2 {
   font-family: var(--font-inter);
   font-weight: 500;
 }
-
-
 
 h2 > span {
   font-family: var(--font-oswald);
@@ -287,7 +291,6 @@ div#encuentranos::before {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
-  /* Ajusta la opacidad aquí */
   z-index: 1;
   pointer-events: none;
 }
@@ -299,7 +302,6 @@ div#encuentranos::after {
   right: 0;
   bottom: 0;
   height: 4rem;
-  /* Ajusta la altura del difuminado */
   z-index: 2;
   pointer-events: none;
   background: linear-gradient(
@@ -436,12 +438,12 @@ main#cuotas > div.cuotas > div > button {
 
   header u {
     display: flex;
-    font-size: .8rem;
+    font-size: 0.8rem;
     font-weight: 300;
   }
 
   header span.azul {
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 
   header img.usuario {
@@ -670,7 +672,7 @@ main#cuotas > div.cuotas > div > button {
     flex-flow: row wrap;
     width: 100%;
     margin-top: -8rem;
-    background-position: center -3.5rem;
+    background-position: center center;
   }
 
   div#encuentranos > h2 {
@@ -733,18 +735,6 @@ main#cuotas > div.cuotas > div > button {
   main#cuotas > div.cuotas > div > button {
     margin-top: auto;
   }
-
-  main#actividadesUnlogged > div > div.actividades {
-    flex-flow: row wrap;
-    width: 80%;
-    justify-content: space-between;
-    margin: 0 auto;
-  }
-
-  main#actividadesUnlogged > div > div.actividades > div.actividad {
-    flex: 45% 0;
-  }
-
 }
 
 @media (orientation: landscape) and (max-width: 969px) and (pointer: coarse) {

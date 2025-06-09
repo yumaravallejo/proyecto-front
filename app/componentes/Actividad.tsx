@@ -45,7 +45,7 @@ export default function Actividad(props: Props) {
 
   return (
     <div
-      className={`actividad flex flex-col border-3 ${borderClass} bg-white items-center w-full rounded-xl`}
+      className={`actividad flex flex-col border-3 ${borderClass} bg-white items-center w-full sm:w-[calc(50%-2rem)] rounded-xl`}
     >
       <h2
         className={`text-white ${bgClass} w-full text-center text-2xl p-2 rounded-t-lg`}

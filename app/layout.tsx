@@ -38,22 +38,6 @@ export default function RootLayout({
           href="/img/zumba.webp"
           type="image/webp"
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-            const l = document.createElement('link');
-            l.rel = 'stylesheet';
-            l.href = '/css/f63175d15d0525ee.css';
-            l.media = 'print';
-            l.onload = () => { l.media = 'all'; };
-            document.head.appendChild(l);
-          `,
-          }}
-        />
-
-        <noscript>
-          <link rel="stylesheet" href="/css/f63175d15d0525ee.css" />
-        </noscript>
       </head>
       <body>{children}</body>
     </html>

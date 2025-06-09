@@ -272,6 +272,8 @@ export default function UserProfile() {
             <article className="flex flex-col items-center gap-5 w-1/3">
               <Image
                 src={imagen}
+                width={600}
+                height={400}
                 alt={`Imagen de perfil de ${localUser.nombre}`}
                 className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
               />
@@ -424,6 +426,8 @@ export default function UserProfile() {
               <Image
                 src={imagen}
                 alt={`Imagen de perfil de ${localUser.nombre}`}
+                width={600}
+                height={400}
                 className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
               />
               <Form {...form}>

@@ -8,37 +8,37 @@ export default function Servicios() {
         {
             nombre: "Asesoramiento Nutricional",
             descripcion: "Nuestro equipo de expertos en nutrición te guiará para mejorar tu alimentación de forma saludable y sostenible. Aprende a nutrirte según tus objetivos, ya sea perder peso, ganar masa muscular o simplemente sentirte con más energía.",
-            imagen: "/Image/asesoramiento.webp",
+            imagen: "/img/asesoramiento.webp",
             
         },
          {
             nombre: "Personal Training",
             descripcion: "Resultados reales con atención personalizada. Nuestros entrenadores personales diseñan rutinas exclusivas para ti, adaptadas a tu nivel, metas y ritmo. Entrena con motivación y enfoque, con un profesional a tu lado en cada paso.",
-            imagen: "/Image/personal-trainer.webp",
+            imagen: "/img/personal-trainer.webp",
             
         },
          {
             nombre: "Dietas Personalizadas",
             descripcion: "Porque cada cuerpo es diferente, creamos planes de alimentación a medida, elaborados por nutricionistas profesionales. Combinamos ciencia y experiencia para que tu dieta sea efectiva, equilibrada y fácil de seguir.",
-            imagen: "/Image/dieta.webp",
+            imagen: "/img/dieta.webp",
             
         },
          {
             nombre: "Clases Grupales",
             descripcion: "Entrena en equipo, diviértete y mantén la motivación al máximo. Ofrecemos una variedad de clases como yoga, pilates, cycling, y más. Para todos los niveles, con instructores certificados y ambientes energizantes.",
-            imagen: "/Image/clases-grupales.webp",
+            imagen: "/img/clases-grupales.webp",
             
         },
          {
             nombre: "Eventos Privados",
             descripcion: "¿Quieres celebrar de forma diferente? Organizamos eventos fitness exclusivos para empresas, grupos o celebraciones especiales. Actividades dinámicas, retos en equipo y experiencias saludables fuera de lo común.",
-            imagen: "/Image/eventos.webp",
+            imagen: "/img/eventos.webp",
             
         },
          {
             nombre: "Zonas Únicas",
             descripcion: "Nuestro gimnasio está diseñado para inspirarte. Disfruta de zonas diferenciadas como áreas funcionales, espacio de peso libre, sala de cardio con tecnología avanzada, y rincones de relajación.",
-            imagen: "/Image/zonas_unicas.webp",
+            imagen: "/img/zonas_unicas.webp",
             
         }
     ];

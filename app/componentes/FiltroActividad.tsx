@@ -26,7 +26,7 @@ export default function FiltrosActividades({
       : actividades.filter((a) => a.tipoClase === tipoFiltro);
 
   const filtros = [
-    { tipo: "TODAS", color: "#d1d1d1", label: "TODAS" },
+    { tipo: "TODAS", color: "gray", label: "TODAS" },
     { tipo: "CARDIO", color: "pink", label: "CARDIO" },
     { tipo: "INFANTIL", color: "blue", label: "INFANTIL" },
     { tipo: "RELAJACION", color: "green", label: "CUERPO Y MENTE" },
@@ -58,7 +58,7 @@ export default function FiltrosActividades({
         ))}
       </section>
 
-      <div className="actividades flex flex-col gap-y-15 p-6">
+      <div className="actividades sm:mx-auto flex flex-col sm:flex-row sm:flex-wrap gap-y-15 sm:justify-between p-6 max-w-6xl">
         {actividadesFiltradas.map((actividad, idx) => (
           <Actividad
             key={idx}

@@ -68,8 +68,8 @@ export default function Servicio(props: Props) {
                                 src={imagen}
                                 alt={nombre}
                                 className={`w-full h-full object-cover ${shadowClass} rounded-lg`}
-                                width={50}
-                                height={50}
+                                width={600}
+                                height={400}
                             />
                         )}
                         <div className="absolute bottom-0 bg-black/60 text-white text-xs px-3 py-1 w-full text-center rounded-b-lg">
