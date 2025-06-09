@@ -31,7 +31,6 @@ export default function RootLayout({
         <link
           rel="preconnect"
           href="https://sb-changes.onrender.com"
-          crossOrigin="anonymous"
         />
         <link
           rel="preload"
