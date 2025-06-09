@@ -16,7 +16,6 @@ interface ActividadesType {
 }
 
 export default function Actividades() {
-  const [user, setUser] = useState(null);
   const [actividades, setActividades] = useState<ActividadesType[]>([]);
   const [tipoFiltro, setTipoFiltro] = useState("TODAS");
   const [cargando, setCargando] = useState(true);
