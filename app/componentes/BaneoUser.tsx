@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import React, { useState } from "react";
 import {
   Dialog,
@@ -43,11 +42,10 @@ export default function BaneoUser() {
       toast.success("Usuario baneado con éxito", {
         description: "El usuario ha sido baneado",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Error al banear al usuario", {
-        description: error.message || "Inténtalo de nuevo más tarde",
+        description: "Inténtalo de nuevo más tarde",
       });
-      setError(error.message);
     } finally {
       setCargando(false);
     }

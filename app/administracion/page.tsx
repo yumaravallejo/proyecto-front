@@ -19,8 +19,6 @@ export default function Administracion() {
   );
   const [cargando, setCargando] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [baneoUser, setBaneoUser] = useState(false);
-  const [addEntrenador, setAddEntrenador] = useState(false);
 
   async function fetchDatos() {
     const user = localStorage.getItem("user");
@@ -44,9 +42,9 @@ export default function Administracion() {
       const data = await res.json();
       setDatosIniciales(data);
       setCargando(false);
-    } catch (error: any) {
+    } catch (error) {
       setCargando(false);
-      setError(error.message);
+      
     }
   }
 
