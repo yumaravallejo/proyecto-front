@@ -31,7 +31,7 @@ export default function HeaderUs(props: Props) {
   }, []);
 
   const login = !!user;
-  const imagenUser = user?.imagen ?? "";
+  const imagenUser = user?.imagen ?? "/usuario.svg";
 
   useEffect(() => {
     function actualizarUser() {

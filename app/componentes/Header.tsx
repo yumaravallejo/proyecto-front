@@ -57,7 +57,7 @@ export default function Header(props: Props) {
   if (!isClient) return null;
 
   const login = !!user;
-  const imagenUser = user?.imagen ?? "";
+  const imagenUser = user?.imagen ?? "/usuario.svg";
 
   const opcionesMenu = login ? (
     user.tipo !== "Entrenador" ? [
