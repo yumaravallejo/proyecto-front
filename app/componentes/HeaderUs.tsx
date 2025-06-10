@@ -265,7 +265,7 @@ export default function HeaderUs(props: Props) {
               {imagenUser.trim() ? (
                 <Avatar className="w-11 h-auto">
                   <AvatarImage
-                    src={`${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo?imagen=${imagenUser}`}
+                    src={imagenUser}
                     alt="Imagen de usuario"
                     className="icono-user rounded-full"
                   />
