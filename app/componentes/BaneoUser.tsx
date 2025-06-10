@@ -12,11 +12,22 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-export default function BaneoUser() {
+interface Props {
+  fetchData: () => Promise<void>;
+}
+
+export default function BaneoUser({ fetchData }: Props) {
   const [cargando, setCargando] = useState(false);
 
   const formSchema = z.object({
@@ -26,13 +37,20 @@ export default function BaneoUser() {
   async function handleBanUser(values: z.infer<typeof formSchema>) {
     try {
       setCargando(true);
-      const response = await fetch("/api/ban-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: values.userId,
-        }),
-      });
+      const user = localStorage.getItem("user");
+      const parsedUser = user ? JSON.parse(user) : null;
+      const token = parsedUser?.token;
+      const URL = process.env.NEXT_PUBLIC_API;
+      const response = await fetch(
+        URL + "/entrenador/banear/" + values.userId,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al banear al usuario");
@@ -41,6 +59,7 @@ export default function BaneoUser() {
       toast.success("Usuario baneado con éxito", {
         description: "El usuario ha sido baneado",
       });
+      fetchData;
     } catch (error) {
       toast.error("Error al banear al usuario", {
         description: "Inténtalo de nuevo más tarde " + error,
@@ -79,7 +98,10 @@ export default function BaneoUser() {
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(handleBanUser)}>
+          <form
+            className="space-y-6"
+            onSubmit={form.handleSubmit(handleBanUser)}
+          >
             <FormField
               control={form.control}
               name="userId"

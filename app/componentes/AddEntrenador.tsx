@@ -43,7 +43,12 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function AddEntrenador() {
+interface Props {
+  fetchData: () => Promise<void>;
+}
+
+export default function AddEntrenador({ fetchData }: Props) {
+  const [open, setOpen] = useState(false);
   const [cargando, setCargando] = useState(false);
 
   // Configuramos React Hook Form con la validación Zod
@@ -61,7 +66,7 @@ export default function AddEntrenador() {
 
   async function handleSubmitForm(values: FormValues) {
     setCargando(true);
-
+    const [open, setOpen] = useState(false);
     values.sueldo = parseFloat(values.sueldo.toString());
 
     try {
@@ -87,6 +92,8 @@ export default function AddEntrenador() {
       });
 
       form.reset();
+      setOpen(false);
+      fetchData;
     } catch (error) {
       toast.error("Error al registrar el entrenador", {
         description: "Intenta de nuevo más tarde " + error,
@@ -97,7 +104,7 @@ export default function AddEntrenador() {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <div className="shadow-lg text-lg rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-2xl transition-all bg-blue-500 text-white font-bold hover:bg-blue-700 cursor-pointer">
           REGISTRAR ENTRENADOR
@@ -156,6 +163,8 @@ export default function AddEntrenador() {
                     <Input
                       placeholder="Introduce el DNI del entrenador"
                       {...field}
+                      maxLength={9}
+                      minLength={9}
                       className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${
                         form.formState.errors.dni
                           ? "border-2 border-red-500"

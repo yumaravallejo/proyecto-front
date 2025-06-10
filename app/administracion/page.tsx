@@ -104,8 +104,8 @@ export default function Administracion() {
               {datosIniciales?.entrenadoresRegistrados}
             </p>
           </article>
-          <BaneoUser />
-          <AddEntrenador />
+          <BaneoUser fetchData={fetchDatos} />
+          <AddEntrenador fetchData={fetchDatos} />
         </section>
       </main>
       
