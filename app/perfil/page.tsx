@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import HeaderUs from "../componentes/HeaderUs";
@@ -138,10 +138,12 @@ export default function UserProfile() {
 
   const detalles = backendData?.detallesUsuario;
 
-  const imagen =
-    localUser?.imagen == ""
-      ? "/usuario.svg"
-      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/${localUser?.id}`;
+  const imagen = useMemo(() => {
+    if (!localUser?.imagen) return "/usuario.svg";
+    return `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/${
+      localUser.id
+    }?t=${Date.now()}`;
+  }, [localUser?.imagen, localUser?.id]);
 
   async function handleLogOut() {
     try {
@@ -208,33 +210,26 @@ export default function UserProfile() {
 
       const response = await fetch(
         `${apiUrl}/usuarios/${localUser?.id}/editarAvatar`,
-        {
-          method: "POST",
-          body: formData,
-        }
+        { method: "POST", body: formData }
       );
 
-      if (!response.ok) {
-        toast.error("Error al editar la imagen", {
-          description: "Inténtalo de nuevo más tarde",
-        });
-        return;
-      }
+      if (!response.ok) throw new Error("Error en la respuesta");
 
-      const data = await response.text();
+      const nuevaRutaImagen = await response.text();
 
       setLocalUser((prevUser) => {
         if (!prevUser) return prevUser;
-        const updatedUser = { ...prevUser, imagen: data };
+        const updatedUser = { ...prevUser, imagen: nuevaRutaImagen };
         localStorage.setItem("user", JSON.stringify(updatedUser));
         return updatedUser;
       });
-      localUser?.imagen == ""
-        ? "/usuario.svg"
-        : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/${localUser?.id}`;
+
+      // Forzar recarga del componente
       window.dispatchEvent(new Event("icon-updated"));
+      toast.success("Imagen actualizada correctamente");
     } catch (error) {
-      console.error("Error al editar la imagen. " + error);
+      toast.error("Error al actualizar la imagen");
+      console.error(error);
     }
   }
 
@@ -256,10 +251,12 @@ export default function UserProfile() {
             <article className="flex flex-col items-center gap-5 w-1/3">
               <Image
                 src={imagen}
-                width={600}
-                height={400}
-                alt={`Imagen de perfil de ${localUser.nombre}`}
-                className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)] bg-[var(--gris-oscuro)]"
+                width={120}
+                height={120}
+                alt={`Imagen de perfil de ${localUser?.nombre}`}
+                className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)]"
+                priority
+                unoptimized={true}
               />
               <Form {...form}>
                 <FormField
