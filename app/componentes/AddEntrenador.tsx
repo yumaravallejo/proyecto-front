@@ -23,26 +23,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-// Definimos el esquema de validación con Zod
-const formSchema = z.object({
-  nombre: z.string().min(1, "El nombre no puede estar vacío"),
-  dni: z
-    .string()
-    .regex(
-      /^[0-9]{8}[A-Z]$/,
-      "El DNI debe tener 8 dígitos seguidos de una letra mayúscula"
-    ),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-  imagen: z.string().optional(),
-  email: z
-    .string()
-    .email("El email no es válido")
-    .min(1, "El email no puede estar vacío"),
-  sueldo: z.number().min(0, "El sueldo debe ser un número positivo"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
 interface Props {
   fetchData: () => Promise<void>;
 }
@@ -50,6 +30,28 @@ interface Props {
 export default function AddEntrenador({ fetchData }: Props) {
   const [open, setOpen] = useState(false);
   const [cargando, setCargando] = useState(false);
+
+  // Definimos el esquema de validación con Zod
+  const formSchema = z.object({
+    nombre: z.string().min(1, "El nombre no puede estar vacío"),
+    dni: z
+      .string()
+      .regex(
+        /^[0-9]{8}[A-Z]$/,
+        "El DNI debe tener 8 dígitos seguidos de una letra mayúscula"
+      ),
+    password: z
+      .string()
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
+    imagen: z.string().optional(),
+    email: z
+      .string()
+      .email("El email no es válido")
+      .min(1, "El email no puede estar vacío"),
+    sueldo: z.number().min(0, "El sueldo debe ser un número positivo"),
+  });
+
+  type FormValues = z.infer<typeof formSchema>;
 
   // Configuramos React Hook Form con la validación Zod
   const form = useForm<FormValues>({
@@ -66,7 +68,6 @@ export default function AddEntrenador({ fetchData }: Props) {
 
   async function handleSubmitForm(values: FormValues) {
     setCargando(true);
-    const [open, setOpen] = useState(false);
     values.sueldo = parseFloat(values.sueldo.toString());
 
     try {
