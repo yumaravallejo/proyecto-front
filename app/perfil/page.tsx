@@ -229,6 +229,9 @@ export default function UserProfile() {
         localStorage.setItem("user", JSON.stringify(updatedUser));
         return updatedUser;
       });
+      localUser?.imagen == ""
+        ? "/usuario.svg"
+        : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/${localUser?.id}`;
       window.dispatchEvent(new Event("icon-updated"));
     } catch (error) {
       console.error("Error al editar la imagen. " + error);
