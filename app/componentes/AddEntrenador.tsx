@@ -23,37 +23,31 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+const formSchema = z.object({
+  nombre: z.string().min(1, "El nombre no puede estar vacío"),
+  dni: z
+    .string()
+    .regex(
+      /^[0-9]{8}[A-Z]$/,
+      "El DNI debe tener 8 dígitos seguidos de una letra mayúscula"
+    ),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  imagen: z.string().optional(),
+  email: z.string().email("El email no es válido").min(1, "El email no puede estar vacío"),
+  sueldo: z.number().min(0, "El sueldo debe ser un número positivo"),
+});
+
+export type FormValues = z.infer<typeof formSchema>;
+
 interface Props {
   fetchData: () => Promise<void>;
+  onSubmit: (values: FormValues) => Promise<void>;
 }
 
-export default function AddEntrenador({ fetchData }: Props) {
+export default function AddEntrenador({ fetchData, onSubmit }: Props) {
   const [open, setOpen] = useState(false);
   const [cargando, setCargando] = useState(false);
 
-  // Definimos el esquema de validación con Zod
-  const formSchema = z.object({
-    nombre: z.string().min(1, "El nombre no puede estar vacío"),
-    dni: z
-      .string()
-      .regex(
-        /^[0-9]{8}[A-Z]$/,
-        "El DNI debe tener 8 dígitos seguidos de una letra mayúscula"
-      ),
-    password: z
-      .string()
-      .min(6, "La contraseña debe tener al menos 6 caracteres"),
-    imagen: z.string().optional(),
-    email: z
-      .string()
-      .email("El email no es válido")
-      .min(1, "El email no puede estar vacío"),
-    sueldo: z.number().min(0, "El sueldo debe ser un número positivo"),
-  });
-
-  type FormValues = z.infer<typeof formSchema>;
-
-  // Configuramos React Hook Form con la validación Zod
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,35 +60,12 @@ export default function AddEntrenador({ fetchData }: Props) {
     },
   });
 
-  async function handleSubmitForm(values: FormValues) {
+  async function handleInternalSubmit(values: FormValues) {
     setCargando(true);
-    values.sueldo = parseFloat(values.sueldo.toString());
-
     try {
-      const user = localStorage.getItem("user");
-      const parsedUser = user ? JSON.parse(user) : null;
-      const token = parsedUser?.token;
-      const URL = process.env.NEXT_PUBLIC_API;
-      const response = await fetch(URL + "/entrenador/registrarEntrenador", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al registrar el entrenador");
-      }
-
-      toast.success("Entrenador registrado con éxito", {
-        description: "El entrenador ha sido añadido",
-      });
-
+      await onSubmit(values);
       form.reset();
       setOpen(false);
-      await fetchData();
     } catch (error) {
       toast.error("Error al registrar el entrenador", {
         description: "Intenta de nuevo más tarde " + error,
@@ -126,10 +97,7 @@ export default function AddEntrenador({ fetchData }: Props) {
         </DialogHeader>
 
         <Form {...form}>
-          <form
-            className="space-y-6"
-            onSubmit={form.handleSubmit(handleSubmitForm)}
-          >
+          <form className="space-y-6" onSubmit={form.handleSubmit(handleInternalSubmit)}>
             {/* Nombre */}
             <FormField
               control={form.control}
@@ -237,10 +205,8 @@ export default function AddEntrenador({ fetchData }: Props) {
                       type="number"
                       placeholder="Introduce el sueldo"
                       {...field}
-                      // Manejamos el cambio, permitiendo un valor vacío
                       onChange={(e) => {
-                        const value =
-                          e.target.value === "" ? "" : Number(e.target.value);
+                        const value = e.target.value === "" ? "" : Number(e.target.value);
                         field.onChange(value);
                       }}
                       className={`w-full rounded-md border px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 ${

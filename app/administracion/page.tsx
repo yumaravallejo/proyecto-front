@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import Footer from "../componentes/Footer";
 import HeaderUs from "../componentes/HeaderUs";
 import BaneoUser from "../componentes/BaneoUser";
-import AddEntrenador from "../componentes/AddEntrenador";
+import AddEntrenador, { FormValues } from "../componentes/AddEntrenador";
+import { toast, Toaster } from "sonner";
 
 interface DatosIniciales {
   usuariosRegistrados: number;
@@ -43,7 +44,43 @@ export default function Administracion() {
       setCargando(false);
     } catch (error) {
       setCargando(false);
-      console.error(error)
+      console.error(error);
+    }
+  }
+
+  async function handleSubmitForm(values: FormValues) {
+    setCargando(true);
+    values.sueldo = parseFloat(values.sueldo.toString());
+
+    try {
+      const user = localStorage.getItem("user");
+      const parsedUser = user ? JSON.parse(user) : null;
+      const token = parsedUser?.token;
+      const URL = process.env.NEXT_PUBLIC_API;
+      const response = await fetch(URL + "/entrenador/registrarEntrenador", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al registrar el entrenador");
+      }
+
+      toast.success("Entrenador registrado con éxito", {
+        description: "El entrenador ha sido añadido",
+      });
+
+      fetchDatos();
+    } catch (error) {
+      toast.error("Error al registrar el entrenador", {
+        description: "Intenta de nuevo más tarde " + error,
+      });
+    } finally {
+      setCargando(false);
     }
   }
 
@@ -54,6 +91,7 @@ export default function Administracion() {
   return (
     <div className="bg-gray-100 min-h-screen relative">
       <HeaderUs promocion={null} pagina="ADMINISTRACIÓN" />
+      <Toaster />
       <main className="min-h-screen sm:max-w-7xl w-full mx-auto ">
         <h1 className="sm:hidden w-full text-center pt-4 pb-4 mb-10 text-2xl text-white bg-[var(--gris-oscuro)]">
           PANEL DE ADMINISTRACIÓN
@@ -105,10 +143,9 @@ export default function Administracion() {
             </p>
           </article>
           <BaneoUser fetchData={fetchDatos} />
-          <AddEntrenador fetchData={fetchDatos} />
+          <AddEntrenador fetchData={fetchDatos} onSubmit={handleSubmitForm} />
         </section>
       </main>
-      
 
       <Footer />
     </div>
