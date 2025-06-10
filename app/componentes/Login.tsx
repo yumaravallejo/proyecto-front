@@ -54,6 +54,7 @@ export default function Login() {
         toast.error("Error al iniciar sesión", {
           description: "Las credenciales son incorrectas",
         });
+        setCargando(false);
         return;
       }
 
