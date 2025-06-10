@@ -93,7 +93,7 @@ export default function Administracion() {
     const URL = process.env.NEXT_PUBLIC_API;
 
     const response = await fetch(`${URL}/entrenador/banear/`+userId, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
