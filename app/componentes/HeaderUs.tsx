@@ -34,7 +34,7 @@ export default function HeaderUs(props: Props) {
   const imagenUser =
     user?.imagen == ""
       ? "/usuario.svg"
-      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/`+user?.id;
+      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/${user?.id}`;
 
   useEffect(() => {
     function actualizarUser() {

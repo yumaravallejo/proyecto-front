@@ -60,7 +60,7 @@ export default function Header(props: Props) {
   const imagenUser =
     user?.imagen == ""
       ? "/usuario.svg"
-      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/`+user?.id;
+      : `${process.env.NEXT_PUBLIC_API}/usuarios/obtenerArchivo/${user?.id}`;
 
   const opcionesMenu = login
     ? user.tipo !== "Entrenador"
