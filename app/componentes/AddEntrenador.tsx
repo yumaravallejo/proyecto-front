@@ -93,7 +93,7 @@ export default function AddEntrenador({ fetchData }: Props) {
 
       form.reset();
       setOpen(false);
-      fetchData;
+      await fetchData();
     } catch (error) {
       toast.error("Error al registrar el entrenador", {
         description: "Intenta de nuevo más tarde " + error,

@@ -59,7 +59,7 @@ export default function BaneoUser({ fetchData }: Props) {
       toast.success("Usuario baneado con éxito", {
         description: "El usuario ha sido baneado",
       });
-      fetchData;
+      await fetchData();
     } catch (error) {
       toast.error("Error al banear al usuario", {
         description: "Inténtalo de nuevo más tarde " + error,
