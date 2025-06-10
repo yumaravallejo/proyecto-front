@@ -254,7 +254,7 @@ export default function UserProfile() {
                 width={120}
                 height={120}
                 alt={`Imagen de perfil de ${localUser?.nombre}`}
-                className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)]"
+                className="w-24 h-24 rounded-full object-cover border-2 border-white"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = "/usuario.svg"; // Fallback si la imagen no carga

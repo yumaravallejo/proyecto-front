@@ -267,7 +267,7 @@ export default function HeaderUs(props: Props) {
                   width={120}
                   height={120}
                   alt={`Imagen de perfil`}
-                  className="w-12 h-12 rounded-full object-cover border-2 border-[var(--gris-oscuro)]"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = "/usuario.svg"; // Fallback si la imagen no carga
