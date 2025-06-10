@@ -40,11 +40,10 @@ const formSchema = z.object({
 export type FormValues = z.infer<typeof formSchema>;
 
 interface Props {
-  fetchData: () => Promise<void>;
   onSubmit: (values: FormValues) => Promise<void>;
 }
 
-export default function AddEntrenador({ fetchData, onSubmit }: Props) {
+export default function AddEntrenador({ onSubmit }: Props) {
   const [open, setOpen] = useState(false);
   const [cargando, setCargando] = useState(false);
 
