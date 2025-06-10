@@ -143,7 +143,7 @@ export default function Administracion() {
             </p>
           </article>
           <BaneoUser fetchData={fetchDatos} />
-          <AddEntrenador fetchData={fetchDatos} onSubmit={handleSubmitForm} />
+          <AddEntrenador onSubmit={handleSubmitForm} />
         </section>
       </main>
 
