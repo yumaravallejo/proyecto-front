@@ -23,58 +23,38 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+const formSchema = z.object({
+  userId: z.string().min(1, "La ID del usuario es requerida"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
 interface Props {
-  fetchData: () => Promise<void>;
+  onSubmit: (values: FormValues) => Promise<void>;
 }
 
-export default function BaneoUser({ fetchData }: Props) {
+export default function BaneoUser({ onSubmit }: Props) {
   const [cargando, setCargando] = useState(false);
-
-  const formSchema = z.object({
-    userId: z.string().min(1, "La ID del usuario es requerida"),
-  });
-
-  async function handleBanUser(values: z.infer<typeof formSchema>) {
-    try {
-      setCargando(true);
-      const user = localStorage.getItem("user");
-      const parsedUser = user ? JSON.parse(user) : null;
-      const token = parsedUser?.token;
-      const URL = process.env.NEXT_PUBLIC_API;
-      const response = await fetch(
-        URL + "/entrenador/banear/" + values.userId,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Error al banear al usuario");
-      }
-
-      toast.success("Usuario baneado con éxito", {
-        description: "El usuario ha sido baneado",
-      });
-      await fetchData();
-    } catch (error) {
-      toast.error("Error al banear al usuario", {
-        description: "Inténtalo de nuevo más tarde " + error,
-      });
-    } finally {
-      setCargando(false);
-    }
-  }
-
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       userId: "",
     },
   });
+
+  async function handleBanUser(values: FormValues) {
+    setCargando(true);
+    try {
+      await onSubmit(values);
+      form.reset();
+    } catch (error) {
+      toast.error("Error al banear el usuario", {
+        description: "Intenta de nuevo más tarde " + error,
+      });
+    } finally {
+      setCargando(false);
+    }
+  }
 
   return (
     <Dialog>
@@ -98,10 +78,7 @@ export default function BaneoUser({ fetchData }: Props) {
         </DialogHeader>
 
         <Form {...form}>
-          <form
-            className="space-y-6"
-            onSubmit={form.handleSubmit(handleBanUser)}
-          >
+          <form className="space-y-6" onSubmit={form.handleSubmit(handleBanUser)}>
             <FormField
               control={form.control}
               name="userId"

@@ -83,6 +83,38 @@ export default function Administracion() {
       setCargando(false);
     }
   }
+  
+  async function handleBanUser({ userId }: { userId: string }) {
+  setCargando(true);
+  try {
+    const user = localStorage.getItem("user");
+    const parsedUser = user ? JSON.parse(user) : null;
+    const token = parsedUser?.token;
+    const URL = process.env.NEXT_PUBLIC_API;
+
+    const response = await fetch(`${URL}/entrenador/banear-usuario`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo banear el usuario");
+    }
+
+    toast.success("Usuario baneado correctamente");
+    fetchDatos(); // Actualiza los datos después del baneo
+  } catch (error) {
+    toast.error("Error al banear el usuario", {
+      description: String(error),
+    });
+  } finally {
+    setCargando(false);
+  }
+}
 
   useEffect(() => {
     fetchDatos();
@@ -142,7 +174,7 @@ export default function Administracion() {
               {datosIniciales?.entrenadoresRegistrados}
             </p>
           </article>
-          <BaneoUser fetchData={fetchDatos} />
+          <BaneoUser onSubmit={handleBanUser} />
           <AddEntrenador onSubmit={handleSubmitForm} />
         </section>
       </main>
