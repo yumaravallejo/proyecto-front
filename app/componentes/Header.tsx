@@ -3,7 +3,6 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Login from "./Login";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   promocion: string | null;
@@ -172,13 +171,15 @@ export default function Header(props: Props) {
               title="Ir al perfil"
             >
               {imagenUser?.trim() ? (
-                <Avatar className="w-11 h-auto">
-                  <AvatarImage
-                    src={imagenUser}
-                    alt="Imagen de usuario"
-                    className="icono-user rounded-full"
-                  />
-                </Avatar>
+                <Image
+                  src={imagenUser}
+                  width={120}
+                  height={120}
+                  alt={`Imagen de perfil`}
+                  className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)]"
+                  priority
+                  unoptimized={true}
+                />
               ) : (
                 <Image
                   src="/usuario.svg"
