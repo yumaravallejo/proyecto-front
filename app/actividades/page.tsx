@@ -13,7 +13,8 @@ interface Actividades {
 }
 
 async function getActividades(): Promise<Actividades[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API}/actividades`, {
+  const URL = process.env.NEXT_PUBLIC_API;
+  const res = await fetch(`${URL}/actividades`, {
     next: { revalidate: 60 }, // o "force-cache" si no se actualiza seguido
   });
   if (!res.ok) throw new Error("Error al obtener actividades");

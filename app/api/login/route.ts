@@ -17,27 +17,47 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false }, { status: 401 });
   }
 
-  const response = NextResponse.json(data); // incluye los datos del backend
-  response.cookies.set("token", data.token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24,
-  });
+  const response = NextResponse.json(data);
+
+  if (URL === "http://localhost:8080") {
+    response.cookies.set("token", data.token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    });
+  } else {
+    response.cookies.set("token", data.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    });
+  }
   return response;
 }
 
 export async function GET() {
+  const URL = process.env.NEXT_PUBLIC_API;
   const response = NextResponse.json({ success: true });
-  response.cookies.set("token", "", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0, // Elimina la cookie
-  });
+  if (URL === "http://localhost:8080") {
+    response.cookies.set("token", "", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    });
+  } else {
+    response.cookies.set("token", "", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    });
+  }
   return response;
 }
-
-
