@@ -1,28 +1,69 @@
-// app/dashboard/page.tsx
-import { cookies } from "next/headers";
-import DashboardContent from "../componentes/DashboardContent";
+// app/componentes/DashboardContent.tsx
+"use client";
+
+import { useEffect, useState } from "react";
 import { UsuarioDTO } from "../componentes/types";
+import HeaderUs from "../componentes/HeaderUs";
+import EntrenadorDashboard from "../componentes/EntrenadorDashboard";
+import ClienteDashboard, { InfoHoyDTOBackend } from "../componentes/ClienteDashboard";
+import Footer from "../componentes/Footer";
 
+export default function DashboardContent() {
+  const [infoHoy, setInfoHoy] = useState<InfoHoyDTOBackend | null>(null);
+  const [user, setUser] = useState<UsuarioDTO | null>(null);
 
-async function getUser(): Promise<UsuarioDTO | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const fetchInfoHoy = async () => {
+    const cache = localStorage.getItem("infoHoy");
+    if (cache) {
+      try {
+        const parsed = JSON.parse(cache);
+        if (parsed?.userId === user?.id) {
+          setInfoHoy(parsed.data);
+          return;
+        }
+      } catch {}
+    }
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API}/usuarios/infoToken`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API}/usuarios/info-hoy/${user?.id}`
+    );
+    if (!res.ok) return console.error("Error al obtener info-hoy");
 
-  if (!res.ok) return null;
-  return res.json();
-}
+    const data = await res.json();
+    setInfoHoy(data);
 
-export default async function Dashboard() {
-  const user = await getUser();
+    localStorage.setItem("infoHoy", JSON.stringify({ userId: user?.id, data }));
+  };
 
-  if (!user) return <p>No estás logueado</p>;
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const parsed = JSON.parse(userData);
+      setUser(parsed);
+    }
+    
+    fetchInfoHoy();
+  }, [user?.id]);
 
-  return <DashboardContent user={user} />;
+  return (
+    <div className="flex flex-col min-h-screen">
+      <HeaderUs promocion={null} pagina="DASHBOARD" />
+
+      <main className="flex-grow bg-[var(--gris-oscuro)] text-gray-900">
+        {infoHoy ? (
+          user?.tipo === "Entrenador" ? (
+            <EntrenadorDashboard infoHoy={infoHoy} user={user} />
+          ) : (
+            <ClienteDashboard infoHoy={infoHoy} />
+          )
+        ) : (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+          </div>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
 }

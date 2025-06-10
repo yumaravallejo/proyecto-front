@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { InfoHoyDTO, TipoClase } from "./types";
+import React, { useState, useEffect } from "react";
+import { ClaseHoyItem, Descripcion, Evento, InfoHoyDTO, TipoClase } from "./types";
 
 const tipoClaseColors: Record<TipoClase, string> = {
   CARDIO: "bg-red-500",
@@ -12,14 +12,45 @@ const tipoClaseColors: Record<TipoClase, string> = {
   TONO_CARDIO: "bg-orange-500",
 };
 
+interface DietaBackend {
+  idDieta: number;
+  descripcion: string; 
+  fecha: string; 
+}
+
+export interface InfoHoyDTOBackend {
+  clasesHoy: ClaseHoyItem[]; 
+  eventosHoy: Evento[]; 
+  dietaHoy: DietaBackend | null;
+}
+
 interface Props {
-  infoHoy: InfoHoyDTO;
+  infoHoy: InfoHoyDTOBackend;
 }
 
 export default function ClienteView({ infoHoy }: Props) {
+  const [descripcionDieta, setDescripcionDieta] = useState<Descripcion | null>(null);
   const clasesOrdenadas = [...infoHoy.clasesHoy].sort(
     (a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime()
   );
+
+  useEffect(() => {
+    if (infoHoy.dietaHoy?.descripcion) {
+      try {
+        const parsed = JSON.parse(infoHoy.dietaHoy.descripcion);
+        setDescripcionDieta(parsed);
+      } catch (error) {
+        console.error("Error parsing dieta description:", error);
+        setDescripcionDieta({
+          desayuno: "-",
+          comida: "-",
+          merienda: "-",
+          cena: "-",
+          picoteo: "-"
+        });
+      }
+    }
+  }, [infoHoy.dietaHoy]);
 
   return (
     <div className="px-4 py-6 mx-auto min-h-screen">
@@ -85,38 +116,40 @@ export default function ClienteView({ infoHoy }: Props) {
             <h3 className="text-xl font-semibold text-white">COMIDAS DE HOY</h3>
           </div>
           <div className="p-4 flex-grow flex flex-col text-gray-900">
-            {!infoHoy.dietaHoy ? (
+            {!infoHoy.dietaHoy || !descripcionDieta ? (
               <p className="text-gray-600 text-center flex-grow flex items-center justify-center">
                 No tienes ninguna dieta asignada
               </p>
             ) : (
               <section className="prose prose-sm max-w-none overflow-auto text-gray-700 flex flex-col gap-y-5">
-                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-2">
-                  <h4>Desayuno</h4>
+                <article className="rounded-lg w-full bg-gray-100 p-4 flex flex-col gap-y-2">
+                  <span className="font-bold text-lg truncate text-black">Desayuno</span>
                   <p className="text-sm">
-                    {infoHoy.dietaHoy.descripcion.desayuno || " - "}
+                    {descripcionDieta.desayuno || " - "}
                   </p>
                 </article>
-                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
-                  <h4>Almuerzo</h4>
+                <article className="rounded-lg  w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                  <span className="font-bold text-lg truncate text-black">Almuerzo</span>
                   <p className="text-sm">
-                    {infoHoy.dietaHoy.descripcion.comida || " - "}
+                    {descripcionDieta.comida || " - "}
                   </p>
                 </article>
-                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
-                  <h4>Merienda</h4>
+                <article className="rounded-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                 <span className="font-bold text-lg truncate text-black">Merienda</span>
                   <p className="text-sm">
-                    {infoHoy.dietaHoy.descripcion.merienda || " - "}
+                    {descripcionDieta.merienda || " - "}
                   </p>
                 </article>
-                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
-                  <h4>Cena</h4>
-                  <p className="text-sm">{infoHoy.dietaHoy.descripcion.cena || " - "}</p>
-                </article>
-                <article className="rounded-lg shadow-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
-                  <h4>Picoteo</h4>
+                <article className="rounded-lg w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                  <span className="font-bold text-lg truncate text-black">Cena</span>
                   <p className="text-sm">
-                    {infoHoy.dietaHoy.descripcion.picoteo || " - "}
+                    {descripcionDieta.cena || " - "}
+                  </p>
+                </article>
+                <article className="rounded-lg  w-full bg-gray-100 p-4 flex flex-col gap-y-5">
+                  <span className="font-bold text-lg truncate text-black">Picoteo</span>
+                  <p className="text-sm">
+                    {descripcionDieta.picoteo || " - "}
                   </p>
                 </article>
               </section>

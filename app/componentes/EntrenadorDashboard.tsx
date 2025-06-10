@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { InfoHoyDTO, TipoClase, UsuarioDTO } from "./types";
+import { TipoClase, UsuarioDTO } from "./types";
+import { InfoHoyDTOBackend } from "./ClienteDashboard";
  // o donde tengas tipos
 
 const tipoClaseColors: Record<TipoClase, string> = {
@@ -14,7 +15,7 @@ const tipoClaseColors: Record<TipoClase, string> = {
 };
 
 interface Props {
-  infoHoy: InfoHoyDTO;
+  infoHoy: InfoHoyDTOBackend;
   user: UsuarioDTO;
 }
 
