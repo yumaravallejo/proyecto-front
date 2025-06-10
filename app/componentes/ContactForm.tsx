@@ -124,6 +124,8 @@ export default function ContactForm() {
                                     <Input
                                         placeholder="Introduce tu teléfono"
                                         {...field}
+                                        maxLength={9}
+                                        minLength={9}
                                         className="bg-white px-4 py-2 rounded-md shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
                                     />
                                 </FormControl>
