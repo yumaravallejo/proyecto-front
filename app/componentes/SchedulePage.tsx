@@ -276,37 +276,21 @@ export default function SchedulePage({ horariosIniciales }: SchedulePageProps) {
     setIsLoading(true);
 
     try {
-      // Si no está reservado, no hacer nada
       if (!userReservations.includes(idHorario)) {
         toast.info("No tienes una reserva para esta clase.");
         return;
       }
 
-      // Actualizar las reservas del usuario
-      const updatedUserReservations = userReservations.filter(
-        (id) => id !== idHorario
-      );
-      setUserReservations(updatedUserReservations);
-
-      // Actualizar el horario con la nueva cantidad de reservas
-      const updatedHorarios = horarios.map((clase) =>
-        clase.idHorario === idHorario
-          ? { ...clase, numReservas: clase.numReservas - 1 }
-          : clase
-      );
-
-      // Actualizar el estado con la lista de horarios actualizada
-      setHorarios(updatedHorarios);
-
-      // Guardar los horarios actualizados en el localStorage
-      localStorage.setItem("horarios", JSON.stringify(updatedHorarios));
-
-      // Cancelar la reserva en el backend
       const res = await fetch(
         `${URL}/usuarios/cancelarReserva?idHorario=${idHorario}&idUsuario=${idUsuario}`,
         { method: "DELETE", headers: { "Content-Type": "application/json" } }
       );
       if (!res.ok) throw new Error("Error al cancelar la reserva");
+
+      // Actualizar las reservas del usuario y refrescar horarios del servidor
+      setUserReservations((prev) => prev.filter((id) => id !== idHorario));
+
+      await fetchHorarios(); 
 
       toast.success("Reserva cancelada correctamente");
     } catch (error) {
