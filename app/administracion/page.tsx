@@ -92,13 +92,12 @@ export default function Administracion() {
     const token = parsedUser?.token;
     const URL = process.env.NEXT_PUBLIC_API;
 
-    const response = await fetch(`${URL}/entrenador/banear-usuario`, {
+    const response = await fetch(`${URL}/entrenador/banear/`+userId, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ id: userId }),
     });
 
     if (!response.ok) {
