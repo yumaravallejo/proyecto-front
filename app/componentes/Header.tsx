@@ -177,6 +177,10 @@ export default function Header(props: Props) {
                   height={120}
                   alt={`Imagen de perfil`}
                   className="w-24 h-24 rounded-full object-cover border-2 border-[var(--gris-oscuro)]"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/usuario.svg"; // Fallback si la imagen no carga
+                  }}
                   priority
                   unoptimized={true}
                 />
