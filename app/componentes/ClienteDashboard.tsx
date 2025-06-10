@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ClaseHoyItem, Descripcion, Evento, InfoHoyDTO, TipoClase } from "./types";
+import { ClaseHoyItem, Descripcion, Evento, TipoClase } from "./types";
 
 const tipoClaseColors: Record<TipoClase, string> = {
   CARDIO: "bg-red-500",

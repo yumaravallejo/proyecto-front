@@ -1,4 +1,3 @@
-// app/componentes/DashboardContent.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,20 +11,25 @@ export default function DashboardContent() {
   const [infoHoy, setInfoHoy] = useState<InfoHoyDTOBackend | null>(null);
   const [user, setUser] = useState<UsuarioDTO | null>(null);
 
-  const fetchInfoHoy = async () => {
-    const cache = localStorage.getItem("infoHoy");
-    if (cache) {
-      try {
-        const parsed = JSON.parse(cache);
-        if (parsed?.userId === user?.id) {
-          setInfoHoy(parsed.data);
-          return;
-        }
-      } catch {}
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const parsed = JSON.parse(userData);
+      setUser(parsed);
     }
+  }, []); 
 
+  useEffect(() => {
+    fetchInfoHoy(user?.id);
+  }, [user?.id]);
+
+  const fetchInfoHoy = async (id: number | undefined) => {
+    if (!id) {
+      console.warn("No se puede obtener info-hoy: ID de usuario es undefined");
+      return; 
+    }
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API}/usuarios/info-hoy/${user?.id}`
+      `${process.env.NEXT_PUBLIC_API}/usuarios/info-hoy/${id}`
     );
     if (!res.ok) return console.error("Error al obtener info-hoy");
 
@@ -34,16 +38,6 @@ export default function DashboardContent() {
 
     localStorage.setItem("infoHoy", JSON.stringify({ userId: user?.id, data }));
   };
-
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const parsed = JSON.parse(userData);
-      setUser(parsed);
-    }
-    
-    fetchInfoHoy();
-  }, [user?.id]);
 
   return (
     <div className="flex flex-col min-h-screen">
